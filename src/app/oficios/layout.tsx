@@ -4,30 +4,29 @@ import { redirect } from "next/navigation";
 import { Footer, Header, Sidebar } from "../components";
 
 export default async function OficiosLayout({
-    children
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-
   const session = await getServerSession(authOptions);
-  if( !session ) {
-    redirect('/api/auth/signin')
+  if (!session) {
+    redirect('/api/auth/signin');
   }
 
   return (
-    <div className="flex h-screen">
-      <Sidebar /> {/* Mueve el sidebar fuera del flex principal para asegurarte de que ocupe su espacio adecuado */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex h-screen oficios-layout">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
         <Header />
-        <div className="flex h-full ml-4 mt-16"> {/* Añade margen izquierdo para el sidebar y superior para el header */}
-          <main className="flex-grow overflow-x-hidden overflow-y-auto mb-14">
-            <div className="w-full px-6 py-8 lg:md:items-center lg:md:justify-center">
-              { children }
+        <div className="flex-1 flex overflow-auto ml-64 mt-16">
+          <main className="flex-grow overflow-auto">
+            <div className="w-full h-full px-6 py-8">
+              {children}
             </div>
           </main>
         </div>
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 }

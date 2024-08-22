@@ -25,35 +25,31 @@ export const Sidebar = () => {
 
     return (
         <>
-            {/* Botón para abrir el Sidebar en dispositivos móviles */}
             {!isOpen && (
                 <button 
                     onClick={() => setIsOpen(true)} 
-                    className="lg:hidden fixed top-24 left-4 z-50 bg-green-500 text-white p-3 rounded-full shadow-lg transition-transform transform hover:bg-green-600"
+                    className="lg:hidden fixed top-28 left-4 z-50 bg-[#383838] text-white p-3 rounded-full shadow-lg transition-transform transform hover:bg-[#383838]"
                 >
                     <IoMenuOutline className="w-6 h-6" />
                 </button>
             )}
 
-            {/* Sidebar */}
             <aside 
                 id="default-sidebar" 
-                className={`fixed top-0 left-0 w-64 h-[calc(100vh+50px)] bg-green-800 text-white transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:relative lg:w-64 z-40`} 
+                className={`fixed top-0 left-0 w-64 h-full bg-[#383838] text-white transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:relative lg:w-64 z-40`} 
                 aria-label="Sidebar"
             >
-                <div className="relative h-full flex flex-col">
-                    {/* Imagen del logo en la parte superior del menú, solo visible en pantallas grandes */}
-                    <div className="hidden lg:block">
-                        <Image 
-                            src="/assets/logo-blanco.png" 
-                            alt="logo" 
-                            width={225} 
-                            height={100} 
-                            className="w-full h-auto object-cover" 
-                        />
-                    </div>
+                <div className="relative h-full flex flex-col overflow-hidden">
+                <div className="hidden lg:block">
+            <Image
+              src="/assets/logo-blanco.png"
+              alt="logo"
+              width={225}
+              height={100}
+              className="ml-3 mt-3" 
+            />
+          </div>
 
-                    {/* Botón de cerrar el menú en la vista móvil */}
                     {isOpen && (
                         <button 
                             onClick={() => setIsOpen(false)} 
@@ -66,31 +62,31 @@ export const Sidebar = () => {
                     <div className="flex-grow overflow-y-auto px-4 py-6">
                         <ul className="space-y-4 font-medium">
                             <li>
-                                <Link href={'/transparencia'} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-green-700">
+                                <Link href={'/transparencia'} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600">
                                     <IoHomeOutline className="w-6 h-6" />
                                     <span className="ml-4 text-lg">Home</span>
                                 </Link>
                             </li>
                             <li>
-                                <Link href={'/transparencia/documentos'} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-green-700">
+                                <Link href={'/transparencia/documentos'} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600">
                                     <IoDocumentAttachOutline className="w-6 h-6" />
                                     <span className="ml-4 text-lg">Documentos</span>
                                 </Link>
                             </li>
                             <li>
-                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-green-700">
+                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600">
                                     <IoArrowUp className="w-6 h-6" />
                                     <span className="ml-4 text-lg">Oficios Recibidos</span>
                                 </Link>
                             </li>
                             <li>
-                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-green-700">
+                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600">
                                     <IoArrowDown className="w-6 h-6" />
                                     <span className="ml-4 text-lg">Oficios Expedidos</span>
                                 </Link>
                             </li>
                             <li>
-                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-green-700">
+                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600">
                                     <IoPencil className="w-6 h-6" />
                                     <span className="ml-4 text-lg">Oficios por Expedir</span>
                                 </Link>

@@ -19,5 +19,15 @@
 body {
   color: rgb(var(--foreground-rgb));
   background-color:#f6f6f6 ;
+  overflow: hidden; /* Evitar desplazamiento en el cuerpo */
+  height: 100%; /* Asegurar que el cuerpo ocupe toda la pantalla */
+}
 
+/* Estilos específicos para OficiosLayout */
+.oficios-layout {
+  height: 100vh;
+}
+
+.oficios-layout main {
+  overflow: auto; /* Permitir desplazamiento solo en el contenido principal */
 }
