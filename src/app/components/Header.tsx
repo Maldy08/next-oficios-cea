@@ -1,7 +1,7 @@
-import { getServerSession } from 'next-auth';
-import Image from 'next/image';
-import { authOptions } from '../api/auth/[...nextauth]/route';
-import { ButtonHeader } from '.';
+import { getServerSession } from "next-auth";
+import Image from "next/image";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { ButtonHeader } from ".";
 
 const sistema = process.env.NOMBRE_SISTEMA;
 
@@ -15,14 +15,23 @@ export const Header = async () => {
         <div className="flex flex-wrap justify-between items-center mx-auto">
           {/* Imagen solo visible en pantallas pequeñas */}
           <div className="block lg:hidden">
-            <Image src={"/assets/logo-blanco.png"} alt="logo" width={225} height={100} className="" />
+            <Image
+              src={"/assets/logo-blanco.png"}
+              alt="logo"
+              width={225}
+              height={100}
+              className=""
+            />
           </div>
 
           <div className="lg:order-2">
             <ButtonHeader user={user!} />
           </div>
-          
-          <div className="justify-between items-center w-full flex lg:w-auto lg:order-1" id="mobile-menu-2">
+
+          <div
+            className="justify-between items-center w-full flex lg:w-auto lg:order-1"
+            id="mobile-menu-2"
+          >
             <span className="self-center text-lg font-semibold whitespace-nowrap dark:text-white text-white uppercase">
               {sistema}
             </span>
@@ -31,4 +40,4 @@ export const Header = async () => {
       </nav>
     </header>
   );
-}
+};
