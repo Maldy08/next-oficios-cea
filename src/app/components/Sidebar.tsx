@@ -44,7 +44,7 @@ export const Sidebar = () => {
 
       <aside
         id="default-sidebar"
-        className={`fixed top-0 left-0 w-64 h-screen bg-[#383838] text-white transition-transform duration-300 ${
+        className={`fixed top-0 left-0 w-64 h-full bg-[#383838] text-white transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 lg:relative lg:w-64 z-40`}
         aria-label="Sidebar"
@@ -69,7 +69,7 @@ export const Sidebar = () => {
             </button>
           )}
 
-          <div className="flex-grow px-4 py-6 overflow-hidden">
+          <div className="flex-grow overflow-y-auto px-4 py-6">
             <ul className="space-y-4 font-medium">
               <li>
                 <Link
@@ -92,7 +92,7 @@ export const Sidebar = () => {
               <li>
                 <Link
                   href={"/transparencia/"}
-                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600"
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
                   <IoArrowUp className="w-6 h-6" />
                   <span className="ml-4 text-lg">Oficios Recibidos</span>
@@ -101,7 +101,7 @@ export const Sidebar = () => {
               <li>
                 <Link
                   href={"/transparencia/"}
-                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600"
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
                   <IoArrowDown className="w-6 h-6" />
                   <span className="ml-4 text-lg">Oficios Expedidos</span>
@@ -110,7 +110,7 @@ export const Sidebar = () => {
               <li>
                 <Link
                   href={"/transparencia/"}
-                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-purple-600"
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
                   <IoPencil className="w-6 h-6" />
                   <span className="ml-4 text-lg">Oficios por Expedir</span>
