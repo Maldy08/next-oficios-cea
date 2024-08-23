@@ -54,11 +54,11 @@ export default function OficiosRecibidos() {
                                     />
                                 </div>
 
-                                <div className="flex items-center space-x-4">
-                                    <label className="mr-2">CEA</label>
+                                <div className="flex items-center space-x-3">
+                                    <label className="mr-1">CEA</label>
                                     <input type="radio" name="selection" className="mr-4" />
 
-                                    <label className="mr-2">SEPRA</label>
+                                    <label className="mr-1">SEPRA</label>
                                     <input type="radio" name="selection" />
                                 </div>
 
