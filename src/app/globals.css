@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
+
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -31,3 +33,13 @@ body {
 .oficios-layout main {
   overflow: auto; /* Permitir desplazamiento solo en el contenido principal */
 }
+
+.input-field {
+  width: 100%;
+  max-width: 300px; /* Ajusta este valor según el diseño que desees */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+}
+
