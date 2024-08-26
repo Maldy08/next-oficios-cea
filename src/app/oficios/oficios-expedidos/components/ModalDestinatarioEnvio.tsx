@@ -5,27 +5,36 @@ import SearchIcon from '@mui/icons-material/Search';
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (selectedName: string) => void;
+  onSave: (selectedDestinatario: string) => void;
 }
 
 const data = [
-  { nombre: 'María Fernández', departamento: 'Global Solutions', puesto: 'Jefa de Proyecto' },
-  { nombre: 'Pedro Gómez', departamento: 'Tech Innovations', puesto: 'Ingeniero de Software' },
-  { nombre: 'Carmen Martínez', departamento: 'FinSolve', puesto: 'Analista Financiero' },
-  { nombre: 'Luis Pérez', departamento: 'EcoTech', puesto: 'Director de Operaciones' },
-  { nombre: 'Sonia Morales', departamento: 'MedTech', puesto: 'Especialista en Salud' },
-  { nombre: 'Rafael Sánchez', departamento: 'LogiCore', puesto: 'Coordinador de Logística' },
-  { nombre: 'Elena Castro', departamento: 'EduSmart', puesto: 'Educadora' },
-  { nombre: 'Fernando Ruiz', departamento: 'Creative Minds', puesto: 'Diseñador Gráfico' },
-  { nombre: 'Patricia López', departamento: 'RetailPro', puesto: 'Gerente de Ventas' },
-  { nombre: 'Carlos Ortega', departamento: 'HealthCare Inc', puesto: 'Consultor' }
+  { nombre: 'Juan Pérez', departamento: 'Acme Corp', puesto: 'Gerente' },
+  { nombre: 'Ana García', departamento: 'Tech Solutions', puesto: 'Desarrolladora' },
+  { nombre: 'Carlos López', departamento: 'Finanzas Globales', puesto: 'Analista Financiero' },
+  { nombre: 'Marta Rodríguez', departamento: 'Salud y Bienestar', puesto: 'Médico' },
+  { nombre: 'Luis Fernández', departamento: 'Ingeniería Innovadora', puesto: 'Ingeniero de Software' },
+  { nombre: 'Lucía Martínez', departamento: 'Educación Avanzada', puesto: 'Profesora' },
+  { nombre: 'Diego Gómez', departamento: 'Marketing Creativo', puesto: 'Director de Marketing' },
+  { nombre: 'Elena Torres', departamento: 'Recursos Humanos', puesto: 'Especialista en RRHH' },
+  { nombre: 'Pablo Herrera', departamento: 'Consultoría Empresarial', puesto: 'Consultor' },
+  { nombre: 'Clara Morales', departamento: 'Tecnología Verde', puesto: 'Ingeniera Ambiental' },
 ];
 
 const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
-  const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [selectedDestinatario, setSelectedDestinatario] = useState<string>("");
+
+  const handleRowClick = (nombre: string) => {
+    setSelectedDestinatario(nombre);
+  };
+
+  const handleSaveClick = () => {
+    onSave(selectedDestinatario);
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -40,17 +49,7 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
-    setPage(0); // Resetear la página al buscar
-  };
-
-  const handleRowClick = (name: string) => {
-    setSelectedName(name);
-  };
-
-  const handleSave = () => {
-    if (selectedName) {
-      onSave(selectedName); // Pasar el nombre seleccionado al onSave
-    }
+    setPage(0);
   };
 
   const filteredData = data.filter(row =>
@@ -60,10 +59,11 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
   );
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Personal Interno</h2>
+    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
+      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+      <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Personal Interno</h2>
           <TextField
             variant="standard"
             placeholder="Buscar..."
@@ -111,10 +111,8 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
                 <TableRow
                   key={index}
                   onClick={() => handleRowClick(row.nombre)}
-                  sx={{
-                    cursor: 'pointer',
-                    backgroundColor: row.nombre === selectedName ? '#f0f0f0' : 'inherit'
-                  }}
+                  selected={selectedDestinatario === row.nombre}
+                  style={{ cursor: 'pointer' }}
                 >
                   <TableCell>{row.nombre}</TableCell>
                   <TableCell>{row.departamento}</TableCell>
@@ -138,18 +136,10 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
         />
 
         <div className="flex justify-end mt-4 gap-2">
-          <Button
-            onClick={onClose}
-            variant="contained"
-            color="error"
-          >
+          <Button onClick={onClose} variant="contained" color="error">
             Cerrar
           </Button>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            color="primary"
-          >
+          <Button onClick={handleSaveClick} variant="contained" color="primary">
             Guardar
           </Button>
         </div>

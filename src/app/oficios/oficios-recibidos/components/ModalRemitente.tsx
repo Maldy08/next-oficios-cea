@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   Paper,
@@ -19,6 +19,7 @@ import SearchIcon from '@mui/icons-material/Search';
 interface ModalRemitenteProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: (name: string) => void;
 }
 
 const data = [
@@ -34,10 +35,11 @@ const data = [
   { nombre: 'Patricia Morales', empresa: 'Logistics LLC', puesto: 'Logística' }
 ];
 
-const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose }) => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [searchText, setSearchText] = React.useState('');
+const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchText, setSearchText] = useState('');
+  const [selectedName, setSelectedName] = useState<string | null>(null);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -51,6 +53,17 @@ const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose }) => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
     setPage(0); // Resetear la página al buscar
+  };
+
+  const handleSelect = (name: string) => {
+    setSelectedName(name);
+  };
+
+  const handleSave = () => {
+    if (selectedName) {
+      onSave(selectedName);
+      onClose();
+    }
   };
 
   // Filtrar los datos según el texto de búsqueda
@@ -82,12 +95,12 @@ const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose }) => {
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Typography 
+            <Typography 
               variant="h6" 
               id="modal-title" 
               sx={{ 
                 fontSize: '1rem',
-                fontWeight: 'bold' // Esto pone el texto en negrita
+                fontWeight: 'bold'
               }}
             >
               Personal Externo
@@ -129,14 +142,19 @@ const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose }) => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE DE LA PERSONA</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>EMPRESA / DEPENDENCIA</TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={index}>
+                  <TableRow
+                    key={index}
+                    hover
+                    onClick={() => handleSelect(row.nombre)}
+                    sx={{ cursor: 'pointer', backgroundColor: selectedName === row.nombre ? 'rgba(0, 0, 255, 0.1)' : '' }}
+                  >
                     <TableCell>{row.nombre}</TableCell>
                     <TableCell>{row.empresa}</TableCell>
                     <TableCell>{row.puesto}</TableCell>
@@ -162,7 +180,7 @@ const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose }) => {
             <Button variant="contained" color="error" sx={{ marginRight: 1, fontSize: '0.75rem' }} onClick={onClose}>
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" sx={{ fontSize: '0.75rem' }}>
+            <Button variant="contained" color="primary" sx={{ fontSize: '0.75rem' }} onClick={handleSave}>
               Guardar
             </Button>
           </div>

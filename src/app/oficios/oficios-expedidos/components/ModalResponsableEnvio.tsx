@@ -2,30 +2,24 @@ import { FC, useState } from "react";
 import { InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Button } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
-interface ModalDestinatarioProps {
+interface ModalResponsableProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (selectedName: string) => void;
+  onSave: (name: string) => void;
 }
 
-const data = [
-  { nombre: 'María Fernández', departamento: 'Global Solutions', puesto: 'Jefa de Proyecto' },
-  { nombre: 'Pedro Gómez', departamento: 'Tech Innovations', puesto: 'Ingeniero de Software' },
-  { nombre: 'Carmen Martínez', departamento: 'FinSolve', puesto: 'Analista Financiero' },
-  { nombre: 'Luis Pérez', departamento: 'EcoTech', puesto: 'Director de Operaciones' },
-  { nombre: 'Sonia Morales', departamento: 'MedTech', puesto: 'Especialista en Salud' },
-  { nombre: 'Rafael Sánchez', departamento: 'LogiCore', puesto: 'Coordinador de Logística' },
-  { nombre: 'Elena Castro', departamento: 'EduSmart', puesto: 'Educadora' },
-  { nombre: 'Fernando Ruiz', departamento: 'Creative Minds', puesto: 'Diseñador Gráfico' },
-  { nombre: 'Patricia López', departamento: 'RetailPro', puesto: 'Gerente de Ventas' },
-  { nombre: 'Carlos Ortega', departamento: 'HealthCare Inc', puesto: 'Consultor' }
+const mockData = [
+  { nombre: "Juan Pérez", departamento: "Administración", puesto: "Jefe" },
+  { nombre: "Ana Gómez", departamento: "Recursos Humanos", puesto: "Analista" },
+  { nombre: "Luis Martínez", departamento: "IT", puesto: "Desarrollador" },
+  // Agrega más datos si es necesario
 ];
 
-const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave }) => {
+const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onSave }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
-  const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -40,30 +34,32 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
-    setPage(0); // Resetear la página al buscar
+    setPage(0);
   };
 
   const handleRowClick = (name: string) => {
-    setSelectedName(name);
+    setSelectedResponsable(name);
   };
 
   const handleSave = () => {
-    if (selectedName) {
-      onSave(selectedName); // Pasar el nombre seleccionado al onSave
+    if (selectedResponsable) {
+      onSave(selectedResponsable);
+      onClose();
     }
   };
 
-  const filteredData = data.filter(row =>
+  const filteredData = mockData.filter(row =>
     row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
     row.departamento.toLowerCase().includes(searchText.toLowerCase()) ||
     row.puesto.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Personal Interno</h2>
+    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
+      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+      <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Responsable</h2>
           <TextField
             variant="standard"
             placeholder="Buscar..."
@@ -108,12 +104,13 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
             </TableHead>
             <TableBody>
               {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <TableRow
-                  key={index}
+                <TableRow 
+                  key={index} 
                   onClick={() => handleRowClick(row.nombre)}
+                  selected={selectedResponsable === row.nombre}
                   sx={{
                     cursor: 'pointer',
-                    backgroundColor: row.nombre === selectedName ? '#f0f0f0' : 'inherit'
+                    backgroundColor: selectedResponsable === row.nombre ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
                   }}
                 >
                   <TableCell>{row.nombre}</TableCell>
@@ -158,4 +155,4 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
   );
 };
 
-export default ModalDestinatario;
+export default ModalResponsableEnvio;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { FaSearch, FaUserPlus, FaFileUpload } from 'react-icons/fa';
 import ModalDestinatario from '../components/ModalDestinatario';
@@ -22,24 +20,55 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
 
+  const [destinatario, setDestinatario] = useState<string | null>(null);
+  const [responsable, setResponsable] = useState<string | null>(null);
+  const [remitente, setRemitente] = useState<string | null>(null);
+
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setCurrentDate(today);
   }, []);
 
   const toggleExterno = () => {
+    if (isInterno) {
+      setIsInterno(false);
+      setRemitente(null);
+    }
     setIsExterno(true);
-    setIsInterno(false);
   };
 
   const toggleInterno = () => {
-    setIsExterno(false);
+    if (isExterno) {
+      setIsExterno(false);
+      setDestinatario(null);
+      setResponsable(null);
+    }
     setIsInterno(true);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
-    setSelectedFile(file);
+    if (file && file.type !== "application/pdf") {
+      alert("Por favor, selecciona un archivo PDF.");
+      setSelectedFile(null);
+    } else {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleDestinatarioSave = (name: string) => {
+    setDestinatario(name);
+    setShowDestinatarioModal(false);
+  };
+
+  const handleResponsableSave = (name: string) => {
+    setResponsable(name);
+    setShowResponsableModal(false);
+  };
+
+  const handleRemitenteSave = (name: string) => {
+    setRemitente(name);
+    setShowRemitenteModal(false);
   };
 
   if (!isOpen) return null;
@@ -145,6 +174,8 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                     <input
                       type="text"
                       placeholder="Persona que firma el oficio"
+                      value={remitente || ''}
+                      readOnly
                       className="border border-gray-300 rounded p-2 w-full text-sm"
                     />
                     <FaSearch
@@ -194,6 +225,8 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                       <input
                         type="text"
                         placeholder="Persona a quien va dirigido"
+                        value={destinatario || ''}
+                        readOnly
                         className="border border-gray-300 rounded p-2 w-full text-sm"
                       />
                       <FaUserPlus
@@ -203,16 +236,18 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                     </div>
                   </div>
 
-                  {/* Nombre del Responsable - Barra de búsqueda */}
+                  {/* Nombre del Responsable */}
                   <div className="mb-4">
-                    <label className="block mb-2">Nombre del responsable</label>
+                    <label className="block mb-2">Nombre del Responsable</label>
                     <div className="relative">
                       <input
                         type="text"
-                        placeholder="Persona que atenderá el oficio"
+                        placeholder="Persona que envía el oficio"
+                        value={responsable || ''}
+                        readOnly
                         className="border border-gray-300 rounded p-2 w-full text-sm"
                       />
-                      <FaSearch
+                      <FaUserPlus
                         onClick={() => setShowResponsableModal(true)}
                         className="absolute right-2 top-2 text-gray-400 cursor-pointer"
                       />
@@ -228,13 +263,12 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
             <input type="text" placeholder="Tema" className="border border-gray-300 rounded p-2 flex-1 text-sm" />
           </div>
 
-          {/* Observaciones */}
-          <div className="flex flex-col mb-4">
-            <label className="block mb-2">Observaciones</label>
+          {/* Comentarios */}
+          <div className="mb-4">
+            <label className="block mb-2">Comentarios</label>
             <textarea
               rows={textareaRows}
-              onFocus={() => setTextareaRows(5)}
-              onBlur={() => setTextareaRows(3)}
+              onChange={(e) => setTextareaRows(Math.min(5, e.target.value.split("\n").length))}
               className="border border-gray-300 rounded p-2 w-full text-sm"
             />
           </div>
@@ -245,23 +279,26 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
               type="file"
               onChange={handleFileChange}
               className="border border-gray-300 rounded p-2"
+              accept=".pdf"  // Acepta solo archivos PDF
             />
             {selectedFile && (
-              <span className="ml-4 text-sm text-gray-700">{selectedFile.name}</span>
+              <div className="ml-4 text-sm">{selectedFile.name}</div>
             )}
           </div>
 
           {/* Botones */}
           <div className="flex justify-end space-x-4">
             <button
+              type="button"
               onClick={onClose}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              className="bg-red-500 text-white py-2 px-4 rounded"
             >
               Cancelar
             </button>
             <button
+              type="button"
               onClick={onSave}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white py-2 px-4 rounded"
             >
               Guardar
             </button>
@@ -269,24 +306,21 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
         </div>
 
         {/* Modales */}
-        {showDestinatarioModal && (
-          <ModalDestinatario
-            isOpen={showDestinatarioModal}
-            onClose={() => setShowDestinatarioModal(false)}
-          />
-        )}
-        {showRemitenteModal && (
-          <ModalRemitente
-            isOpen={showRemitenteModal}
-            onClose={() => setShowRemitenteModal(false)}
-          />
-        )}
-        {showResponsableModal && (
-          <ModalResponsable
-            isOpen={showResponsableModal}
-            onClose={() => setShowResponsableModal(false)}
-          />
-        )}
+        <ModalDestinatario
+          isOpen={showDestinatarioModal}
+          onClose={() => setShowDestinatarioModal(false)}
+          onSave={handleDestinatarioSave}
+        />
+        <ModalResponsable
+          isOpen={showResponsableModal}
+          onClose={() => setShowResponsableModal(false)}
+          onSave={handleResponsableSave}
+        />
+        <ModalRemitente
+          isOpen={showRemitenteModal}
+          onClose={() => setShowRemitenteModal(false)}
+          onSave={handleRemitenteSave}
+        />
       </div>
     </div>
   );
