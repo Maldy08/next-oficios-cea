@@ -237,22 +237,23 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                   </div>
 
                   {/* Nombre del Responsable */}
-                  <div className="mb-4">
-                    <label className="block mb-2">Nombre del Responsable</label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Persona que envía el oficio"
-                        value={responsable || ''}
-                        readOnly
-                        className="border border-gray-300 rounded p-2 w-full text-sm"
-                      />
-                      <FaUserPlus
-                        onClick={() => setShowResponsableModal(true)}
-                        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                      />
-                    </div>
-                  </div>
+<div className="mb-4">
+  <label className="block mb-2">Nombre del Responsable</label>
+  <div className="relative">
+    <input
+      type="text"
+      placeholder="Persona que envía el oficio"
+      value={responsable || ''}
+      readOnly
+      className="border border-gray-300 rounded p-2 w-full text-sm"
+    />
+    <FaSearch  // Cambiado de FaUserPlus a FaSearch
+      onClick={() => setShowResponsableModal(true)}
+      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+    />
+  </div>
+</div>
+
                 </>
               )}
             </div>

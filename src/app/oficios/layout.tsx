@@ -18,7 +18,7 @@ export default async function OficiosLayout({
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <div className="flex-1 flex overflow-auto ml-64 mt-16">
+        <div className="flex-1 flex overflow-auto ml-0 mt-16">
           <main className="flex-grow overflow-auto">
             <div className="w-full h-full px-6 py-8">
               {children}
