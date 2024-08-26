@@ -73,7 +73,7 @@ export const Sidebar = () => {
             <ul className="space-y-4 font-medium">
               <li>
                 <Link
-                  href={"/transparencia"}
+                  href={"/oficios"}
                   className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
                   <IoHomeOutline className="w-6 h-6" />
@@ -91,7 +91,7 @@ export const Sidebar = () => {
               </li>
               <li>
                 <Link
-                  href={"/transparencia/"}
+                  href={"/oficios/oficios-recibidos"}
                   className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
                   <IoArrowUp className="w-6 h-6" />
