@@ -1,6 +1,7 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import axios from 'axios';
 
 interface ModalRemitenteProps {
   isOpen: boolean;
@@ -8,26 +9,26 @@ interface ModalRemitenteProps {
   onSave: (name: string) => void;
 }
 
-const data = [
-  { nombre: 'Juan Pérez', departamento: 'Acme Corp', puesto: 'Gerente' },
-  { nombre: 'Ana García', departamento: 'Tech Solutions', puesto: 'Desarrolladora' },
-  { nombre: 'Luis Fernández', departamento: 'Innovatech', puesto: 'Analista' },
-  { nombre: 'Laura Rodríguez', departamento: 'Business Inc', puesto: 'Consultora' },
-  { nombre: 'Carlos Martínez', departamento: 'FinTech', puesto: 'Director' },
-  { nombre: 'Sofia López', departamento: 'HealthPlus', puesto: 'Coordinadora' },
-  { nombre: 'David Gómez', departamento: 'Retail Co', puesto: 'Vendedor' },
-  { nombre: 'Marta Jiménez', departamento: 'EduTech', puesto: 'Educadora' },
-  { nombre: 'Jorge Moreno', departamento: 'Creative Agency', puesto: 'Creativo' },
-  { nombre: 'Patricia Morales', departamento: 'Logistics LLC', puesto: 'Logística' }
-];
-
 const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
   const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]); // Estado para los datos de la API
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('/api/oficiousuext');
+        console.log('API Response:', response.data.data); // Verifica los datos recibidos
+        setData(response.data.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -57,7 +58,7 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
   const filteredData = data.filter(row =>
     row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
     row.departamento.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.puesto.toLowerCase().includes(searchText.toLowerCase())
+    row.cargo.toLowerCase().includes(searchText.toLowerCase()) // Asegúrate de que el campo 'cargo' es correcto
   );
 
   return (
@@ -105,7 +106,7 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
               <TableRow>
                 <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE COMPLETO</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }}>DEPARTAMENTO</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>CARGO</TableCell> {/* Asegúrate de que esto es correcto */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -120,8 +121,8 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
                   }}
                 >
                   <TableCell>{row.nombre}</TableCell>
-                  <TableCell>{row.departamento}</TableCell>
-                  <TableCell>{row.puesto}</TableCell>
+                  <TableCell>{row.empresa}</TableCell>
+                  <TableCell>{row.cargo}</TableCell> {/* Asegúrate de que esto es correcto */}
                 </TableRow>
               ))}
             </TableBody>
@@ -151,7 +152,7 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
           </button>
           <button
             type="button"
-            onClick={handleSave} // Cambiar a handleSave
+            onClick={handleSave}
             className="bg-blue-500 text-white py-2 px-4 rounded"
             style={{ backgroundColor: '#3b82f6', borderColor: 'transparent' }}
           >
