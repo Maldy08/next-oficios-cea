@@ -1,13 +1,31 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { FaSearch, FaUserPlus } from 'react-icons/fa';
 import ModalDestinatarioEnvio from "./ModalDestinatarioEnvio";
 import ModalRemitenteEnvio from "./ModalRemitenteEnvio";
 import ModalResponsableEnvio from "./ModalResponsableEnvio";
 
+
 interface ModalOficioExpedidoProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
+}
+
+interface Departamento {
+  id: number;
+  idCea: number;
+  idShpoa: number;
+  descripcion: string;
+  nivel: number;
+  oficial: number;
+  idReporta: number;
+  agrupaPoa: number;
+  meta: number;
+  accion: number;
+  prog: string;
+  empRespon: number;
+  agrupaDir: number;
 }
 
 export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOficioExpedidoProps) {
@@ -22,10 +40,28 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
   const [responsableName, setResponsableName] = useState<string>("");
   const [destinatarioType, setDestinatarioType] = useState<string>("Interno");
   const [remitenteType, setRemitenteType] = useState<string>("Interno");
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [selectedArea, setSelectedArea] = useState<string>("");
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setCurrentDate(today);
+
+    const fetchDepartamentos = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/departamentos");
+        console.log("Respuesta de la API:", response.data); // Verifica la respuesta
+        if (response.data && Array.isArray(response.data.data)) {
+          setDepartamentos(response.data.data);
+        } else {
+          console.error("La respuesta de la API no contiene el array esperado:", response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener los departamentos:", error);
+      }
+    };
+
+    fetchDepartamentos();
   }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +87,10 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
   const handleSaveResponsable = (name: string) => {
     setResponsableName(name);
     setShowResponsableModal(false);
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedArea(event.target.value);
   };
 
   if (!isOpen) return null;
@@ -95,12 +135,23 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
           <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
             {/* Área o Departamento */}
             <div className="flex-grow mb-4 sm:mb-0">
-              <label className="block mb-2">Área o Departamento</label>
-              <select className="border border-gray-300 rounded p-2 w-full text-sm">
+              <label htmlFor="areaSelect" className="block mb-2">Área o Departamento</label>
+              <select
+                id="areaSelect"
+                value={selectedArea}
+                onChange={handleSelectChange}
+                className="border border-gray-300 rounded p-2 w-full text-sm"
+              >
                 <option value="">Selecciona una opción</option>
-                <option value="departamento1">Departamento 1</option>
-                <option value="departamento2">Departamento 2</option>
-                <option value="departamento3">Departamento 3</option>
+                {departamentos.length > 0 ? (
+                  departamentos.map((departamento) => (
+                    <option key={departamento.idCea} value={departamento.idCea}>
+                      {departamento.descripcion}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No hay departamentos disponibles</option>
+                )}
               </select>
             </div>
 
@@ -122,6 +173,28 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
               />
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+  {/* Número de Oficio */}
+  <div className="flex flex-col">
+    <label className="block mb-2">Número de Oficio</label>
+    <input
+      type="text"
+      placeholder="Ingrese el número de oficio"
+      className="border border-gray-300 rounded p-2 w-full text-sm"
+    />
+  </div>
+
+  {/* Persona que lo entrega a la mesa de correspondencia */}
+  <div className="flex flex-col">
+    <label className="block mb-2">Persona que lo entrega a la mesa de correspondencia</label>
+    <input
+      type="text"
+      placeholder="Ingrese el nombre de la persona"
+      className="border border-gray-300 rounded p-2 w-full text-sm"
+    />
+  </div>
+</div>
 
           {/* Grid Layout para los campos de texto */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -235,22 +308,24 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
           </div>
 
-          {/* Tema */}
+          {/* Campo de Tema */}
           <div className="flex mb-4">
-            <input type="text" placeholder="Tema" className="border border-gray-300 rounded p-2 flex-1 text-sm" />
+            <input
+              type="text"
+              placeholder="Tema"
+              className="border border-gray-300 rounded p-2 flex-1 text-sm"
+            />
           </div>
 
-          {/* Observaciones */}
-          <div className="flex flex-col mb-4">
-            <label className="block mb-2">Observaciones</label>
+          {/* Comentarios */}
+          <div className="mb-4">
+            <label htmlFor="comentarios" className="block mb-2">Comentarios</label>
             <textarea
+              id="comentarios"
               rows={textareaRows}
-              placeholder="Observaciones"
+              placeholder="Comentarios"
               className="border border-gray-300 rounded p-2 w-full"
-              onChange={(e) => {
-                const lines = e.target.value.split("\n").length;
-                setTextareaRows(Math.min(lines, 10)); // Limitar a un máximo de 10 filas
-              }}
+              onChange={(e) => setTextareaRows(Math.max(3, e.target.value.split('\n').length))}
             />
           </div>
 
@@ -266,25 +341,26 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
               <div className="ml-4 text-sm">{selectedFile.name}</div>
             )}
           </div>
+
+          {/* Botones */}
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={onSave}
+              className="bg-primary-900 text-white px-4 py-2 rounded"
+            >
+              Guardar
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
 
-        {/* Botones de Acción */}
-        <div className="flex justify-end space-x-4 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-white rounded hover:bg-gray-400"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={onSave}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Guardar
-          </button>
-        </div>
-
-        {/* Modals */}
         {showDestinatarioModal && (
           <ModalDestinatarioEnvio
             isOpen={showDestinatarioModal}
@@ -292,6 +368,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             onSave={handleSaveDestinatario}
           />
         )}
+
         {showRemitenteModal && (
           <ModalRemitenteEnvio
             isOpen={showRemitenteModal}
@@ -299,6 +376,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             onSave={handleSaveRemitente}
           />
         )}
+
         {showResponsableModal && (
           <ModalResponsableEnvio
             isOpen={showResponsableModal}
