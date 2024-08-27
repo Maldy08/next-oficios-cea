@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaSearch, FaUserPlus, FaFileUpload } from 'react-icons/fa';
+import { FaSearch, FaUserPlus } from 'react-icons/fa';
 import ModalDestinatario from '../components/ModalDestinatario';
 import ModalRemitente from '../components/ModalRemitente';
 import ModalResponsable from '../components/ModalResponsable';
@@ -11,40 +11,22 @@ interface ModalOficioProps {
 }
 
 export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProps) {
-  const [isExterno, setIsExterno] = useState(false);
-  const [isInterno, setIsInterno] = useState(false);
-  const [textareaRows, setTextareaRows] = useState(3);
-  const [currentDate, setCurrentDate] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [remitenteType, setRemitenteType] = useState("Interno");
+  const [destinatarioType, setDestinatarioType] = useState("Interno");
+  const [remitenteName, setRemitenteName] = useState<string | null>(null);
+  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
+  const [responsableName, setResponsableName] = useState<string | null>(null);
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
-
-  const [destinatario, setDestinatario] = useState<string | null>(null);
-  const [responsable, setResponsable] = useState<string | null>(null);
-  const [remitente, setRemitente] = useState<string | null>(null);
+  const [textareaRows, setTextareaRows] = useState(3);
+  const [currentDate, setCurrentDate] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setCurrentDate(today);
   }, []);
-
-  const toggleExterno = () => {
-    if (isInterno) {
-      setIsInterno(false);
-      setRemitente(null);
-    }
-    setIsExterno(true);
-  };
-
-  const toggleInterno = () => {
-    if (isExterno) {
-      setIsExterno(false);
-      setDestinatario(null);
-      setResponsable(null);
-    }
-    setIsInterno(true);
-  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -57,17 +39,17 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
   };
 
   const handleDestinatarioSave = (name: string) => {
-    setDestinatario(name);
+    setDestinatarioName(name);
     setShowDestinatarioModal(false);
   };
 
   const handleResponsableSave = (name: string) => {
-    setResponsable(name);
+    setResponsableName(name);
     setShowResponsableModal(false);
   };
 
   const handleRemitenteSave = (name: string) => {
-    setRemitente(name);
+    setRemitenteName(name);
     setShowRemitenteModal(false);
   };
 
@@ -137,125 +119,113 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
 
           {/* Externo e Interno */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              {/* Checkbox Externo */}
-              <label className="flex items-center space-x-2 mb-4">
-                <input
-                  type="checkbox"
-                  id="externo"
-                  checked={isExterno}
-                  onChange={toggleExterno}
-                  className="hidden peer"
-                />
-                <label
-                  htmlFor="externo"
-                  className="relative inline-flex items-center cursor-pointer"
-                >
-                  <span className="sr-only">Externo</span>
-                  <div className="relative">
-                    <div
-                      className={`block w-12 h-6 rounded-full transition-colors duration-300 
-                ${isExterno ? "bg-green-500" : "bg-gray-200"}`}
-                    ></div>
-                    <div
-                      className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 
-                ${isExterno ? "translate-x-6" : ""}`}
-                    ></div>
-                  </div>
-                  <span className="ml-2 text-lg font-medium">Externo?</span>
-                </label>
-              </label>
+            <div className="flex flex-col">
+              {/* Nombre del Remitente */}
+              <label className="block mb-2 flex items-center">
+                Nombre del Remitente
+                <div className="ml-4 flex items-center">
+                  <input
+                    type="radio"
+                    id="remitenteInterno"
+                    name="remitenteType"
+                    value="Interno"
+                    checked={remitenteType === "Interno"}
+                    onChange={() => setRemitenteType("Interno")}
+                    className="mr-2"
+                  />
+                  <label htmlFor="remitenteInterno" className="cursor-pointer mr-4">Interno</label>
 
-              {/* Nombre del Remitente - Barra de búsqueda */}
-              {isExterno && (
-                <div className="mb-4">
-                  <label className="block mb-2">Nombre del Remitente</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Persona que firma el oficio"
-                      value={remitente || ''}
-                      readOnly
-                      className="border border-gray-300 rounded p-2 w-full text-sm"
-                    />
-                    <FaSearch
-                      onClick={() => setShowRemitenteModal(true)}
-                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                    />
-                  </div>
+                  <input
+                    type="radio"
+                    id="remitenteExterno"
+                    name="remitenteType"
+                    value="Externo"
+                    checked={remitenteType === "Externo"}
+                    onChange={() => setRemitenteType("Externo")}
+                    className="mr-2"
+                  />
+                  <label htmlFor="remitenteExterno" className="cursor-pointer">Externo</label>
                 </div>
-              )}
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Persona que firma el oficio"
+                  value={remitenteName || ''}
+                  className="border border-gray-300 rounded p-2 w-full text-sm"
+                  readOnly
+                  onClick={() => setShowRemitenteModal(true)}
+                />
+                <FaSearch
+                  onClick={() => setShowRemitenteModal(true)}
+                  className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                />
+              </div>
             </div>
 
-            <div>
-              {/* Checkbox Interno */}
-              <label className="flex items-center space-x-2 mb-4">
-                <input
-                  type="checkbox"
-                  id="interno"
-                  checked={isInterno}
-                  onChange={toggleInterno}
-                  className="hidden peer"
-                />
-                <label
-                  htmlFor="interno"
-                  className="relative inline-flex items-center cursor-pointer"
-                >
-                  <span className="sr-only">Interno</span>
-                  <div className="relative">
-                    <div
-                      className={`block w-12 h-6 rounded-full transition-colors duration-300 
-                ${isInterno ? "bg-green-500" : "bg-gray-200"}`}
-                    ></div>
-                    <div
-                      className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300 
-                ${isInterno ? "translate-x-6" : ""}`}
-                    ></div>
-                  </div>
-                  <span className="ml-2 text-lg font-medium">Interno?</span>
-                </label>
-              </label>
-
+            <div className="flex flex-col">
               {/* Nombre del Destinatario */}
-              {isInterno && (
-                <>
-                  <div className="mb-4">
-                    <label className="block mb-2">Nombre del destinatario</label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="Persona a quien va dirigido"
-                        value={destinatario || ''}
-                        readOnly
-                        className="border border-gray-300 rounded p-2 w-full text-sm"
-                      />
-                      <FaUserPlus
-                        onClick={() => setShowDestinatarioModal(true)}
-                        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                      />
-                    </div>
-                  </div>
+              <label className="block mb-2 flex items-center">
+                Nombre del destinatario
+                <div className="ml-4 flex items-center">
+                  <input
+                    type="radio"
+                    id="destinatarioInterno"
+                    name="destinatarioType"
+                    value="Interno"
+                    checked={destinatarioType === "Interno"}
+                    onChange={() => setDestinatarioType("Interno")}
+                    className="mr-2"
+                  />
+                  <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">Interno</label>
 
-                  {/* Nombre del Responsable */}
-<div className="mb-4">
-  <label className="block mb-2">Nombre del Responsable</label>
-  <div className="relative">
-    <input
-      type="text"
-      placeholder="Persona que envía el oficio"
-      value={responsable || ''}
-      readOnly
-      className="border border-gray-300 rounded p-2 w-full text-sm"
-    />
-    <FaSearch  // Cambiado de FaUserPlus a FaSearch
-      onClick={() => setShowResponsableModal(true)}
-      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-    />
-  </div>
-</div>
+                  <input
+                    type="radio"
+                    id="destinatarioExterno"
+                    name="destinatarioType"
+                    value="Externo"
+                    checked={destinatarioType === "Externo"}
+                    onChange={() => setDestinatarioType("Externo")}
+                    className="mr-2"
+                  />
+                  <label htmlFor="destinatarioExterno" className="cursor-pointer">Externo</label>
+                </div>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Persona a quien va dirigido"
+                  value={destinatarioName || ''}
+                  className="border border-gray-300 rounded p-2 w-full text-sm"
+                  readOnly
+                  onClick={() => setShowDestinatarioModal(true)}
+                />
+                <FaUserPlus
+                  onClick={() => setShowDestinatarioModal(true)}
+                  className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                />
+              </div>
+            </div>
 
-                </>
-              )}
+            {/* Nombre del Responsable */}
+            <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
+              <div className="flex flex-col sm:w-1/2">
+                <label className="block mb-2">Nombre del Responsable</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Persona que atenderá el oficio"
+                    value={responsableName || ''}
+                    className="border border-gray-300 rounded p-2 w-full text-sm"
+                    readOnly
+                    onClick={() => setShowResponsableModal(true)}
+                  />
+                  <FaSearch
+                    onClick={() => setShowResponsableModal(true)}
+                    className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -290,38 +260,41 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
           {/* Botones */}
           <div className="flex justify-end space-x-4">
             <button
-              type="button"
               onClick={onClose}
-              className="bg-red-500 text-white py-2 px-4 rounded"
+              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
             >
               Cancelar
             </button>
             <button
-              type="button"
               onClick={onSave}
-              className="bg-blue-500 text-white py-2 px-4 rounded"
+              className="bg-primary-900 text-white py-2 px-4 rounded hover:bg-primary-800"
             >
               Guardar
             </button>
           </div>
         </div>
 
-        {/* Modales */}
-        <ModalDestinatario
-          isOpen={showDestinatarioModal}
-          onClose={() => setShowDestinatarioModal(false)}
-          onSave={handleDestinatarioSave}
-        />
-        <ModalResponsable
-          isOpen={showResponsableModal}
-          onClose={() => setShowResponsableModal(false)}
-          onSave={handleResponsableSave}
-        />
-        <ModalRemitente
-          isOpen={showRemitenteModal}
-          onClose={() => setShowRemitenteModal(false)}
-          onSave={handleRemitenteSave}
-        />
+        {showDestinatarioModal && (
+          <ModalDestinatario
+            isOpen={showDestinatarioModal}
+            onClose={() => setShowDestinatarioModal(false)}
+            onSave={handleDestinatarioSave}
+          />
+        )}
+        {showRemitenteModal && (
+          <ModalRemitente
+            isOpen={showRemitenteModal}
+            onClose={() => setShowRemitenteModal(false)}
+            onSave={handleRemitenteSave}
+          />
+        )}
+        {showResponsableModal && (
+          <ModalResponsable
+            isOpen={showResponsableModal}
+            onClose={() => setShowResponsableModal(false)}
+            onSave={handleResponsableSave}
+          />
+        )}
       </div>
     </div>
   );

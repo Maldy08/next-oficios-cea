@@ -61,7 +61,7 @@ const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave
 
   const handleSave = () => {
     if (selectedName) {
-      onSave(selectedName);
+      onSave(selectedName); // Pasar el nombre seleccionado al componente padre
       onClose();
     }
   };
@@ -176,13 +176,23 @@ const ModalRemitente: React.FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave
             sx={{ overflowX: 'auto' }}
           />
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-            <Button variant="contained" color="error" sx={{ marginRight: 1, fontSize: '0.75rem' }} onClick={onClose}>
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-red-500 text-white py-2 px-4 rounded"
+              style={{ backgroundColor: '#ef4444', borderColor: 'transparent' }}
+            >
               Cancelar
-            </Button>
-            <Button variant="contained" color="primary" sx={{ fontSize: '0.75rem' }} onClick={handleSave}>
+            </button>
+            <button
+              type="button"
+              onClick={handleSave} // Usar handleSave para pasar el nombre seleccionado
+              className="bg-blue-500 text-white py-2 px-4 rounded"
+              style={{ backgroundColor: '#3b82f6', borderColor: 'transparent' }}
+            >
               Guardar
-            </Button>
+            </button>
           </div>
         </div>
       </Paper>

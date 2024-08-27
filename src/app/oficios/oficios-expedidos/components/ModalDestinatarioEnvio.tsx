@@ -135,14 +135,25 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
           sx={{ overflowX: 'auto' }}
         />
 
-        <div className="flex justify-end mt-4 gap-2">
-          <Button onClick={onClose} variant="contained" color="error">
-            Cerrar
-          </Button>
-          <Button onClick={handleSaveClick} variant="contained" color="primary">
-            Guardar
-          </Button>
-        </div>
+<div className="flex justify-end space-x-4">
+  <button
+    type="button"
+    onClick={onClose}
+    className="bg-red-500 text-white py-2 px-4 rounded"
+    style={{ backgroundColor: '#ef4444', borderColor: 'transparent' }}
+  >
+    Cancelar
+  </button>
+  <button
+    type="button"
+    onClick={handleSaveClick} // Cambiar a handleSaveClick
+    className="bg-blue-500 text-white py-2 px-4 rounded"
+    style={{ backgroundColor: '#3b82f6', borderColor: 'transparent' }}
+  >
+    Guardar
+  </button>
+</div>
+
       </div>
     </div>
   );

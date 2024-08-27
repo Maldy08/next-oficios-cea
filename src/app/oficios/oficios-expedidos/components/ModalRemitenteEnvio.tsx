@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Button } from "@mui/material";
+import { InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 interface ModalRemitenteProps {
@@ -140,21 +140,23 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
           sx={{ overflowX: 'auto' }}
         />
 
-        <div className="flex justify-end mt-4 gap-2">
-          <Button
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
             onClick={onClose}
-            variant="contained"
-            color="error"
+            className="bg-red-500 text-white py-2 px-4 rounded"
+            style={{ backgroundColor: '#ef4444', borderColor: 'transparent' }}
           >
-            Cerrar
-          </Button>
-          <Button
-            onClick={handleSave}
-            variant="contained"
-            color="primary"
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleSave} // Cambiar a handleSave
+            className="bg-blue-500 text-white py-2 px-4 rounded"
+            style={{ backgroundColor: '#3b82f6', borderColor: 'transparent' }}
           >
             Guardar
-          </Button>
+          </button>
         </div>
       </div>
     </div>

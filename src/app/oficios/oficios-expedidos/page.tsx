@@ -9,22 +9,36 @@ import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import ModalOficioExpedido from "./components/ModalOficioExpedido";
-
+import ModalOficioExpedido from "./components/ModalOficioExpedido"; // Asegúrate de que esta ruta sea correcta
+import ModalEdit from "./components/components table/ModalEdit";
+import ModalList from "./components/components table/ModalList";
 
 export default function OficiosExpedidosPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+  const [ismodalopenList, setismodalopenList] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+
+
+  const handleOpenModal = (type: string) => {
+    setModalType(type);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setModalType(null);
   };
+
+  const modalopenList = () => {
+    setismodalopenList(true);
+  };
+
+  const modalcloseList = () => {
+    setismodalopenList(false);
+  };
+
 
   const handleSave = () => {
     console.log("Datos guardados");
@@ -63,30 +77,28 @@ export default function OficiosExpedidosPage() {
 
   return (
     <div className="p-6">
-      {/* Título de la página con tamaño reducido */}
       <Typography variant="h6" component="h1" sx={{ marginBottom: '0px', fontWeight: 'bold' }}>
         Oficios-Expedidos
       </Typography>
 
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-      <Button
-  onClick={handleOpenModal}
-  variant="contained"
-  disableRipple
-  sx={{
-    backgroundColor: '#993233 !important', // Usar !important para forzar el color
-    ':hover': {
-      backgroundColor: '#993233 !important', // Mantener el mismo color en hover y usar !important
-    },
-    ':focus': {
-      backgroundColor: '#993233 !important', // Asegurar que el color se mantenga en foco
-    },
-    color: 'white !important', // Forzar el color del texto
-  }}
->
-  INGRESAR OFICIO EXPEDIDO
-</Button>
-
+        <Button
+          onClick={() => handleOpenModal('oficioExpedido')}
+          variant="contained"
+          disableRipple
+          sx={{
+            backgroundColor: '#993233 !important',
+            ':hover': {
+              backgroundColor: '#993233 !important',
+            },
+            ':focus': {
+              backgroundColor: '#993233 !important',
+            },
+            color: 'white !important',
+          }}
+        >
+          INGRESAR OFICIO EXPEDIDO
+        </Button>
 
         <TextField
           variant="outlined"
@@ -123,9 +135,15 @@ export default function OficiosExpedidosPage() {
             {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <IconButton size="small"><VisibilityIcon fontSize="small" /></IconButton>
-                  <IconButton size="small"><EditIcon fontSize="small" /></IconButton>
-                  <IconButton size="small"><ListAltIcon fontSize="small" /></IconButton>
+                  <IconButton size="small" onClick={() => handleOpenModal('edit')}>
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => handleOpenModal('view')}>
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton size="small" onClick={modalopenList}>
+                  <ListAltIcon fontSize="small" />
+                  </IconButton>
                 </TableCell>
                 <TableCell>{row.noFolio}</TableCell>
                 <TableCell>{row.fecha}</TableCell>
@@ -138,6 +156,7 @@ export default function OficiosExpedidosPage() {
               </TableRow>
             ))}
           </TableBody>
+          <ModalList isOpen={ismodalopenList} onClose={modalcloseList} />
         </Table>
       </TableContainer>
 
@@ -153,11 +172,23 @@ export default function OficiosExpedidosPage() {
         />
       </Box>
 
-      <ModalOficioExpedido
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSave={handleSave}
-      />
+      {/* ModalOficioExpedido */}
+      {modalType === 'oficioExpedido' && (
+        <ModalOficioExpedido
+          isOpen={modalType === 'oficioExpedido'}
+          onClose={handleCloseModal}
+          onSave={handleSave}
+        />
+      )}
+
+      {/* ModalEdit */}
+      {modalType === 'edit' && (
+        <ModalEdit
+          isOpen={modalType === 'edit'}
+          onClose={handleCloseModal}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }

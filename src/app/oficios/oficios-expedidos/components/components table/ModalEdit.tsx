@@ -1,32 +1,41 @@
 import { useState, useEffect } from "react";
 import { FaSearch, FaUserPlus } from 'react-icons/fa';
-import ModalDestinatarioEnvio from "./ModalDestinatarioEnvio";
-import ModalRemitenteEnvio from "./ModalRemitenteEnvio";
-import ModalResponsableEnvio from "./ModalResponsableEnvio";
+import ModalResponsable from "@/app/oficios/oficios-recibidos/components/ModalResponsable";
+import ModalRemitente from "@/app/oficios/oficios-recibidos/components/ModalRemitente";
+import ModalDestinatario from "@/app/oficios/oficios-recibidos/components/ModalDestinatario";
 
-interface ModalOficioExpedidoProps {
+interface ModalEditProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
 }
 
-export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOficioExpedidoProps) {
+export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
+  const [remitenteType, setRemitenteType] = useState<string | null>(null);
+  const [destinatarioType, setDestinatarioType] = useState<string | null>(null);
   const [textareaRows, setTextareaRows] = useState(3);
   const [currentDate, setCurrentDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
-  const [destinatarioName, setDestinatarioName] = useState<string>("");
-  const [remitenteName, setRemitenteName] = useState<string>("");
-  const [responsableName, setResponsableName] = useState<string>("");
-  const [destinatarioType, setDestinatarioType] = useState<string>("Interno");
-  const [remitenteType, setRemitenteType] = useState<string>("Interno");
+
+  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
+  const [responsableName, setResponsableName] = useState<string | null>(null);
+  const [remitenteName, setRemitenteName] = useState<string | null>(null);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setCurrentDate(today);
   }, []);
+
+  const handleRemitenteTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRemitenteType(event.target.value);
+  };
+
+  const handleDestinatarioTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDestinatarioType(event.target.value);
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -38,19 +47,19 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
     }
   };
 
-  const handleSaveDestinatario = (name: string) => {
+  const handleDestinatarioSave = (name: string) => {
     setDestinatarioName(name);
     setShowDestinatarioModal(false);
   };
 
-  const handleSaveRemitente = (name: string) => {
-    setRemitenteName(name);
-    setShowRemitenteModal(false);
-  };
-
-  const handleSaveResponsable = (name: string) => {
+  const handleResponsableSave = (name: string) => {
     setResponsableName(name);
     setShowResponsableModal(false);
+  };
+
+  const handleRemitenteSave = (name: string) => {
+    setRemitenteName(name);
+    setShowRemitenteModal(false);
   };
 
   if (!isOpen) return null;
@@ -58,7 +67,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
       <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0">
-        <h2 className="text-lg font-semibold mb-4">Ingresar Oficio Expedidos</h2>
+        <h2 className="text-lg font-semibold mb-4">Editar Oficio Recibido</h2>
 
         <div className="flex flex-col space-y-4">
           {/* Folio y Selección */}
@@ -91,30 +100,24 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
           </div>
 
-          {/* Área o Departamento y Fechas */}
+          {/* Número de Oficio y Fechas */}
           <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
-            {/* Área o Departamento */}
-            <div className="flex-grow mb-4 sm:mb-0">
-              <label className="block mb-2">Área o Departamento</label>
-              <select className="border border-gray-300 rounded p-2 w-full text-sm">
-                <option value="">Selecciona una opción</option>
-                <option value="departamento1">Departamento 1</option>
-                <option value="departamento2">Departamento 2</option>
-                <option value="departamento3">Departamento 3</option>
-              </select>
+            <div className="flex-1 mb-4 sm:mb-0">
+              <label className="block mb-2">Número de Oficio</label>
+              <input
+                type="text"
+                placeholder="Número de Oficio"
+                className="border border-gray-300 rounded p-2 w-full text-sm"
+              />
             </div>
-
-            {/* Fecha Captura */}
-            <div className="flex-none w-40 mb-4 sm:mb-0">
+            <div className="flex-1 mb-4 sm:mb-0">
               <label className="block mb-2">Fecha Captura</label>
               <input
                 type="date"
                 className="border border-gray-300 rounded p-2 w-full"
               />
             </div>
-
-            {/* Fecha Límite */}
-            <div className="flex-none w-40">
+            <div className="flex-1">
               <label className="block mb-2">Fecha Límite</label>
               <input
                 type="date"
@@ -123,10 +126,10 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
           </div>
 
-          {/* Grid Layout para los campos de texto */}
+          {/* Remitente, Destinatario y Responsable */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            {/* Remitente */}
             <div className="flex flex-col">
-              {/* Nombre del Remitente */}
               <label className="block mb-2 flex items-center">
                 Nombre del Remitente
                 <div className="ml-4 flex items-center">
@@ -136,7 +139,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                     name="remitenteType"
                     value="Interno"
                     checked={remitenteType === "Interno"}
-                    onChange={() => setRemitenteType("Interno")}
+                    onChange={handleRemitenteTypeChange}
                     className="mr-2"
                   />
                   <label htmlFor="remitenteInterno" className="cursor-pointer mr-4">Interno</label>
@@ -147,7 +150,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                     name="remitenteType"
                     value="Externo"
                     checked={remitenteType === "Externo"}
-                    onChange={() => setRemitenteType("Externo")}
+                    onChange={handleRemitenteTypeChange}
                     className="mr-2"
                   />
                   <label htmlFor="remitenteExterno" className="cursor-pointer">Externo</label>
@@ -157,7 +160,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                 <input
                   type="text"
                   placeholder="Persona que firma el oficio"
-                  value={remitenteName}
+                  value={remitenteName || ''}
                   className="border border-gray-300 rounded p-2 w-full text-sm"
                   readOnly
                   onClick={() => setShowRemitenteModal(true)}
@@ -169,8 +172,8 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
               </div>
             </div>
 
+            {/* Destinatario */}
             <div className="flex flex-col">
-              {/* Nombre del Destinatario */}
               <label className="block mb-2 flex items-center">
                 Nombre del destinatario
                 <div className="ml-4 flex items-center">
@@ -180,7 +183,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                     name="destinatarioType"
                     value="Interno"
                     checked={destinatarioType === "Interno"}
-                    onChange={() => setDestinatarioType("Interno")}
+                    onChange={handleDestinatarioTypeChange}
                     className="mr-2"
                   />
                   <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">Interno</label>
@@ -191,7 +194,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                     name="destinatarioType"
                     value="Externo"
                     checked={destinatarioType === "Externo"}
-                    onChange={() => setDestinatarioType("Externo")}
+                    onChange={handleDestinatarioTypeChange}
                     className="mr-2"
                   />
                   <label htmlFor="destinatarioExterno" className="cursor-pointer">Externo</label>
@@ -201,7 +204,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                 <input
                   type="text"
                   placeholder="Persona a quien va dirigido"
-                  value={destinatarioName}
+                  value={destinatarioName || ''}
                   className="border border-gray-300 rounded p-2 w-full text-sm"
                   readOnly
                   onClick={() => setShowDestinatarioModal(true)}
@@ -213,7 +216,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
               </div>
             </div>
 
-            {/* Nombre del Responsable */}
+            {/* Responsable */}
             <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
               <div className="flex flex-col sm:w-1/2">
                 <label className="block mb-2">Nombre del Responsable</label>
@@ -221,7 +224,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                   <input
                     type="text"
                     placeholder="Persona que atenderá el oficio"
-                    value={responsableName}
+                    value={responsableName || ''}
                     className="border border-gray-300 rounded p-2 w-full text-sm"
                     readOnly
                     onClick={() => setShowResponsableModal(true)}
@@ -241,69 +244,63 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
           </div>
 
           {/* Observaciones */}
-          <div className="flex flex-col mb-4">
+          <div className="mb-4">
             <label className="block mb-2">Observaciones</label>
             <textarea
               rows={textareaRows}
-              placeholder="Observaciones"
-              className="border border-gray-300 rounded p-2 w-full"
-              onChange={(e) => {
-                const lines = e.target.value.split("\n").length;
-                setTextareaRows(Math.min(lines, 10)); // Limitar a un máximo de 10 filas
-              }}
+              className="border border-gray-300 rounded p-2 w-full text-sm"
+              placeholder="Observaciones adicionales"
             />
           </div>
 
-          {/* Adjuntar Archivo */}
-          <div className="flex items-center mb-4">
+          {/* Archivo */}
+          <div className="mb-4">
+            <label className="block mb-2">Adjuntar Archivo</label>
             <input
               type="file"
+              accept=".pdf"
               onChange={handleFileChange}
-              className="border border-gray-300 rounded p-2"
-              accept=".pdf"  // Acepta solo archivos PDF
+              className="border border-gray-300 rounded p-2 w-full text-sm"
             />
-            {selectedFile && (
-              <div className="ml-4 text-sm">{selectedFile.name}</div>
-            )}
           </div>
-        </div>
 
-        {/* Botones de Acción */}
-        <div className="flex justify-end space-x-4 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-white rounded hover:bg-gray-400"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={onSave}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Guardar
-          </button>
+          {/* Botones */}
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={onClose}
+              className="bg-gray-500 text-white rounded px-4 py-2"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={onSave}
+              className="bg-blue-500 text-white rounded px-4 py-2"
+            >
+              Guardar
+            </button>
+          </div>
         </div>
 
         {/* Modals */}
         {showDestinatarioModal && (
-          <ModalDestinatarioEnvio
+          <ModalDestinatario
             isOpen={showDestinatarioModal}
             onClose={() => setShowDestinatarioModal(false)}
-            onSave={handleSaveDestinatario}
+            onSave={handleDestinatarioSave}
           />
         )}
         {showRemitenteModal && (
-          <ModalRemitenteEnvio
+          <ModalRemitente
             isOpen={showRemitenteModal}
             onClose={() => setShowRemitenteModal(false)}
-            onSave={handleSaveRemitente}
+            onSave={handleRemitenteSave}
           />
         )}
         {showResponsableModal && (
-          <ModalResponsableEnvio
+          <ModalResponsable
             isOpen={showResponsableModal}
             onClose={() => setShowResponsableModal(false)}
-            onSave={handleSaveResponsable}
+            onSave={handleResponsableSave}
           />
         )}
       </div>

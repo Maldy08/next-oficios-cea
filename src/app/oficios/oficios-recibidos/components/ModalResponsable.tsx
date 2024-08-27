@@ -11,7 +11,6 @@ import {
   TablePagination,
   TextField,
   Typography,
-  Button,
   InputAdornment
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -176,13 +175,24 @@ const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, on
             sx={{ overflowX: 'auto' }}
           />
 
+          {/* Contenedor de los botones */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-            <Button variant="contained" color="error" sx={{ marginRight: 1, fontSize: '0.75rem' }} onClick={onClose}>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-red-500 text-white py-2 px-4 rounded"
+              style={{ backgroundColor: '#ef4444', borderColor: 'transparent' }}
+            >
               Cancelar
-            </Button>
-            <Button variant="contained" color="primary" sx={{ fontSize: '0.75rem' }} onClick={handleSave}>
+            </button>
+            <button
+              type="button"
+              onClick={handleSave} // Usar handleSave para pasar el nombre seleccionado
+              className="bg-blue-500 text-white py-2 px-4 rounded"
+              style={{ backgroundColor: '#3b82f6', borderColor: 'transparent', marginLeft: '8px' }}
+            >
               Guardar
-            </Button>
+            </button>
           </div>
         </div>
       </Paper>
