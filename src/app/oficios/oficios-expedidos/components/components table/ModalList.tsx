@@ -43,7 +43,7 @@ const ModalList: React.FC<ModalListProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Detalles del Oficio</DialogTitle>
+      <DialogTitle>Bitacora del Oficio</DialogTitle>
       <DialogContent>
         <div className="space-y-4">
           <Grid container spacing={2}>

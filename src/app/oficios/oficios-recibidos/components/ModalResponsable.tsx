@@ -191,16 +191,16 @@ const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, on
             <button
               type="button"
               onClick={onClose}
-              className="bg-red-500 text-white py-2 px-4 rounded"
-              style={{ backgroundColor: '#ef4444', borderColor: 'transparent' }}
+              className="bg-[#641c34] text-white py-2 px-4 rounded"
+              style={{ backgroundColor: '#641c34', borderColor: 'transparent' }}
             >
               Cancelar
             </button>
             <button
               type="button"
               onClick={handleSave} // Usar handleSave para pasar el nombre seleccionado
-              className="bg-blue-500 text-white py-2 px-4 rounded"
-              style={{ backgroundColor: '#3b82f6', borderColor: 'transparent', marginLeft: '8px' }}
+              className="bg-[#993233] text-white py-2 px-4 rounded"
+              style={{ backgroundColor: '#993233', borderColor: 'transparent', marginLeft: '8px' }}
             >
               Guardar
             </button>

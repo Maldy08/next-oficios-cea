@@ -147,17 +147,40 @@ export default function OficiosExpedidosPage() {
             ) : (
               filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-  <IconButton size="small" onClick={() => handleOpenModal('edit')}>
-    <EditIcon fontSize="small" />
-  </IconButton>
-  <IconButton size="small" onClick={() => handleOpenModal('view')}>
-    <VisibilityIcon fontSize="small" />
-  </IconButton>
-  <IconButton size="small" onClick={modalopenList}>
-    <ListAltIcon fontSize="small" />
-  </IconButton>
+                  <TableCell sx={{ padding: '8px' }}>
+  <Box sx={{
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: '8px',
+  }}>
+    <IconButton
+      size="small"
+      onClick={() => handleOpenModal('edit')}
+      sx={{ padding: '8px' }}
+    >
+      <EditIcon fontSize="small" />
+    </IconButton>
+    <IconButton
+      size="small"
+      onClick={() => handleOpenModal('view')}
+      sx={{ padding: '8px' }}
+    >
+      <VisibilityIcon fontSize="small" />
+    </IconButton>
+    <IconButton
+      size="small"
+      onClick={modalopenList}
+      sx={{ padding: '8px' }}
+    >
+      <ListAltIcon fontSize="small" />
+    </IconButton>
+  </Box>
 </TableCell>
+
+
+
+
                   <TableCell>{row.folio}</TableCell>
                   <TableCell>{new Date(row.fecha).toLocaleDateString()}</TableCell>
                   <TableCell>{row.remDepen}</TableCell>
