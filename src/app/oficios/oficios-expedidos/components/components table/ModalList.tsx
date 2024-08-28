@@ -9,7 +9,6 @@ import {
   Button,
   TextField,
   Grid,
-  Typography,
   Paper,
   TableContainer,
   Table,
@@ -17,13 +16,12 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  IconButton,
+  IconButton
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PersonIcon from "@mui/icons-material/Person";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import MessageIcon from "@mui/icons-material/Message";
-import { VscAdd } from "react-icons/vsc";
 
 interface ModalListProps {
   isOpen: boolean;
@@ -163,7 +161,7 @@ const ModalList: React.FC<ModalListProps> = ({ isOpen, onClose }) => {
             <IconButton color="primary" aria-label="add">
               <Button className="bg-[#641c34] text-white lg:hover:bg-[#641c34]">
                 Ingresar
-                <AddIcon></AddIcon>
+                <AddIcon />
               </Button>
             </IconButton>
           </div>
