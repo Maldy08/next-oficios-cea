@@ -1,5 +1,19 @@
-import { FC, useState } from "react";
-import { InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField } from "@mui/material";
+import { FC, useState, useEffect } from "react";
+import {
+  InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  TextField,
+  CircularProgress,
+  Box,
+  Typography,
+  Button
+} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
 interface ModalResponsableProps {
@@ -8,18 +22,45 @@ interface ModalResponsableProps {
   onSave: (name: string) => void;
 }
 
-const mockData = [
-  { nombre: "Juan Pérez", departamento: "Administración", puesto: "Jefe" },
-  { nombre: "Ana Gómez", departamento: "Recursos Humanos", puesto: "Analista" },
-  { nombre: "Luis Martínez", departamento: "IT", puesto: "Desarrollador" },
-  // Agrega más datos si es necesario
-];
-
 const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onSave }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
   const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const response = await fetch('/api/empleados');
+          if (!response.ok) {
+            throw new Error('Error en la llamada a la API');
+          }
+          const result = await response.json();
+
+          // Ajusta el manejo de datos según el formato de respuesta de la API
+          if (Array.isArray(result)) {
+            setData(result);
+          } else if (typeof result === 'object' && result.data && Array.isArray(result.data)) {
+            setData(result.data);
+          } else {
+            throw new Error('Datos de API no son un array');
+          }
+        } catch (error: any) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchData();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -48,11 +89,12 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onS
     }
   };
 
-  const filteredData = mockData.filter(row =>
-    row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.departamento.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.puesto.toLowerCase().includes(searchText.toLowerCase())
-  );
+  // Filtra los datos asegurándose de que `data` es un array
+  const filteredData = Array.isArray(data) ? data.filter(row =>
+    (row.nombreCompleto || '').toLowerCase().includes(searchText.toLowerCase()) ||
+    (row.descripcionDepto || '').toLowerCase().includes(searchText.toLowerCase()) ||
+    (row.descripcionPuesto || '').toLowerCase().includes(searchText.toLowerCase())
+  ) : [];
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
@@ -93,34 +135,48 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onS
           />
         </div>
 
-        <TableContainer className="flex-grow overflow-auto">
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE COMPLETO</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>DEPARTAMENTO</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <TableRow 
-                  key={index} 
-                  onClick={() => handleRowClick(row.nombre)}
-                  selected={selectedResponsable === row.nombre}
-                  sx={{
-                    cursor: 'pointer',
-                    backgroundColor: selectedResponsable === row.nombre ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
-                  }}
-                >
-                  <TableCell>{row.nombre}</TableCell>
-                  <TableCell>{row.departamento}</TableCell>
-                  <TableCell>{row.puesto}</TableCell>
+        {loading && (
+          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+            <CircularProgress />
+          </Box>
+        )}
+
+        {error && (
+          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+            <Typography color="error">{error}</Typography>
+          </Box>
+        )}
+
+        {!loading && !error && (
+          <TableContainer className="flex-grow overflow-auto">
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE COMPLETO</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>DEPARTAMENTO</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => handleRowClick(row.nombreCompleto || '')}
+                    selected={selectedResponsable === row.nombreCompleto}
+                    sx={{
+                      cursor: 'pointer',
+                      backgroundColor: selectedResponsable === row.nombreCompleto ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
+                    }}
+                  >
+                    <TableCell>{row.nombreCompleto || ''}</TableCell>
+                    <TableCell>{row.descripcionDepto || ''}</TableCell>
+                    <TableCell>{row.descripcionPuesto || ''}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
         <TablePagination
           component="div"
@@ -134,7 +190,7 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onS
           sx={{ overflowX: 'auto' }}
         />
 
-        <div className="flex justify-end space-x-4">
+<div className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={onClose}
@@ -145,7 +201,7 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onS
           </button>
           <button
             type="button"
-            onClick={handleSave} // Cambiar a handleSave
+            onClick={handleSave}
             className="bg-blue-500 text-white py-2 px-4 rounded"
             style={{ backgroundColor: '#3b82f6', borderColor: 'transparent' }}
           >

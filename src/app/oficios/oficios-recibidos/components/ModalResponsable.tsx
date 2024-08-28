@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   Paper,
@@ -14,6 +14,7 @@ import {
   InputAdornment
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import axios from 'axios';
 
 interface ModalResponsableProps {
   isOpen: boolean;
@@ -21,24 +22,34 @@ interface ModalResponsableProps {
   onSave: (name: string) => void;
 }
 
-const data = [
-  { nombre: 'Juan Pérez', empresa: 'Acme Corp', puesto: 'Gerente' },
-  { nombre: 'Ana García', empresa: 'Tech Solutions', puesto: 'Desarrolladora' },
-  { nombre: 'Luis Fernández', empresa: 'Innovatech', puesto: 'Analista' },
-  { nombre: 'Laura Rodríguez', empresa: 'Business Inc', puesto: 'Consultora' },
-  { nombre: 'Carlos Martínez', empresa: 'FinTech', puesto: 'Director' },
-  { nombre: 'Sofia López', empresa: 'HealthPlus', puesto: 'Coordinadora' },
-  { nombre: 'David Gómez', empresa: 'Retail Co', puesto: 'Vendedor' },
-  { nombre: 'Marta Jiménez', empresa: 'EduTech', puesto: 'Educadora' },
-  { nombre: 'Jorge Moreno', empresa: 'Creative Agency', puesto: 'Creativo' },
-  { nombre: 'Patricia Morales', empresa: 'Logistics LLC', puesto: 'Logística' }
-];
-
 const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, onSave }) => {
+  const [data, setData] = useState<any[]>([]); // Inicializar como un array vacío
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
   const [selectedName, setSelectedName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      axios.get('/api/empleados')
+        .then(response => {
+          // Acceder a la propiedad data en la respuesta de la API
+          const apiData = response.data.data;
+          console.log('Datos recibidos:', apiData); // Verifica los datos
+          // Verificar que la respuesta es un array
+          if (Array.isArray(apiData)) {
+            setData(apiData);
+          } else {
+            console.error('La propiedad "data" en la respuesta de la API no es un array:', apiData);
+            setData([]); // Asegúrate de que `data` sea un array vacío en caso de error
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          setData([]); // Asegúrate de que `data` sea un array vacío en caso de error
+        });
+    }
+  }, [isOpen]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -66,11 +77,11 @@ const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, on
   };
 
   // Filtrar los datos según el texto de búsqueda
-  const filteredData = data.filter(row =>
-    row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.puesto.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredData = Array.isArray(data) ? data.filter(row =>
+    (row.nombreCompleto || '').toLowerCase().includes(searchText.toLowerCase()) ||
+    (row.descripcionDepto || '').toLowerCase().includes(searchText.toLowerCase()) ||
+    (row.descripcionPuesto || '').toLowerCase().includes(searchText.toLowerCase())
+  ) : [];
 
   return (
     <Modal
@@ -151,12 +162,12 @@ const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, on
                   <TableRow
                     key={index}
                     hover
-                    onClick={() => handleSelect(row.nombre)}
-                    sx={{ cursor: 'pointer', backgroundColor: selectedName === row.nombre ? 'rgba(0, 0, 255, 0.1)' : '' }}
+                    onClick={() => handleSelect(row.nombreCompleto || '')}
+                    sx={{ cursor: 'pointer', backgroundColor: selectedName === row.nombreCompleto ? 'rgba(0, 0, 255, 0.1)' : '' }}
                   >
-                    <TableCell>{row.nombre}</TableCell>
-                    <TableCell>{row.empresa}</TableCell>
-                    <TableCell>{row.puesto}</TableCell>
+                    <TableCell>{row.nombreCompleto || ''}</TableCell>
+                    <TableCell>{row.descripcionDepto || ''}</TableCell>
+                    <TableCell>{row.descripcionPuesto || ''}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

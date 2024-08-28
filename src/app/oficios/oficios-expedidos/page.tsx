@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent, MouseEvent } from "react";
+import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
 import {
   Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, IconButton, TextField, TablePagination, InputAdornment, Box, Typography
@@ -9,7 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import ModalOficioExpedido from "./components/ModalOficioExpedido"; // Asegúrate de que esta ruta sea correcta
+import ModalOficioExpedido from "./components/ModalOficioExpedido"; 
 import ModalEdit from "./components/components table/ModalEdit";
 import ModalList from "./components/components table/ModalList";
 
@@ -18,10 +18,26 @@ export default function OficiosExpedidosPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  
+  const [rows, setRows] = useState<any[]>([]);
   const [ismodalopenList, setismodalopenList] = useState(false);
 
-
+  useEffect(() => {
+    fetch('http://localhost:3000/api/oficios')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Datos de la API:', data);
+        if (data.data && Array.isArray(data.data)) {
+          setRows(data.data);
+        } else {
+          console.error('La respuesta de la API no contiene un array en la propiedad "data":', data);
+          setRows([]);
+        }
+      })
+      .catch(error => {
+        console.error('Error al obtener datos:', error);
+        setRows([]);
+      });
+  }, []);
 
   const handleOpenModal = (type: string) => {
     setModalType(type);
@@ -38,7 +54,6 @@ export default function OficiosExpedidosPage() {
   const modalcloseList = () => {
     setismodalopenList(false);
   };
-
 
   const handleSave = () => {
     console.log("Datos guardados");
@@ -58,22 +73,13 @@ export default function OficiosExpedidosPage() {
     setPage(0);
   };
 
-  const rows = Array.from({ length: 20 }, (_, i) => ({
-    noFolio: 198 - i,
-    fecha: `22/02/202${2 - Math.floor(i / 10)}`,
-    dependencia: i % 2 === 0 ? "CEA" : "SEPROA",
-    tipo: `${1 + (i % 3)}`,
-    noDeOficio: `B/${57 - i}`,
-    remitente: `ING. FRANCISCO A. BERNAL RODRÍGUEZ`,
-    destinatario: `DESTINATARIO ${i + 1}`,
-    estatus: `ENTREGADO CON ACUSE`,
-  }));
-
   const filteredRows = rows.filter((row) =>
     Object.values(row).some((value) =>
-      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+      value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
+
+  console.log('Filtered Rows:', filteredRows); // Verifica los datos filtrados
 
   return (
     <div className="p-6">
@@ -132,29 +138,37 @@ export default function OficiosExpedidosPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <IconButton size="small" onClick={() => handleOpenModal('edit')}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => handleOpenModal('view')}>
-                    <VisibilityIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton size="small" onClick={modalopenList}>
-                  <ListAltIcon fontSize="small" />
-                  </IconButton>
+            {filteredRows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center">
+                  No hay datos disponibles
                 </TableCell>
-                <TableCell>{row.noFolio}</TableCell>
-                <TableCell>{row.fecha}</TableCell>
-                <TableCell>{row.dependencia}</TableCell>
-                <TableCell>{row.tipo}</TableCell>
-                <TableCell>{row.noDeOficio}</TableCell>
-                <TableCell>{row.remitente}</TableCell>
-                <TableCell>{row.destinatario}</TableCell>
-                <TableCell>{row.estatus}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+  <IconButton size="small" onClick={() => handleOpenModal('edit')}>
+    <EditIcon fontSize="small" />
+  </IconButton>
+  <IconButton size="small" onClick={() => handleOpenModal('view')}>
+    <VisibilityIcon fontSize="small" />
+  </IconButton>
+  <IconButton size="small" onClick={modalopenList}>
+    <ListAltIcon fontSize="small" />
+  </IconButton>
+</TableCell>
+                  <TableCell>{row.folio}</TableCell>
+                  <TableCell>{new Date(row.fecha).toLocaleDateString()}</TableCell>
+                  <TableCell>{row.remDepen}</TableCell>
+                  <TableCell>{row.tipo}</TableCell>
+                  <TableCell>{row.noOficio}</TableCell>
+                  <TableCell>{row.remNombre}</TableCell>
+                  <TableCell>{row.destNombre}</TableCell>
+                  <TableCell>{row.estatus}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
           <ModalList isOpen={ismodalopenList} onClose={modalcloseList} />
         </Table>

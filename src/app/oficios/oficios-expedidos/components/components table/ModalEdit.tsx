@@ -1,41 +1,69 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { FaSearch, FaUserPlus } from 'react-icons/fa';
-import ModalResponsable from "@/app/oficios/oficios-recibidos/components/ModalResponsable";
-import ModalRemitente from "@/app/oficios/oficios-recibidos/components/ModalRemitente";
-import ModalDestinatario from "@/app/oficios/oficios-recibidos/components/ModalDestinatario";
+import ModalDestinatarioEnvio from "../ModalDestinatarioEnvio";
+import ModalRemitenteEnvio from "../ModalRemitenteEnvio";
+import ModalResponsableEnvio from "../ModalResponsableEnvio";
+import ModalPersonaEnvio from "./ModalPersonaEnvio";
 
-interface ModalEditProps {
+interface ModalOficioExpedidoProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
 }
 
-export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
-  const [remitenteType, setRemitenteType] = useState<string | null>(null);
-  const [destinatarioType, setDestinatarioType] = useState<string | null>(null);
+interface Departamento {
+  id: number;
+  idCea: number;
+  idShpoa: number;
+  descripcion: string;
+  nivel: number;
+  oficial: number;
+  idReporta: number;
+  agrupaPoa: number;
+  meta: number;
+  accion: number;
+  prog: string;
+  empRespon: number;
+  agrupaDir: number;
+}
+
+export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOficioExpedidoProps) {
   const [textareaRows, setTextareaRows] = useState(3);
   const [currentDate, setCurrentDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
-
-  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
-  const [responsableName, setResponsableName] = useState<string | null>(null);
-  const [remitenteName, setRemitenteName] = useState<string | null>(null);
+  const [showPersonaEnvioModal, setShowPersonaEnvioModal] = useState(false);
+  const [destinatarioName, setDestinatarioName] = useState<string>("");
+  const [remitenteName, setRemitenteName] = useState<string>("");
+  const [responsableName, setResponsableName] = useState<string>("");
+  const [personaEntregaName, setPersonaEntregaName] = useState<string>("");
+  const [destinatarioType, setDestinatarioType] = useState<string>("Interno");
+  const [remitenteType, setRemitenteType] = useState<string>("Interno");
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [selectedArea, setSelectedArea] = useState<string>("");
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     setCurrentDate(today);
+
+    const fetchDepartamentos = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/departamentos");
+        if (response.data && Array.isArray(response.data.data)) {
+          setDepartamentos(response.data.data);
+        } else {
+          console.error("La respuesta de la API no contiene el array esperado:", response.data);
+        }
+      } catch (error) {
+        console.error("Error al obtener los departamentos:", error);
+      }
+    };
+
+    fetchDepartamentos();
   }, []);
-
-  const handleRemitenteTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRemitenteType(event.target.value);
-  };
-
-  const handleDestinatarioTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDestinatarioType(event.target.value);
-  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
@@ -47,27 +75,36 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
     }
   };
 
-  const handleDestinatarioSave = (name: string) => {
+  const handleSaveDestinatario = (name: string) => {
     setDestinatarioName(name);
     setShowDestinatarioModal(false);
   };
 
-  const handleResponsableSave = (name: string) => {
+  const handleSaveRemitente = (name: string) => {
+    setRemitenteName(name);
+    setShowRemitenteModal(false);
+  };
+
+  const handleSaveResponsable = (name: string) => {
     setResponsableName(name);
     setShowResponsableModal(false);
   };
 
-  const handleRemitenteSave = (name: string) => {
-    setRemitenteName(name);
-    setShowRemitenteModal(false);
+  const handleSavePersonaEnvio = (name: string) => {
+    setPersonaEntregaName(name);
+    setShowPersonaEnvioModal(false);
+  };
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedArea(event.target.value);
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0">
-        <h2 className="text-lg font-semibold mb-4">Editar Oficio Recibido</h2>
+      <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+        <h2 className="text-lg font-semibold mb-4">Editar Oficio Expedidos</h2>
 
         <div className="flex flex-col space-y-4">
           {/* Folio y Selección */}
@@ -100,24 +137,41 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
             </div>
           </div>
 
-          {/* Número de Oficio y Fechas */}
+          {/* Área o Departamento y Fechas */}
           <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
-            <div className="flex-1 mb-4 sm:mb-0">
-              <label className="block mb-2">Número de Oficio</label>
-              <input
-                type="text"
-                placeholder="Número de Oficio"
+            {/* Área o Departamento */}
+            <div className="flex-grow mb-4 sm:mb-0">
+              <label htmlFor="areaSelect" className="block mb-2">Área o Departamento</label>
+              <select
+                id="areaSelect"
+                value={selectedArea}
+                onChange={handleSelectChange}
                 className="border border-gray-300 rounded p-2 w-full text-sm"
-              />
+              >
+                <option value="">Selecciona una opción</option>
+                {departamentos.length > 0 ? (
+                  departamentos.map((departamento) => (
+                    <option key={departamento.idCea} value={departamento.idCea}>
+                      {departamento.descripcion}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No hay departamentos disponibles</option>
+                )}
+              </select>
             </div>
-            <div className="flex-1 mb-4 sm:mb-0">
+
+            {/* Fecha Captura */}
+            <div className="flex-none w-40 mb-4 sm:mb-0">
               <label className="block mb-2">Fecha Captura</label>
               <input
                 type="date"
                 className="border border-gray-300 rounded p-2 w-full"
               />
             </div>
-            <div className="flex-1">
+
+            {/* Fecha Límite */}
+            <div className="flex-none w-40">
               <label className="block mb-2">Fecha Límite</label>
               <input
                 type="date"
@@ -126,41 +180,53 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
             </div>
           </div>
 
-          {/* Remitente, Destinatario y Responsable */}
+          {/* Número de Oficio y Persona que lo entrega */}
+          <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
+            {/* Número de Oficio */}
+            <div className="flex-none w-40 mb-4 sm:mb-0">
+              <label htmlFor="numeroOficio" className="block mb-2">Número de Oficio</label>
+              <input
+                type="text"
+                id="numeroOficio"
+                placeholder="Número de Oficio"
+                className="border border-gray-300 rounded p-2 w-full text-sm"
+              />
+            </div>
+
+            {/* Persona que lo entrega */}
+            <div className="flex-grow mb-4 sm:mb-0">
+              <label htmlFor="personaEntrega" className="block mb-2">
+                Persona que lo entrega a la mesa de correspondencia
+              </label>
+              <div className="relative">
+                <input
+                  id="personaEntrega"
+                  type="text"
+                  placeholder="Persona que lo entrega a la mesa de correspondencia"
+                  value={personaEntregaName}
+                  className="border border-gray-300 rounded p-2 w-full text-sm"
+                  readOnly
+                  onClick={() => setShowPersonaEnvioModal(true)}
+                />
+                <FaSearch
+                  className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Grid Layout para los campos de texto */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            {/* Remitente */}
             <div className="flex flex-col">
+              {/* Nombre del Remitente */}
               <label className="block mb-2 flex items-center">
                 Nombre del Remitente
-                <div className="ml-4 flex items-center">
-                  <input
-                    type="radio"
-                    id="remitenteInterno"
-                    name="remitenteType"
-                    value="Interno"
-                    checked={remitenteType === "Interno"}
-                    onChange={handleRemitenteTypeChange}
-                    className="mr-2"
-                  />
-                  <label htmlFor="remitenteInterno" className="cursor-pointer mr-4">Interno</label>
-
-                  <input
-                    type="radio"
-                    id="remitenteExterno"
-                    name="remitenteType"
-                    value="Externo"
-                    checked={remitenteType === "Externo"}
-                    onChange={handleRemitenteTypeChange}
-                    className="mr-2"
-                  />
-                  <label htmlFor="remitenteExterno" className="cursor-pointer">Externo</label>
-                </div>
               </label>
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Persona que firma el oficio"
-                  value={remitenteName || ''}
+                  value={remitenteName}
                   className="border border-gray-300 rounded p-2 w-full text-sm"
                   readOnly
                   onClick={() => setShowRemitenteModal(true)}
@@ -172,8 +238,8 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
               </div>
             </div>
 
-            {/* Destinatario */}
             <div className="flex flex-col">
+              {/* Nombre del Destinatario */}
               <label className="block mb-2 flex items-center">
                 Nombre del destinatario
                 <div className="ml-4 flex items-center">
@@ -183,7 +249,7 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
                     name="destinatarioType"
                     value="Interno"
                     checked={destinatarioType === "Interno"}
-                    onChange={handleDestinatarioTypeChange}
+                    onChange={() => setDestinatarioType("Interno")}
                     className="mr-2"
                   />
                   <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">Interno</label>
@@ -194,7 +260,7 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
                     name="destinatarioType"
                     value="Externo"
                     checked={destinatarioType === "Externo"}
-                    onChange={handleDestinatarioTypeChange}
+                    onChange={() => setDestinatarioType("Externo")}
                     className="mr-2"
                   />
                   <label htmlFor="destinatarioExterno" className="cursor-pointer">Externo</label>
@@ -204,7 +270,7 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
                 <input
                   type="text"
                   placeholder="Persona a quien va dirigido"
-                  value={destinatarioName || ''}
+                  value={destinatarioName}
                   className="border border-gray-300 rounded p-2 w-full text-sm"
                   readOnly
                   onClick={() => setShowDestinatarioModal(true)}
@@ -216,7 +282,7 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
               </div>
             </div>
 
-            {/* Responsable */}
+            {/* Nombre del Responsable */}
             <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
               <div className="flex flex-col sm:w-1/2">
                 <label className="block mb-2">Nombre del Responsable</label>
@@ -224,7 +290,7 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
                   <input
                     type="text"
                     placeholder="Persona que atenderá el oficio"
-                    value={responsableName || ''}
+                    value={responsableName}
                     className="border border-gray-300 rounded p-2 w-full text-sm"
                     readOnly
                     onClick={() => setShowResponsableModal(true)}
@@ -245,62 +311,78 @@ export default function ModalEdit({ isOpen, onClose, onSave }: ModalEditProps) {
 
           {/* Observaciones */}
           <div className="mb-4">
-            <label className="block mb-2">Observaciones</label>
+            <label htmlFor="observaciones" className="block mb-2">Observaciones</label>
             <textarea
+              id="observaciones"
               rows={textareaRows}
+              onChange={(e) => {
+                const lines = e.target.value.split("\n").length;
+                setTextareaRows(Math.max(3, lines));
+              }}
               className="border border-gray-300 rounded p-2 w-full text-sm"
-              placeholder="Observaciones adicionales"
             />
           </div>
 
-          {/* Archivo */}
-          <div className="mb-4">
-            <label className="block mb-2">Adjuntar Archivo</label>
+          {/* Adjuntar Archivo */}
+          <div className="flex items-center mb-4">
             <input
               type="file"
-              accept=".pdf"
               onChange={handleFileChange}
-              className="border border-gray-300 rounded p-2 w-full text-sm"
+              className="border border-gray-300 rounded p-2"
+              accept=".pdf"  // Acepta solo archivos PDF
             />
+            {selectedFile && (
+              <div className="ml-4 text-sm">{selectedFile.name}</div>
+            )}
           </div>
+        </div>
 
-          {/* Botones */}
-          <div className="flex justify-end space-x-4">
-            <button
+        {/* Botones de acción */}
+        <div className="flex justify-end space-x-4 mt-6">
+        <button
               onClick={onClose}
-              className="bg-gray-500 text-white rounded px-4 py-2"
+              className="bg-[#641c34] text-white px-4 py-2 rounded"
             >
               Cancelar
             </button>
             <button
               onClick={onSave}
-              className="bg-blue-500 text-white rounded px-4 py-2"
+              className="bg-[#993233] text-white px-4 py-2 rounded"
             >
               Guardar
             </button>
-          </div>
         </div>
 
-        {/* Modals */}
+        {/* Modales */}
         {showDestinatarioModal && (
-          <ModalDestinatario
+          <ModalDestinatarioEnvio
             isOpen={showDestinatarioModal}
             onClose={() => setShowDestinatarioModal(false)}
-            onSave={handleDestinatarioSave}
+            onSave={handleSaveDestinatario}
           />
         )}
+
         {showRemitenteModal && (
-          <ModalRemitente
+          <ModalRemitenteEnvio
             isOpen={showRemitenteModal}
             onClose={() => setShowRemitenteModal(false)}
-            onSave={handleRemitenteSave}
+            onSave={handleSaveRemitente}
           />
         )}
+
         {showResponsableModal && (
-          <ModalResponsable
+          <ModalResponsableEnvio
             isOpen={showResponsableModal}
             onClose={() => setShowResponsableModal(false)}
-            onSave={handleResponsableSave}
+            onSave={handleSaveResponsable}
+          />
+        )}
+
+        {showPersonaEnvioModal && (
+          <ModalPersonaEnvio
+            isOpen={showPersonaEnvioModal}
+            onClose={() => setShowPersonaEnvioModal(false)}
+            onSave={handleSavePersonaEnvio}
           />
         )}
       </div>

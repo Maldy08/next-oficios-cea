@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import {
   InputAdornment,
   Table,
@@ -8,7 +8,10 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  TextField
+  TextField,
+  CircularProgress,
+  Box,
+  Typography
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -18,24 +21,45 @@ interface ModalDestinatarioProps {
   onSave: (selectedName: string) => void;
 }
 
-const data = [
-  { nombre: 'María Fernández', departamento: 'Global Solutions', puesto: 'Jefa de Proyecto' },
-  { nombre: 'Pedro Gómez', departamento: 'Tech Innovations', puesto: 'Ingeniero de Software' },
-  { nombre: 'Carmen Martínez', departamento: 'FinSolve', puesto: 'Analista Financiero' },
-  { nombre: 'Luis Pérez', departamento: 'EcoTech', puesto: 'Director de Operaciones' },
-  { nombre: 'Sonia Morales', departamento: 'MedTech', puesto: 'Especialista en Salud' },
-  { nombre: 'Rafael Sánchez', departamento: 'LogiCore', puesto: 'Coordinador de Logística' },
-  { nombre: 'Elena Castro', departamento: 'EduSmart', puesto: 'Educadora' },
-  { nombre: 'Fernando Ruiz', departamento: 'Creative Minds', puesto: 'Diseñador Gráfico' },
-  { nombre: 'Patricia López', departamento: 'RetailPro', puesto: 'Gerente de Ventas' },
-  { nombre: 'Carlos Ortega', departamento: 'HealthCare Inc', puesto: 'Consultor' }
-];
-
 const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
   const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [data, setData] = useState<any[]>([]); // Asegúrate de que `data` sea un array
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchData = async () => {
+        setLoading(true);
+        setError(null); // Resetear el error antes de la llamada a la API
+        try {
+          const response = await fetch('/api/empleados'); // Cambia la URL a la ruta de tu API
+          if (!response.ok) {
+            throw new Error('Error en la llamada a la API');
+          }
+          const result = await response.json();
+
+          // Verifica y ajusta la respuesta
+          if (Array.isArray(result)) {
+            setData(result);
+          } else if (typeof result === 'object' && result.data && Array.isArray(result.data)) {
+            setData(result.data); // Ajuste si la API devuelve un objeto con un campo de datos
+          } else {
+            throw new Error('Datos de API no son un array');
+          }
+        } catch (error: any) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchData();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -63,11 +87,17 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
     }
   };
 
-  const filteredData = data.filter(row =>
-    row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.departamento.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.puesto.toLowerCase().includes(searchText.toLowerCase())
-  );
+  // Verifica que `data` sea un array antes de filtrar
+  const filteredData = Array.isArray(data) ? data.filter(row => {
+    const nombreCompleto = row.nombreCompleto || '';
+    const descripcionDepto = row.descripcionDepto || '';
+    const descripcionPuesto = row.descripcionPuesto || '';
+
+    const search = searchText.toLowerCase();
+    return nombreCompleto.toLowerCase().includes(search) ||
+      descripcionDepto.toLowerCase().includes(search) ||
+      descripcionPuesto.toLowerCase().includes(search);
+  }) : [];
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
@@ -107,33 +137,47 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
           />
         </div>
 
-        <TableContainer className="flex-grow overflow-auto">
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE COMPLETO</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>DEPARTAMENTO</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => handleRowClick(row.nombre)}
-                  sx={{
-                    cursor: 'pointer',
-                    backgroundColor: row.nombre === selectedName ? '#f0f0f0' : 'inherit'
-                  }}
-                >
-                  <TableCell>{row.nombre}</TableCell>
-                  <TableCell>{row.departamento}</TableCell>
-                  <TableCell>{row.puesto}</TableCell>
+        {loading && (
+          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+            <CircularProgress />
+          </Box>
+        )}
+
+        {error && (
+          <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+            <Typography color="error">{error}</Typography>
+          </Box>
+        )}
+
+        {!loading && !error && (
+          <TableContainer className="flex-grow overflow-auto">
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE COMPLETO</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>DEPARTAMENTO</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => handleRowClick(row.nombreCompleto)}
+                    sx={{
+                      cursor: 'pointer',
+                      backgroundColor: row.nombreCompleto === selectedName ? '#f0f0f0' : 'inherit'
+                    }}
+                  >
+                    <TableCell>{row.nombreCompleto || ''}</TableCell>
+                    <TableCell>{row.descripcionDepto || ''}</TableCell>
+                    <TableCell>{row.descripcionPuesto || ''}</TableCell> 
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
         <TablePagination
           component="div"
@@ -158,7 +202,7 @@ const ModalDestinatario: FC<ModalDestinatarioProps> = ({ isOpen, onClose, onSave
           </button>
           <button
             type="button"
-            onClick={handleSave}  // Aquí se usa handleSave en lugar de onSave
+            onClick={handleSave}
             className="bg-blue-500 text-white py-2 px-4 rounded"
             style={{ backgroundColor: '#3b82f6', borderColor: 'transparent' }}
           >

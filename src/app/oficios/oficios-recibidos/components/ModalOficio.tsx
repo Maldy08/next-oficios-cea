@@ -57,7 +57,7 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
-      <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0">
+      <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto" style={{ maxHeight: '80vh' }}>
         <h2 className="text-lg font-semibold mb-4">Ingresar Oficio Recibido</h2>
 
         <div className="flex flex-col space-y-4">
@@ -234,13 +234,13 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
             <input type="text" placeholder="Tema" className="border border-gray-300 rounded p-2 flex-1 text-sm" />
           </div>
 
-          {/* Comentarios */}
+          {/* Observaciones */}
           <div className="mb-4">
-            <label className="block mb-2">Comentarios</label>
+            <label className="block mb-2">Observaciones</label>
             <textarea
               rows={textareaRows}
-              onChange={(e) => setTextareaRows(Math.min(5, e.target.value.split("\n").length))}
-              className="border border-gray-300 rounded p-2 w-full text-sm"
+              onChange={(e) => setTextareaRows(Math.max(3, e.target.value.split('\n').length))}
+              className="border border-gray-300 rounded p-2 w-full"
             />
           </div>
 
@@ -256,22 +256,11 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
               <div className="ml-4 text-sm">{selectedFile.name}</div>
             )}
           </div>
+        </div>
 
-          {/* Botones */}
-          <div className="flex justify-end space-x-4">
-            <button
-              onClick={onClose}
-              className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={onSave}
-              className="bg-primary-900 text-white py-2 px-4 rounded hover:bg-primary-800"
-            >
-              Guardar
-            </button>
-          </div>
+        <div className="flex justify-end space-x-4 mt-4">
+          <button onClick={onClose} className="bg-[#641c34] text-white py-2 px-4 rounded">Cancelar</button>
+          <button onClick={onSave} className="bg-[#993233] text-white py-2 px-4 rounded">Guardar</button>
         </div>
 
         {showDestinatarioModal && (
@@ -281,6 +270,7 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
             onSave={handleDestinatarioSave}
           />
         )}
+
         {showRemitenteModal && (
           <ModalRemitente
             isOpen={showRemitenteModal}
@@ -288,6 +278,7 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
             onSave={handleRemitenteSave}
           />
         )}
+
         {showResponsableModal && (
           <ModalResponsable
             isOpen={showResponsableModal}
