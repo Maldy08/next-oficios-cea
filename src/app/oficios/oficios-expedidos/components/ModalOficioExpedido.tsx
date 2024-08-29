@@ -12,20 +12,9 @@ interface ModalOficioExpedidoProps {
   onSave: () => void;
 }
 
-interface Departamento {
-  id: number;
-  idCea: number;
-  idShpoa: number;
-  descripcion: string;
-  nivel: number;
-  oficial: number;
-  idReporta: number;
-  agrupaPoa: number;
-  meta: number;
-  accion: number;
-  prog: string;
-  empRespon: number;
-  agrupaDir: number;
+interface Departamento { //Identifica las opciones de la lista desplegable de area o departemetno
+  idCea: number;        
+  descripcion: string;  
 }
 
 export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOficioExpedidoProps) {
@@ -36,12 +25,12 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
   const [showPersonaEnvioModal, setShowPersonaEnvioModal] = useState(false);
-  const [destinatarioName, setDestinatarioName] = useState<string>("");
+  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
   const [remitenteName, setRemitenteName] = useState<string>("");
   const [responsableName, setResponsableName] = useState<string>("");
   const [personaEntregaName, setPersonaEntregaName] = useState<string>("");
-  const [destinatarioType, setDestinatarioType] = useState<string>("Interno");
-  const [remitenteType, setRemitenteType] = useState<string>("Interno");
+  const [destinatarioType, setDestinatarioType] = useState("");
+  const [remitenteType, setRemitenteType] = useState<string>("");
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [selectedArea, setSelectedArea] = useState<string>("");
 
@@ -94,7 +83,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
   const handleSavePersonaEnvio = (name: string) => {
     setPersonaEntregaName(name);
     setShowPersonaEnvioModal(false);
-  };
+  };  
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedArea(event.target.value);
@@ -194,29 +183,30 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
               />
             </div>
 
-            {/* Persona que lo entrega */}
-            <div className="flex-grow mb-4 sm:mb-0">
-              <label htmlFor="personaEntrega" className="block mb-2">
-                Persona que lo entrega a la mesa de correspondencia
-              </label>
-              <div className="relative">
-                <input
-                  id="personaEntrega"
-                  type="text"
-                  placeholder="Persona que lo entrega a la mesa de correspondencia"
-                  value={personaEntregaName}
-                  className="border border-gray-300 rounded p-2 w-full text-sm"
-                  onClick={() => setShowPersonaEnvioModal(true)}
-                />
-                <FaSearch
-                  className="absolute top-1/2 right-2 transform -translate-y-1/2 text-gray-500"
-                  size={20}
-                />
-              </div>
-            </div>
+            {/* Persona que lo entrega a la mesa de correspondencia */}
+<div className="flex-grow mb-4 sm:mb-0">
+  <label className="block mb-2 flex items-center">
+    Persona que lo entrega a la mesa de correspondencia
+  </label>
+  <div className="relative">
+    <input
+      type="text"
+      placeholder="Persona"
+      value={personaEntregaName}
+      className="border border-gray-300 rounded p-2 w-full text-sm"
+      readOnly  
+      onClick={() => setShowPersonaEnvioModal(true)} 
+    />
+    <FaSearch
+      onClick={() => setShowPersonaEnvioModal(true)}  
+      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+      size={20}
+    />
+  </div>
+</div>
           </div>
 
-          {/* Grid Layout para los campos de texto */}
+          {/* Aqui empieza otro campo */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div className="flex flex-col">
               {/* Nombre del Remitente */}
@@ -240,38 +230,39 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
 
             <div className="flex flex-col">
-              {/* Nombre del Destinatario */}
-              <label className="block mb-2 flex items-center">
+  {/* Nombre del Destinatario */}
+  <label className="block mb-2 flex items-center">
                 Nombre del destinatario
                 <div className="ml-4 flex items-center">
-                  <input
-                    type="radio"
-                    id="destinatarioInterno"
-                    name="destinatarioType"
-                    value="Interno"
-                    checked={destinatarioType === "Interno"}
-                    onChange={() => setDestinatarioType("Interno")}
-                    className="mr-2"
-                  />
-                  <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">Interno</label>
+                <input
+  type="radio"
+  id="destinatarioInterno"
+  name="destinatarioType"
+  value="Interno"
+  checked={destinatarioType === "Interno"}
+  onChange={() => setDestinatarioType("Interno")}
+  className="mr-2"
+/>
+<label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">Interno</label>
 
-                  <input
-                    type="radio"
-                    id="destinatarioExterno"
-                    name="destinatarioType"
-                    value="Externo"
-                    checked={destinatarioType === "Externo"}
-                    onChange={() => setDestinatarioType("Externo")}
-                    className="mr-2"
-                  />
-                  <label htmlFor="destinatarioExterno" className="cursor-pointer">Externo</label>
+<input
+  type="radio"
+  id="destinatarioExterno"
+  name="destinatarioType"
+  value="Externo"
+  checked={destinatarioType === "Externo"}
+  onChange={() => setDestinatarioType("Externo")}
+  className="mr-2"
+/>
+<label htmlFor="destinatarioExterno" className="cursor-pointer">Externo</label>
+
                 </div>
               </label>
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Persona a quien va dirigido"
-                  value={destinatarioName}
+                  value={destinatarioName || ''}
                   className="border border-gray-300 rounded p-2 w-full text-sm"
                   readOnly
                   onClick={() => setShowDestinatarioModal(true)}
@@ -281,7 +272,8 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                   className="absolute right-2 top-2 text-gray-400 cursor-pointer"
                 />
               </div>
-            </div>
+    </div>
+
 
             {/* Nombre del Responsable */}
             <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
@@ -305,12 +297,12 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
           </div>
 
-          {/* Tema */}
+          {/* Aqui empieza Tema */}
           <div className="flex mb-4">
             <input type="text" placeholder="Tema" className="border border-gray-300 rounded p-2 flex-1 text-sm" />
           </div>
 
-          {/* Observaciones */}
+          {/* Aqui empieza Observaciones */}
           <div className="mb-4">
             <label htmlFor="observaciones" className="block mb-2">Observaciones</label>
             <textarea
@@ -321,7 +313,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             />
           </div>
 
-          {/* Adjuntar Archivo */}
+          {/* Aqui empieza Adjuntar Archivo */}
           <div className="flex items-center mb-4">
             <input
               type="file"
@@ -334,7 +326,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             )}
           </div>
 
-          {/* Botones */}
+          {/* Aui empieza Botones */}
           <div className="flex justify-end space-x-4">
             <button
               onClick={onClose}
@@ -351,7 +343,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
           </div>
         </div>
 
-        {/* Modals */}
+        {/* Aqui estan los Modals */}
         {showDestinatarioModal && (
           <ModalDestinatarioEnvio
             isOpen={showDestinatarioModal}

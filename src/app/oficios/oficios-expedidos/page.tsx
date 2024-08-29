@@ -1,19 +1,17 @@
-// app/oficios-expedidos/page.tsx
-
 "use client";
 
 import { useState } from "react";
-import {
-  Button, TextField, InputAdornment, Box, Typography
-} from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import { FiSearch } from "react-icons/fi";
+import TableComponent from "./components/table";
 import ModalOficioExpedido from "./components/ModalOficioExpedido";
 import ModalEdit from "./components/components table/ModalEdit";
-import TableComponent from "./components/table";
+import ModalList from "./components/components table/ModalList";
 
 export default function OficiosExpedidosPage() {
   const [modalType, setModalType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [ismodalopenList, setismodalopenList] = useState(false);
+
 
   const handleOpenModal = (type: string) => {
     setModalType(type);
@@ -34,52 +32,35 @@ export default function OficiosExpedidosPage() {
 
   return (
     <div className="p-6">
-      <Typography variant="h6" component="h1" sx={{ marginBottom: '0px', fontWeight: 'bold' }}>
-        Oficios-Expedidos
-      </Typography>
+      <h1 className="text-lg font-bold mb-4">Oficios-Expedidos</h1>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <Button
+      <div className="flex justify-between items-center mb-4">
+        <button
           onClick={() => handleOpenModal('oficioExpedido')}
-          variant="contained"
-          disableRipple
-          sx={{
-            backgroundColor: '#993233 !important',
-            ':hover': {
-              backgroundColor: '#993233 !important',
-            },
-            ':focus': {
-              backgroundColor: '#993233 !important',
-            },
-            color: 'white !important',
-          }}
+          className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
         >
           INGRESAR OFICIO EXPEDIDO
-        </Button>
+        </button>
 
-        <TextField
-          variant="outlined"
-          placeholder="Buscar"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          sx={{ width: '50%' }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
+        <div className="w-1/2 relative">
+          <input
+            type="text"
+            placeholder="Buscar"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-full p-2 border border-gray-300 rounded pl-10"
+          />
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        </div>
+      </div>
 
-      <TableComponent
-        modalType={modalType}
-        setModalType={setModalType}
-        searchTerm={searchTerm}
+      <TableComponent 
+        modalType={modalType} //prop que contiene un valor ya sea un texto o un numero
+        setModalType={setModalType} 
+        searchTerm={searchTerm}  
       />
 
-      {/* ModalOficioExpedido */}
+      {/* Aqui estan los Modales */}
       {modalType === 'oficioExpedido' && (
         <ModalOficioExpedido
           isOpen={modalType === 'oficioExpedido'}
@@ -88,7 +69,6 @@ export default function OficiosExpedidosPage() {
         />
       )}
 
-      {/* ModalEdit */}
       {modalType === 'edit' && (
         <ModalEdit
           isOpen={modalType === 'edit'}
@@ -96,6 +76,14 @@ export default function OficiosExpedidosPage() {
           onSave={handleSave}
         />
       )}
+
+{ismodalopenList && (
+        <ModalList
+          isOpen={ismodalopenList}
+          onClose={handleCloseModal}
+        />
+      )}
+
     </div>
   );
 }

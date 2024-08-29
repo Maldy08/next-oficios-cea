@@ -1,16 +1,7 @@
-// components/Table.tsx
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { FiEdit, FiEye, FiList } from 'react-icons/fi';
 
-import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
-import {
-  Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, IconButton, TablePagination, Box
-} from "@mui/material";
-import EditIcon from '@mui/icons-material/Edit';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import ModalOficioExpedido from "./ModalOficioExpedido";
-import ModalEdit from "./components table/ModalEdit";
-import ModalList from "./components table/ModalList";
+import ModalList from './components table/ModalList';
 
 interface TableProps {
   modalType: string | null;
@@ -23,7 +14,7 @@ const TableComponent: React.FC<TableProps> = ({ modalType, setModalType, searchT
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [rows, setRows] = useState<any[]>([]);
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
-  const [ismodalopenList, setismodalopenList] = useState(false);
+  const [ismodalopenList, setismodalopenList] = useState<boolean>(false);
 
   useEffect(() => {
     fetch('http://localhost:3000/api/oficios')
@@ -74,118 +65,111 @@ const TableComponent: React.FC<TableProps> = ({ modalType, setModalType, searchT
     setismodalopenList(false);
   };
 
-  const handleChangePage = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
   return (
     <div>
-      <TableContainer component={Paper}>
-        <Table aria-label="oficios expedidos" size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>ACCIONES</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>NO. FOLIO</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>FECHA</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>DEPENDENCIA</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>TIPO</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>NO DE OFICIO</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>REMITENTE</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>DESTINATARIO</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>ESTATUS</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="py-2 px-4 font-semibold text-left">ACCIONES</th>
+              <th className="py-2 px-4 font-semibold text-left">NO. FOLIO</th>
+              <th className="py-2 px-4 font-semibold text-left">FECHA</th>
+              <th className="py-2 px-4 font-semibold text-left">DEPENDENCIA</th>
+              <th className="py-2 px-4 font-semibold text-left">TIPO</th>
+              <th className="py-2 px-4 font-semibold text-left">NO DE OFICIO</th>
+              <th className="py-2 px-4 font-semibold text-left">REMITENTE</th>
+              <th className="py-2 px-4 font-semibold text-left">DESTINATARIO</th>
+              <th className="py-2 px-4 font-semibold text-left">ESTATUS</th>
+            </tr>
+          </thead>
+          <tbody>
             {filteredRows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} align="center">
-                  No hay datos disponibles
-                </TableCell>
-              </TableRow>
+              <tr>
+                <td colSpan={9} className="text-center py-4">No hay datos disponibles</td>
+              </tr>
             ) : (
               filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <TableRow key={index}>
-                  <TableCell sx={{ padding: '8px' }}>
-                    <Box sx={{
-                      display: 'flex',
-                      justifyContent: 'flex-start',
-                      alignItems: 'center',
-                      gap: '8px',
-                    }}>
-                      <IconButton
-                        size="small"
+                <tr key={index} className="border-t">
+                  <td className="py-2 px-4">
+                    <div className="flex items-center gap-2">
+                      <button
                         onClick={() => handleOpenModal('edit')}
-                        sx={{ padding: '8px' }}
+                        className="text-gray-600 hover:text-primary-900"
                       >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
+                        <FiEdit />
+                      </button>
+                      <button
                         onClick={() => handleOpenModal('view')}
-                        sx={{ padding: '8px' }}
+                        className="text-gray-600 hover:text-primary-900"
                       >
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
+                        <FiEye />
+                      </button>
+                      <button
                         onClick={modalopenList}
-                        sx={{ padding: '8px' }}
+                        className="text-gray-600 hover:text-primary-900"
                       >
-                        <ListAltIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </TableCell>
-
-                  <TableCell>{row.folio}</TableCell>
-                  <TableCell>{new Date(row.fecha).toLocaleDateString()}</TableCell>
-                  <TableCell>{row.remDepen}</TableCell>
-                  <TableCell>{row.tipo}</TableCell>
-                  <TableCell>{row.noOficio}</TableCell>
-                  <TableCell>{row.remNombre}</TableCell>
-                  <TableCell>{row.destNombre}</TableCell>
-                  <TableCell>{row.estatus}</TableCell>
-                </TableRow>
+                        <FiList />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="py-2 px-4">{row.folio}</td>
+                  <td className="py-2 px-4">{new Date(row.fecha).toLocaleDateString()}</td>
+                  <td className="py-2 px-4">{row.remDepen}</td>
+                  <td className="py-2 px-4">{row.tipo}</td>
+                  <td className="py-2 px-4">{row.noOficio}</td>
+                  <td className="py-2 px-4">{row.remNombre}</td>
+                  <td className="py-2 px-4">{row.destNombre}</td>
+                  <td className="py-2 px-4">{row.estatus}</td>
+                </tr>
               ))
             )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', alignItems: 'center' }}>
-        <TablePagination
-          component="div"
-          count={filteredRows.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Filas por página"
-        />
-      </Box>
+      <div className="flex justify-end items-center mt-4">
+        <select
+          value={rowsPerPage}
+          onChange={handleChangeRowsPerPage}
+          className="mr-4 p-2 border border-gray-300 rounded-md"
+        >
+          <option value={5}>5 filas</option>
+          <option value={10}>10 filas</option>
+          <option value={25}>25 filas</option>
+        </select>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleChangePage(page - 1)}
+            disabled={page === 0}
+            className="p-2 border border-gray-300 rounded-md"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => handleChangePage(page + 1)}
+            disabled={(page + 1) * rowsPerPage >= filteredRows.length}
+            className="p-2 border border-gray-300 rounded-md"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
 
-      {/* Modales */}
-      {modalType === 'oficioExpedido' && (
-        <ModalOficioExpedido
-          isOpen={modalType === 'oficioExpedido'}
-          onClose={handleCloseModal}
-          onSave={() => console.log("Datos guardados")}
+      {ismodalopenList && (
+        <ModalList
+          isOpen={ismodalopenList}
+          onClose={modalcloseList}
         />
       )}
-
-      {modalType === 'edit' && (
-        <ModalEdit
-          isOpen={modalType === 'edit'}
-          onClose={handleCloseModal}
-          onSave={() => console.log("Datos guardados")}
-        />
-      )}
-
-      <ModalList isOpen={ismodalopenList} onClose={modalcloseList} />
     </div>
   );
 };

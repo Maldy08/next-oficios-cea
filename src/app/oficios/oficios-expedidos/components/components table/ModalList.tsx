@@ -1,27 +1,5 @@
-"use client";
-
-import React from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Grid,
-  Paper,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  IconButton
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import PersonIcon from "@mui/icons-material/Person";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import MessageIcon from "@mui/icons-material/Message";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 interface ModalListProps {
   isOpen: boolean;
@@ -38,205 +16,149 @@ const getCurrentDate = () => {
 
 const ModalList: React.FC<ModalListProps> = ({ isOpen, onClose }) => {
   const todayDate = getCurrentDate();
+  const [datos, setDatos] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/datos");
+        setDatos(response.data);
+      } catch (error) {
+        console.error("Error al obtener los datos:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Bitacora del Oficio</DialogTitle>
-      <DialogContent>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full relative">
+        <h1 className="text-xl font-bold mb-4">Detalles del Oficio</h1>
         <div className="space-y-4">
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Folio"
-                defaultValue=""
-                fullWidth
-                variant="outlined"
-                margin="dense"
-              />
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={4}
-              container
-              justifyContent="center"
-              alignItems="center"
-            >
-              <div className="flex items-center space-x-4">
-                <label>CEA</label>
-                <input type="radio" name="selection" className="mr-4" />
-                <label>SEPRA</label>
-                <input type="radio" name="selection" />
-              </div>
-            </Grid>
-
-            <Grid item xs={12} sm={4}>
-              <div className="mt-4">
-                <label className="font-bold">Fecha: </label>
-                <span>{todayDate}</span>
-              </div>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Número de Oficio"
-                defaultValue=""
-                fullWidth
-                variant="outlined"
-                margin="dense"
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Fecha Oficio"
-                type="date"
-                defaultValue="2000-00-00"
-                fullWidth
-                variant="outlined"
-                margin="dense"
-                InputProps={{
-                  startAdornment: <CalendarTodayIcon />,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Fecha Límite"
-                type="date"
-                defaultValue="2000-00-00"
-                fullWidth
-                variant="outlined"
-                margin="dense"
-                InputProps={{
-                  startAdornment: <CalendarTodayIcon />,
-                }}
-              />
-            </Grid>
-          </Grid>
-
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Remitente"
-                defaultValue=""
-                fullWidth
-                variant="outlined"
-                margin="dense"
-                InputProps={{
-                  startAdornment: <PersonIcon />,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Destinatario"
-                defaultValue=""
-                fullWidth
-                variant="outlined"
-                margin="dense"
-                InputProps={{
-                  startAdornment: <PersonIcon />,
-                }}
-              />
-            </Grid>
-          </Grid>
-
-          <TextField
-            label="Tema del Oficio"
-            defaultValue=""
-            fullWidth
-            variant="outlined"
-            margin="dense"
-            InputProps={{
-              startAdornment: <MessageIcon />,
-            }}
-          />
-
           <div className="flex items-center space-x-4">
-            <TextField
-              label="Capture Bitacora"
-              fullWidth
-              variant="outlined"
-              margin="dense"
-            />
-            <IconButton color="primary" aria-label="add">
-              <Button className="bg-[#641c34] text-white lg:hover:bg-[#641c34]">
-                Ingresar
-                <AddIcon />
-              </Button>
-            </IconButton>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white">
+              Folio
+            </label>
+            <div className="mt-1">
+              <input
+                type="text"
+                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none sm:text-sm"
+              />
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <label>CEA</label>
+              <input type="radio" name="selection" className="mr-4" />
+              <label>SEPRA</label>
+              <input type="radio" name="selection" />
+            </div>
+
+            <div className="mt-4 my-4">
+              <label className="font-bold">Fecha: </label>
+              <span>{todayDate}</span>
+            </div>
           </div>
 
-          <TableContainer component={Paper}>
-            <Table aria-label="simple table" size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Fecha</TableCell>
-                  <TableCell>Usuario</TableCell>
-                  <TableCell>Estatus</TableCell>
-                  <TableCell>Comentarios</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {[
-                  {
-                    fecha: "2022-03-01",
-                    usuario: "7130",
-                    estatus: "3",
-                    comentarios: "FUE ATENDIDO SATISFACTORIAMENTE",
-                  },
-                  {
-                    fecha: "2022-03-01",
-                    usuario: "7130",
-                    estatus: "1",
-                    comentarios: "SE TURNA AL AREA CORRESPONDIENTE",
-                  },
-                  {
-                    fecha: "2024-03-11",
-                    usuario: "7197",
-                    estatus: "1",
-                    comentarios: "GFHFGHFGH",
-                  },
-                  {
-                    fecha: "2024-03-11",
-                    usuario: "7197",
-                    estatus: "1",
-                    comentarios: "HHHHHHHHHHH",
-                  },
-                  {
-                    fecha: "2024-07-15",
-                    usuario: "7197",
-                    estatus: "1",
-                    comentarios: "121",
-                  },
+          <div>
+            <label>Número de Oficio</label>
+            <input
+              type="text"
+              className="block w-full appearance-none rounded-md border px-2 focus:outline-none"
+            />
+            <label>
+              Fecha de Oficio
+              <input
+                className="px-3"
+                type="date"
+                name="party"
+                min="2000-00-00"
+                max="3000-00-00"
+              />
+            </label>
+            <label>
+              Fecha de limite
+              <input
+                className="px-3"
+                type="date"
+                name="party"
+                min="2000-00-00"
+                max="3000-00-00"
+              />
+            </label>
+          </div>
 
-                  {
-                    fecha: "2024-07-15",
-                    usuario: "7197",
-                    estatus: "1",
-                    comentarios: "8657867876",
-                  },
-                ].map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{row.fecha}</TableCell>
-                    <TableCell>{row.usuario}</TableCell>
-                    <TableCell>{row.estatus}</TableCell>
-                    <TableCell>{row.comentarios}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <label>Remitente</label>
+          <input
+            type="text"
+            className="appearance-none rounded-md border px-2 focus:outline-none"
+          />
+
+          <label>Destinatario</label>
+          <input
+            type="text"
+            className="appearance-none rounded-md border px-2 focus:outline-none"
+          />
+
+          <div className="space-x-4">
+            <label>Tema de Oficio</label>
+            <input
+              type="text"
+              className="appearance-none rounded-md border px-2 focus:outline-none"
+            />
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <label>Captura bitacora</label>
+            <input
+              type="text"
+              className="appearance-none rounded-md border px-2 focus:outline-none"
+            />
+
+            <button className="text-white bg-primary-900 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 transition-all">
+              Ingresar
+            </button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Usuario</th>
+                <th>Estatus</th>
+                <th>Comentarios</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>datos</td>
+                <td>datos</td>
+                <td>datos</td>
+                <td>datos</td>
+                {/* {datos.map((datos) => (
+                  <tr key={6}>
+                    <td>datos</td>
+                    <td>datos</td>
+                    <td>datos</td>
+                    <td>datos</td>
+                  </tr>
+                ))} */}
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={onClose}
-          className="bg-[#641c34] text-white lg:hover:bg-[#641c34]"
-        >
-          Cancelar
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <div className="absolute bottom-4 right-4">
+          <button
+            onClick={onClose}
+            className="p-2 text-white bg-primary-900 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 transition-all"
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

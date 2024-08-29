@@ -11,8 +11,8 @@ interface ModalOficioProps {
 }
 
 export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProps) {
-  const [remitenteType, setRemitenteType] = useState("Interno");
-  const [destinatarioType, setDestinatarioType] = useState("Interno");
+  const [remitenteType, setRemitenteType] = useState("");
+  const [destinatarioType, setDestinatarioType] = useState("");
   const [remitenteName, setRemitenteName] = useState<string | null>(null);
   const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
   const [responsableName, setResponsableName] = useState<string | null>(null);
