@@ -1,53 +1,66 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { FiEdit, FiEye, FiList } from 'react-icons/fi';
-
 import ModalList from './components table/ModalList';
+
+interface TablePost {
+  id: number;
+  title: string;
+  folio: string;
+  fecha: string;
+  remDepen: string;
+  tipo: string;
+  noOficio: string;
+  remNombre: string;
+  destNombre: string;
+  estatus: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  folio?: string;
+  fecha?: string;
+  remDepen?: string;
+  tipo?: string;
+  noOficio?: string;
+  remNombre?: string;
+  destNombre?: string;
+  estatus?: string;
+}
 
 interface TableProps {
   modalType: string | null;
   setModalType: React.Dispatch<React.SetStateAction<string | null>>;
   searchTerm: string;
+  data: Post[];
 }
 
-const TableComponent: React.FC<TableProps> = ({ modalType, setModalType, searchTerm }) => {
+const TableComponent: React.FC<TableProps> = ({ modalType, setModalType, searchTerm, data = [] }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [rows, setRows] = useState<any[]>([]);
-  const [filteredRows, setFilteredRows] = useState<any[]>([]);
+  const [filteredRows, setFilteredRows] = useState<TablePost[]>([]);
   const [ismodalopenList, setismodalopenList] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/oficios')
-      .then(response => response.json())
-      .then(data => {
-        if (data.data && Array.isArray(data.data)) {
-          setRows(data.data);
-          setFilteredRows(data.data);
-        } else {
-          console.error('La respuesta de la API no contiene un array en la propiedad "data":', data);
-          setRows([]);
-          setFilteredRows([]);
-        }
-      })
-      .catch(error => {
-        console.error('Error al obtener datos:', error);
-        setRows([]);
-        setFilteredRows([]);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (searchTerm === '') {
-      setFilteredRows(rows);
+    if (Array.isArray(data)) {
+      const tableData: TablePost[] = data.map(post => ({
+        id: post.id,
+        title: post.title,
+        folio: post.folio || '',
+        fecha: post.fecha || '',
+        remDepen: post.remDepen || '',
+        tipo: post.tipo || '',
+        noOficio: post.noOficio || '',
+        remNombre: post.remNombre || '',
+        destNombre: post.destNombre || '',
+        estatus: post.estatus || '',
+      }));
+      setFilteredRows(tableData);
     } else {
-      const filtered = rows.filter(row =>
-        Object.values(row).some(value =>
-          value != null && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-      setFilteredRows(filtered);
+      console.error('Data is not an array:', data);
+      setFilteredRows([]);
     }
-  }, [searchTerm, rows]);
+  }, [data]);
 
   const handleOpenModal = (type: string) => {
     setModalType(type);
@@ -74,6 +87,8 @@ const TableComponent: React.FC<TableProps> = ({ modalType, setModalType, searchT
     setPage(0);
   };
 
+  const rowsToDisplay = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -92,12 +107,12 @@ const TableComponent: React.FC<TableProps> = ({ modalType, setModalType, searchT
             </tr>
           </thead>
           <tbody>
-            {filteredRows.length === 0 ? (
+            {rowsToDisplay.length === 0 ? (
               <tr>
                 <td colSpan={9} className="text-center py-4">No hay datos disponibles</td>
               </tr>
             ) : (
-              filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+              rowsToDisplay.map((row, index) => (
                 <tr key={index} className="border-t">
                   <td className="py-2 px-4">
                     <div className="flex items-center gap-2">

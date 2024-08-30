@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -79,7 +81,7 @@ const ModalList: React.FC<ModalListProps> = ({ isOpen, onClose }) => {
               />
             </label>
             <label>
-              Fecha de limite
+              Fecha de límite
               <input
                 className="px-3"
                 type="date"
