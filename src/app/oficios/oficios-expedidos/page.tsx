@@ -1,21 +1,24 @@
-// OficiosExpedidosPage.tsx
-
 import TableComponent from './components/table';
 import ClientComponent from './components/ClientComponent';
 
 export default async function OficiosExpedidosPage() {
-  // Aqui se hace la llamada API el servidor 
-  const response = await fetch('http://localhost:3000/api/oficios');
-  const data = await response.json();
-  const rows = data.data || []; 
+  // Hacer la llamada a la API para obtener los oficios
+  const responseOficios = await fetch('http://localhost:3000/api/oficios');
+  const dataOficios = await responseOficios.json();
+  const rows = dataOficios.data || []; // Datos de oficios para la tabla
 
-  // Renderizar el componente servidor con los datos de la API
+  // Hacer la llamada a la API para obtener los departamentos
+  const responseDepartamentos = await fetch('http://localhost:3000/api/departamentos');
+  const dataDepartamentos = await responseDepartamentos.json();
+  const departamentos = dataDepartamentos.data || []; // Datos de departamentos para el modal
+
+  // Renderizar el componente servidor con los datos obtenidos
   return (
     <div className="p-6">
       <h1 className="text-lg font-bold mb-4">Oficios-Expedidos</h1>
 
       {/* Renderizamos el componente cliente para manejar la lógica de botones y búsqueda */}
-      <ClientComponent rows={rows} />
+      <ClientComponent rows={rows} departamentos={departamentos} />
     </div>
   );
 }

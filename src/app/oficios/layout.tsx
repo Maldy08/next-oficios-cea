@@ -14,7 +14,7 @@ export default async function OficiosLayout({
   }
 
   return (
-    <div className="flex h-screen oficios-layout">
+    <div className="flex h-screen oficios-layout overflow-auto">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />

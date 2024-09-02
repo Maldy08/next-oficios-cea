@@ -9,9 +9,10 @@ import ModalList from './components table/ModalList';
 
 interface ClientComponentProps {
   rows: any[];
+  departamentos: any; // Añadido departamentos aquí
 }
 
-export default function ClientComponent({ rows }: ClientComponentProps) {
+export default function ClientComponent({ rows, departamentos }: ClientComponentProps) {
   const [modalType, setModalType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Estado para las filas por página
@@ -119,6 +120,7 @@ export default function ClientComponent({ rows }: ClientComponentProps) {
           isOpen={modalType === 'oficioExpedido'}
           onClose={handleCloseModal}
           onSave={handleSave}
+          departamentos={departamentos} // Pasa departamentos al modal
         />
       )}
 
