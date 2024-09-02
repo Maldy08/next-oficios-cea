@@ -16,7 +16,7 @@ export default async function OficiosLayout({
   return (
     <div className="flex h-screen oficios-layout overflow-auto">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-auto">
         <Header />
         <div className="flex-1 flex overflow-auto ml-0 mt-16">
           <main className="flex-grow overflow-auto">

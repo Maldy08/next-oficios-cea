@@ -69,36 +69,48 @@ export const Sidebar = () => {
             </button>
           )}
 
-                    <div className="flex-grow overflow-y-auto px-4 py-6">
-                        <ul className="space-y-4 font-medium">
-                            <li>
-                                <Link href={'/oficios'} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]">
-                                    <IoHomeOutline className="w-6 h-6" />
-                                    <span className="ml-4 text-lg">Home</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href={"/oficios/oficios-recibidos"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]">
-                                    <IoArrowUp className="w-6 h-6" />
-                                    <span className="ml-4 text-lg">Oficios Recibidos</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href={"/oficios/oficios-expedidos"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]">
-                                    <IoArrowDown className="w-6 h-6" />
-                                    <span className="ml-4 text-lg">Oficios Expedidos</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href={"/transparencia/"} className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]">
-                                    <IoPencil className="w-6 h-6" />
-                                    <span className="ml-4 text-lg">Oficios por Expedir</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </aside>
-        </>
-    );
+          <div className="flex-grow overflow-y-auto px-4 py-6">
+            <ul className="space-y-4 font-medium">
+              <li>
+                <Link
+                  href={"/oficios"}
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
+                >
+                  <IoHomeOutline className="w-6 h-6" />
+                  <span className="ml-4 text-lg">Home</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={"/oficios/oficios-recibidos"}
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
+                >
+                  <IoArrowUp className="w-6 h-6" />
+                  <span className="ml-4 text-lg">Oficios Recibidos</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={"/oficios/oficios-expedidos"}
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
+                >
+                  <IoArrowDown className="w-6 h-6" />
+                  <span className="ml-4 text-lg">Oficios Expedidos</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={"/transparencia/"}
+                  className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
+                >
+                  <IoPencil className="w-6 h-6" />
+                  <span className="ml-4 text-lg">Oficios por Expedir</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
 };
