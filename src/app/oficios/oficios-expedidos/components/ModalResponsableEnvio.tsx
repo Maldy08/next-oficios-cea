@@ -168,14 +168,14 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({ isOpen, onClose, onS
           <button
             type="button"
             onClick={onClose}
-            className="bg-[#641c34] text-white py-2 px-4 rounded"
+            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Cancelar
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="bg-[#993233] text-white py-2 px-4 rounded"
+            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar
           </button>

@@ -108,12 +108,16 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
 
             <div className="flex items-center space-x-3">
-              <label className="mr-1">CEA</label>
-              <input type="radio" name="selection" className="mr-4" />
+  <label className="flex items-center mr-4 cursor-pointer">
+    <input type="radio" name="selection" className="mr-1" />
+    CEA
+  </label>
+  <label className="flex items-center cursor-pointer">
+    <input type="radio" name="selection" className="mr-1" />
+    SEPRA
+  </label>
+</div>
 
-              <label className="mr-1">SEPRA</label>
-              <input type="radio" name="selection" />
-            </div>
 
             <div className="flex items-center">
               <span className="w-24 sm:w-12">Fecha:</span>
@@ -339,13 +343,13 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
         <div className="flex justify-end space-x-4 mt-6">
         <button
               onClick={onClose}
-              className="bg-[#641c34] text-white px-4 py-2 rounded"
+              className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
             >
               Cancelar
             </button>
             <button
               onClick={onSave}
-              className="bg-[#993233] text-white px-4 py-2 rounded"
+              className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
             >
               Guardar
             </button>

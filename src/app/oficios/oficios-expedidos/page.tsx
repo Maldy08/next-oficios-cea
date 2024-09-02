@@ -1,35 +1,21 @@
-// src/app/oficios/oficios-expedidos/page.tsx
+// OficiosExpedidosPage.tsx
 
-import ClientSideComponent from "./components/ClientSideComponent";
-
-interface Post {
-  id: number;
-  title: string;
-  // Otros campos según tu API
-}
-
-async function fetchPosts(): Promise<Post[]> {
-  const response = await fetch('http://localhost:3000/api/oficios');
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-}
+import TableComponent from './components/table';
+import ClientComponent from './components/ClientComponent';
 
 export default async function OficiosExpedidosPage() {
-  let posts: Post[] = [];
-  try {
-    posts = await fetchPosts();
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+  // Aqui se hace la llamada API el servidor 
+  const response = await fetch('http://localhost:3000/api/oficios');
+  const data = await response.json();
+  const rows = data.data || []; 
 
+  // Renderizar el componente servidor con los datos de la API
   return (
     <div className="p-6">
       <h1 className="text-lg font-bold mb-4">Oficios-Expedidos</h1>
 
-      {/* Pasa los datos a un componente del cliente */}
-      <ClientSideComponent posts={posts} />
+      {/* Renderizamos el componente cliente para manejar la lógica de botones y búsqueda */}
+      <ClientComponent rows={rows} />
     </div>
   );
 }
