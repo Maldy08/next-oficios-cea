@@ -18,6 +18,10 @@ export default async function OficiosExpedidosPage() {
   const empleados2 = await empleados.json();
   const datosEmpleados = empleados2.data || [];
 
+  const remitente = await fetch("http://localhost:3000/api/oficiousuext");
+  const remitente2 = await remitente.json();
+  const datosRemitente = remitente2.data || [];
+
   // Renderizar el componente servidor con los datos obtenidos
   return (
     <div className="p-6">

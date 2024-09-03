@@ -99,6 +99,7 @@ export default function ClientComponent({
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
         modalType={modalType}
+        datosEmpleados={datosEmpleados}
       />
 
       {/* Paginación */}
@@ -146,6 +147,8 @@ export default function ClientComponent({
           isOpen={modalType === "edit"}
           onClose={handleCloseModal}
           onSave={handleSave}
+          datosEmpleados={datosEmpleados}
+          departamentos={departamentos}
         />
       )}
 

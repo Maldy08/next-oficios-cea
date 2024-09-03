@@ -2,12 +2,19 @@
 
 import React from "react";
 import { FiEdit, FiEye, FiList } from "react-icons/fi";
-
 interface TableProps {
   rows: any[];
   handleOpenModal: (type: string) => void;
   handleCloseModal: () => void;
   modalType: string | null;
+  datosEmpleados: Empleados[];
+}
+
+interface Empleados {
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
+  idPue: number;
 }
 
 const TableComponent: React.FC<TableProps> = ({
@@ -15,6 +22,7 @@ const TableComponent: React.FC<TableProps> = ({
   handleOpenModal,
   handleCloseModal,
   modalType,
+  datosEmpleados,
 }) => {
   return (
     <div className="">
