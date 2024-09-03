@@ -1,20 +1,26 @@
 "use client";
 
-import { useState } from 'react';
-import { FiSearch } from 'react-icons/fi';
-import ModalEdit from './components table/ModalEdit';
-import TableComponent from './table';
-import ModalOficioExpedido from './ModalOficioExpedido';
-import ModalList from './components table/ModalList';
+import { useState } from "react";
+import { FiSearch } from "react-icons/fi";
+import ModalEdit from "./components table/ModalEdit";
+import TableComponent from "./table";
+import ModalOficioExpedido from "./ModalOficioExpedido";
+import ModalList from "./components table/ModalList";
 
 interface ClientComponentProps {
   rows: any[];
   departamentos: any; // Añadido departamentos aquí
+  datosEmpleados: any[];
 }
 
-export default function ClientComponent({ rows, departamentos }: ClientComponentProps) {
+
+export default function ClientComponent({
+  rows,
+  departamentos,
+  datosEmpleados,
+}: ClientComponentProps) {
   const [modalType, setModalType] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Estado para las filas por página
   const [page, setPage] = useState<number>(0); // Estado para la página actual
 
@@ -35,7 +41,9 @@ export default function ClientComponent({ rows, departamentos }: ClientComponent
     setSearchTerm(event.target.value);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0); // Reiniciar la página al cambiar el número de filas
   };
@@ -44,23 +52,32 @@ export default function ClientComponent({ rows, departamentos }: ClientComponent
     setPage(newPage);
   };
 
-  const filteredRows = rows.filter(row => 
-    row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-    row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (typeof row.tipo === 'string' ? row.tipo.toLowerCase() : '').includes(searchTerm.toLowerCase()) ||
-    row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (typeof row.estatus === 'string' ? row.estatus.toLowerCase() : '').includes(searchTerm.toLowerCase())
+  const filteredRows = rows.filter(
+    (row) =>
+      row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (typeof row.tipo === "string" ? row.tipo.toLowerCase() : "").includes(
+        searchTerm.toLowerCase()
+      ) ||
+      row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (typeof row.estatus === "string"
+        ? row.estatus.toLowerCase()
+        : ""
+      ).includes(searchTerm.toLowerCase())
   );
 
-  const paginatedRows = filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const paginatedRows = filteredRows.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <button
-          onClick={() => handleOpenModal('oficioExpedido')}
+          onClick={() => handleOpenModal("oficioExpedido")}
           className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
         >
           INGRESAR OFICIO EXPEDIDO
@@ -83,6 +100,7 @@ export default function ClientComponent({ rows, departamentos }: ClientComponent
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
         modalType={modalType}
+        datosEmpleados={datosEmpleados}
       />
 
       {/* Paginación */}
@@ -115,28 +133,28 @@ export default function ClientComponent({ rows, departamentos }: ClientComponent
       </div>
 
       {/* Aquí están los modales */}
-      {modalType === 'oficioExpedido' && (
+      {modalType === "oficioExpedido" && (
         <ModalOficioExpedido
-          isOpen={modalType === 'oficioExpedido'}
+          isOpen={modalType === "oficioExpedido"}
           onClose={handleCloseModal}
           onSave={handleSave}
           departamentos={departamentos} // Pasa departamentos al modal
+          datosEmpleados={datosEmpleados}
         />
       )}
 
-      {modalType === 'edit' && (
+      {modalType === "edit" && (
         <ModalEdit
-          isOpen={modalType === 'edit'}
+          isOpen={modalType === "edit"}
           onClose={handleCloseModal}
           onSave={handleSave}
+          departamento={departamentos} // Pasa departamentos al modal
+          datosEmpleados={datosEmpleados}
         />
       )}
 
-      {modalType === 'list' && (
-        <ModalList
-          isOpen={modalType === 'list'}
-          onClose={handleCloseModal}
-        />
+      {modalType === "list" && (
+        <ModalList isOpen={modalType === "list"} onClose={handleCloseModal} />
       )}
     </>
   );
