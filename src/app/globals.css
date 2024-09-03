@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
+
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -19,5 +21,25 @@
 body {
   color: rgb(var(--foreground-rgb));
   background-color:#f6f6f6 ;
-
+  overflow: hidden; /* Evitar desplazamiento en el cuerpo */
+  height: 100%; /* Asegurar que el cuerpo ocupe toda la pantalla */
 }
+
+/* Estilos específicos para OficiosLayout */
+.oficios-layout {
+  height: 100vh;
+}
+
+.oficios-layout main {
+  overflow: auto; /* Permitir desplazamiento solo en el contenido principal */
+}
+
+.input-field {
+  width: 100%;
+  max-width: 300px; /* Ajusta este valor según el diseño que desees */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
+}
+

@@ -82,6 +82,7 @@ export const Sidebar = () => {
               </li>
               <li>
                 <Link
+<<<<<<< HEAD
                   href={"/transparencia/documentos"}
                   className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
@@ -91,6 +92,8 @@ export const Sidebar = () => {
               </li>
               <li>
                 <Link
+=======
+>>>>>>> 938c066acc15df9732b1410304861ac86e1b3496
                   href={"/oficios/oficios-recibidos"}
                   className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
@@ -100,7 +103,11 @@ export const Sidebar = () => {
               </li>
               <li>
                 <Link
+<<<<<<< HEAD
                   href={"/transparencia/"}
+=======
+                  href={"/oficios/oficios-expedidos"}
+>>>>>>> 938c066acc15df9732b1410304861ac86e1b3496
                   className="flex items-center p-3 rounded-lg transition-transform duration-300 lg:hover:scale-105 lg:hover:bg-[#641c34]"
                 >
                   <IoArrowDown className="w-6 h-6" />
@@ -122,4 +129,8 @@ export const Sidebar = () => {
       </aside>
     </>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 938c066acc15df9732b1410304861ac86e1b3496

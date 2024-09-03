@@ -10,7 +10,7 @@ export const Header = async () => {
   const user = session?.user?.name;
 
   return (
-    <header className="lg:fixed lg:top-0 lg:left-64 lg:w-[calc(100%-16rem)] w-full bg-primary-900 border-b-4 border-gray- px-4 lg:px-6 py-2.5 z-30">
+    <header className="lg:fixed lg:top-0 lg:left-64 lg:w-[calc(100%-16rem)] w-full bg-primary-900 border-b-4 border-gray- px-4 lg:px-6 py-2.5 z-30 ">
       <nav>
         <div className="flex flex-wrap justify-between items-center mx-auto">
           {/* Imagen solo visible en pantallas pequeñas */}
@@ -40,4 +40,8 @@ export const Header = async () => {
       </nav>
     </header>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 938c066acc15df9732b1410304861ac86e1b3496
