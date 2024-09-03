@@ -1,20 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Modal,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TablePagination,
-  TextField,
-  Typography,
-  InputAdornment
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
+import { FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface ModalResponsableProps {
   isOpen: boolean;
@@ -23,39 +9,44 @@ interface ModalResponsableProps {
 }
 
 const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, onSave }) => {
-  const [data, setData] = useState<any[]>([]); // Inicializar como un array vacío
+  const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState('');
   const [selectedName, setSelectedName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      axios.get('/api/empleados')
-        .then(response => {
-          // Acceder a la propiedad data en la respuesta de la API
-          const apiData = response.data.data;
-          console.log('Datos recibidos:', apiData); // Verifica los datos
-          // Verificar que la respuesta es un array
-          if (Array.isArray(apiData)) {
-            setData(apiData);
+      const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const response = await axios.get('/api/empleados');
+          const result = response.data.data;
+
+          if (Array.isArray(result)) {
+            setData(result);
           } else {
-            console.error('La propiedad "data" en la respuesta de la API no es un array:', apiData);
-            setData([]); // Asegúrate de que `data` sea un array vacío en caso de error
+            throw new Error('Datos de API no son un array');
           }
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-          setData([]); // Asegúrate de que `data` sea un array vacío en caso de error
-        });
+        } catch (error: any) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
     }
   }, [isOpen]);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -76,138 +67,119 @@ const ModalResponsable: React.FC<ModalResponsableProps> = ({ isOpen, onClose, on
     }
   };
 
-  // Filtrar los datos según el texto de búsqueda
   const filteredData = Array.isArray(data) ? data.filter(row =>
     (row.nombreCompleto || '').toLowerCase().includes(searchText.toLowerCase()) ||
     (row.descripcionDepto || '').toLowerCase().includes(searchText.toLowerCase()) ||
     (row.descripcionPuesto || '').toLowerCase().includes(searchText.toLowerCase())
   ) : [];
 
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  if (!isOpen) return null;
+
   return (
-    <Modal
-      open={isOpen}
-      onClose={onClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-    >
-      <Paper
-        sx={{
-          width: '80%',
-          maxWidth: '800px',
-          height: '80vh',
-          maxHeight: '600px',
-          margin: 'auto',
-          padding: 2,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <Typography 
-              variant="h6" 
-              id="modal-title" 
-              sx={{ 
-                fontSize: '1rem',
-                fontWeight: 'bold'
-              }}
-            >
-              Personal Externo
-            </Typography>
-            <TextField
-              variant="standard"
+    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+      <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Personal Externo</h2>
+          <div className="relative w-full max-w-[300px]">
+            <input
+              type="text"
               placeholder="Buscar..."
               value={searchText}
               onChange={handleSearchChange}
-              sx={{
-                width: '100%',
-                maxWidth: '300px',
-                '& .MuiInputBase-root': {
-                  borderBottom: '1px solid gray',
-                  borderRadius: 0,
-                },
-                '& .MuiInputBase-input': {
-                  padding: '6px 0',
-                  fontSize: '0.875rem',
-                },
-                '& .MuiInputAdornment-root': {
-                  color: 'gray',
-                },
-                '& .MuiInputBase-root.Mui-focused': {
-                  borderBottom: '1px solid blue',
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
+              className="w-full border-b border-gray-300 py-2 px-3 text-sm rounded-none focus:border-blue-500 focus:outline-none"
             />
-          </div>
-
-          <TableContainer sx={{ flexGrow: 1 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>NOMBRE</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>EMPRESA / DEPENDENCIA</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>PUESTO</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow
-                    key={index}
-                    hover
-                    onClick={() => handleSelect(row.nombreCompleto || '')}
-                    sx={{ cursor: 'pointer', backgroundColor: selectedName === row.nombreCompleto ? 'rgba(0, 0, 255, 0.1)' : '' }}
-                  >
-                    <TableCell>{row.nombreCompleto || ''}</TableCell>
-                    <TableCell>{row.descripcionDepto || ''}</TableCell>
-                    <TableCell>{row.descripcionPuesto || ''}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <TablePagination
-            component="div"
-            count={filteredData.length}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="Folios por pág."
-            rowsPerPageOptions={[5, 10]}
-            sx={{ overflowX: 'auto' }}
-          />
-
-          {/* Contenedor de los botones */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-red-500 text-white py-2 px-4 rounded"
-              style={{ backgroundColor: '#ef4444', borderColor: 'transparent' }}
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleSave} // Usar handleSave para pasar el nombre seleccionado
-              className="bg-blue-500 text-white py-2 px-4 rounded"
-              style={{ backgroundColor: '#3b82f6', borderColor: 'transparent', marginLeft: '8px' }}
-            >
-              Guardar
-            </button>
+            <FaSearch className="absolute right-2 top-2 text-gray-400 cursor-pointer" />
           </div>
         </div>
-      </Paper>
-    </Modal>
+
+        {loading && (
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
+        )}
+
+        {error && (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-red-500">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="flex-grow overflow-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="font-bold border-b py-2 px-4">NOMBRE COMPLETO</th>
+                <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
+                <th className="font-bold border-b py-2 px-4">CARGO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                  <tr
+                    key={index}
+                    onClick={() => handleSelect(row.nombreCompleto || '')}
+                    className={`cursor-pointer ${selectedName === row.nombreCompleto ? 'bg-blue-100' : ''}`}
+                  >
+                    <td className="border-b py-2 px-4">{row.nombreCompleto || ''}</td>
+                    <td className="border-b py-2 px-4">{row.descripcionDepto || ''}</td>
+                    <td className="border-b py-2 px-4">{row.descripcionPuesto || ''}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => handleChangePage(Math.max(0, page - 1))}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+              disabled={page === 0}
+            >
+              <FaChevronLeft />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleChangePage(Math.min(totalPages - 1, page + 1))}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+              disabled={page >= totalPages - 1}
+            >
+              <FaChevronRight />
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm">Folios por pág:</span>
+            <select value={rowsPerPage} onChange={handleChangeRowsPerPage} className="border border-gray-300 rounded px-2 py-1 text-sm">
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="flex justify-end space-x-4 mt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-[#641c34] text-white py-2 px-4 rounded"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="bg-[#993233] text-white py-2 px-4 rounded"
+          >
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

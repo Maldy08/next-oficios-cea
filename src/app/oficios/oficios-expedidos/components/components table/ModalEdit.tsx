@@ -12,20 +12,9 @@ interface ModalOficioExpedidoProps {
   onSave: () => void;
 }
 
-interface Departamento {
-  id: number;
-  idCea: number;
-  idShpoa: number;
-  descripcion: string;
-  nivel: number;
-  oficial: number;
-  idReporta: number;
-  agrupaPoa: number;
-  meta: number;
-  accion: number;
-  prog: string;
-  empRespon: number;
-  agrupaDir: number;
+interface Departamento { //Identifica las opciones de la lista desplegable de area o departemetno
+  idCea: number;        
+  descripcion: string;  
 }
 
 export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOficioExpedidoProps) {
@@ -36,12 +25,12 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
   const [showPersonaEnvioModal, setShowPersonaEnvioModal] = useState(false);
-  const [destinatarioName, setDestinatarioName] = useState<string>("");
+  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
   const [remitenteName, setRemitenteName] = useState<string>("");
   const [responsableName, setResponsableName] = useState<string>("");
   const [personaEntregaName, setPersonaEntregaName] = useState<string>("");
-  const [destinatarioType, setDestinatarioType] = useState<string>("Interno");
-  const [remitenteType, setRemitenteType] = useState<string>("Interno");
+  const [destinatarioType, setDestinatarioType] = useState("");
+  const [remitenteType, setRemitenteType] = useState<string>("");
   const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
   const [selectedArea, setSelectedArea] = useState<string>("");
 
@@ -119,12 +108,16 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
 
             <div className="flex items-center space-x-3">
-              <label className="mr-1">CEA</label>
-              <input type="radio" name="selection" className="mr-4" />
+  <label className="flex items-center mr-4 cursor-pointer">
+    <input type="radio" name="selection" className="mr-1" />
+    CEA
+  </label>
+  <label className="flex items-center cursor-pointer">
+    <input type="radio" name="selection" className="mr-1" />
+    SEPRA
+  </label>
+</div>
 
-              <label className="mr-1">SEPRA</label>
-              <input type="radio" name="selection" />
-            </div>
 
             <div className="flex items-center">
               <span className="w-24 sm:w-12">Fecha:</span>
@@ -193,26 +186,28 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
               />
             </div>
 
-            {/* Persona que lo entrega */}
-            <div className="flex-grow mb-4 sm:mb-0">
-              <label htmlFor="personaEntrega" className="block mb-2">
-                Persona que lo entrega a la mesa de correspondencia
-              </label>
-              <div className="relative">
-                <input
-                  id="personaEntrega"
-                  type="text"
-                  placeholder="Persona que lo entrega a la mesa de correspondencia"
-                  value={personaEntregaName}
-                  className="border border-gray-300 rounded p-2 w-full text-sm"
-                  readOnly
-                  onClick={() => setShowPersonaEnvioModal(true)}
-                />
-                <FaSearch
-                  className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                />
-              </div>
-            </div>
+            {/* Persona que lo entrega a la mesa de correspondencia */}
+<div className="flex-grow mb-4 sm:mb-0">
+  {/* Mantener la estructura del label similar a "Nombre del Remitente" */}
+  <label className="block mb-2 flex items-center">
+    Persona que lo entrega a la mesa de correspondencia
+  </label>
+  <div className="relative">
+    <input
+      type="text"
+      placeholder="Persona"
+      value={personaEntregaName}
+      className="border border-gray-300 rounded p-2 w-full text-sm"
+      readOnly  
+      onClick={() => setShowPersonaEnvioModal(true)} 
+    />
+    <FaSearch
+      onClick={() => setShowPersonaEnvioModal(true)}  
+      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+      size={20}
+    />
+  </div>
+</div>
           </div>
 
           {/* Grid Layout para los campos de texto */}
@@ -239,8 +234,8 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             </div>
 
             <div className="flex flex-col">
-              {/* Nombre del Destinatario */}
-              <label className="block mb-2 flex items-center">
+  {/* Nombre del Destinatario */}
+  <label className="block mb-2 flex items-center">
                 Nombre del destinatario
                 <div className="ml-4 flex items-center">
                   <input
@@ -270,7 +265,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                 <input
                   type="text"
                   placeholder="Persona a quien va dirigido"
-                  value={destinatarioName}
+                  value={destinatarioName || ''}
                   className="border border-gray-300 rounded p-2 w-full text-sm"
                   readOnly
                   onClick={() => setShowDestinatarioModal(true)}
@@ -281,6 +276,13 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
                 />
               </div>
             </div>
+
+
+
+
+
+
+
 
             {/* Nombre del Responsable */}
             <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
@@ -341,13 +343,13 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
         <div className="flex justify-end space-x-4 mt-6">
         <button
               onClick={onClose}
-              className="bg-[#641c34] text-white px-4 py-2 rounded"
+              className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
             >
               Cancelar
             </button>
             <button
               onClick={onSave}
-              className="bg-[#993233] text-white px-4 py-2 rounded"
+              className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
             >
               Guardar
             </button>
