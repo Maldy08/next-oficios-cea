@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
 
-interface ModalResponsableProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
@@ -16,12 +16,7 @@ interface Empleados {
   idPue: number;
 }
 
-const ModalResponsableEnvio: FC<ModalResponsableProps> = ({
-  isOpen,
-  onClose,
-  onSave,
-  datosEmpleados,
-}) => {
+const ModalResponsableEnvio = (props: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState("");
@@ -32,7 +27,7 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  if (!props.isOpen) return null;
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -56,12 +51,12 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({
 
   const handleSave = () => {
     if (selectedResponsable) {
-      onSave(selectedResponsable);
-      onClose();
+      props.onSave(selectedResponsable);
+      props.onClose();
     }
   };
 
-  const filteredData = datosEmpleados.filter(
+  const filteredData = props.datosEmpleados.filter(
     (row) =>
       row.nombreCompleto.toLowerCase().includes(searchText.toLowerCase()) ||
       row.descripcionDepto.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -72,7 +67,7 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
-        isOpen ? "block" : "hidden"
+        props.isOpen ? "block" : "hidden"
       }`}
     >
       <div
@@ -186,7 +181,7 @@ const ModalResponsableEnvio: FC<ModalResponsableProps> = ({
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={props.onClose}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Cancelar
