@@ -5,11 +5,14 @@ import ModalDestinatarioEnvio from "../ModalDestinatarioEnvio";
 import ModalRemitenteEnvio from "../ModalRemitenteEnvio";
 import ModalResponsableEnvio from "../ModalResponsableEnvio";
 import ModalPersonaEnvio from "./ModalPersonaEnvio";
+import { Departamentos } from "@/app/domain/entities";
 
 interface ModalOficioExpedidoProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
+  datosEmpleados: any[];
+  departamento: Departamentos[];
 }
 
 interface Departamento { //Identifica las opciones de la lista desplegable de area o departemetno
@@ -17,7 +20,14 @@ interface Departamento { //Identifica las opciones de la lista desplegable de ar
   descripcion: string;  
 }
 
-export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOficioExpedidoProps) {
+interface Empleados {
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
+  idPue: number;
+}
+
+export default function ModalOficioExpedido({ isOpen, onClose, departamento, datosEmpleados, onSave }: ModalOficioExpedidoProps) {
   const [textareaRows, setTextareaRows] = useState(3);
   const [currentDate, setCurrentDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -361,6 +371,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             isOpen={showDestinatarioModal}
             onClose={() => setShowDestinatarioModal(false)}
             onSave={handleSaveDestinatario}
+            datosEmpleados={datosEmpleados}
           />
         )}
 
@@ -377,6 +388,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             isOpen={showResponsableModal}
             onClose={() => setShowResponsableModal(false)}
             onSave={handleSaveResponsable}
+            datosEmpleados={datosEmpleados}
           />
         )}
 
@@ -385,6 +397,7 @@ export default function ModalOficioExpedido({ isOpen, onClose, onSave }: ModalOf
             isOpen={showPersonaEnvioModal}
             onClose={() => setShowPersonaEnvioModal(false)}
             onSave={handleSavePersonaEnvio}
+            datosEmpleados={datosEmpleados}
           />
         )}
       </div>
