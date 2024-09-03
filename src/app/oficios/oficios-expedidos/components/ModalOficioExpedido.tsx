@@ -1,9 +1,6 @@
 import { FaSearch, FaUserPlus } from "react-icons/fa";
-import ModalDestinatarioEnvio from "./ModalDestinatarioEnvio";
-import ModalRemitenteEnvio from "./ModalRemitenteEnvio";
-import ModalResponsableEnvio from "./ModalResponsableEnvio";
-import ModalPersonaEnvio from "./components table/ModalPersonaEnvio";
-import UseModalOficioExpedido from "../Hooks/UseModalOficioExpedido";
+import {
+  ModalDestinatarioEnvio, ModalRemitenteEnvio, ModalResponsableEnvio, ModalPersonaEnvio, UseModalOficioExpedido } from '../';  // Ajusta la ruta según sea necesario
 
 interface Departamento {
   idCea: number;
