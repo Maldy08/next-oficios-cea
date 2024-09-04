@@ -1,10 +1,9 @@
-import { GetAllDepartamentosUseCase } from "@/app/application/use-cases/departamentos/get-all-departamentos";
-import { DepartamentosRepositoryHttpImplementation } from "@/app/infrastructure/repositories/departamentos-repository-http-implementation";
+import { getDepartamentos } from "@/app/infrastructure/data-access/departamentos/get-departamentos.data-access";
 
 
 export default async function PruebasPage() {
-    const fetchaGetAllDepartamentosUseCase = new GetAllDepartamentosUseCase(new DepartamentosRepositoryHttpImplementation());
-    const departamentos = await fetchaGetAllDepartamentosUseCase.execute();
+
+    const departamentos = await getDepartamentos();
 
 
     return (

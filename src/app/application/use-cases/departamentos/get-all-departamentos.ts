@@ -1,5 +1,5 @@
 import { Departamentos } from "@/app/domain/entities";
-import { DepartamentosRepository } from "../../interfaces/departamentos-repository";
+import { DepartamentosRepository } from "../../interfaces/departamentos.interface.repository";
 
 
 
