@@ -1,33 +1,28 @@
-import { FC, useState, useEffect } from "react";
-import { FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import axios from 'axios';
+"use client";
 
-interface ModalRemitenteProps {
+import { useState, useEffect } from "react";
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import axios from "axios";
+
+interface remitentes {
+  nombre: string;
+  empresa: string;
+  cargo: string;
+}
+
+interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
+  remitentes: remitentes[];
 }
 
-const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) => {
+const ModalRemitenteEnvio = (props: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
-  const [data, setData] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/api/oficiousuext');
-        console.log('API Response:', response.data.data);
-        setData(response.data.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const [data, setData] = useState<remitentes[]>(props.remitentes);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -49,21 +44,26 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
 
   const handleSave = () => {
     if (selectedRemitente) {
-      onSave(selectedRemitente);
-      onClose();
+      props.onSave(selectedRemitente);
+      props.onClose();
     }
   };
 
-  const filteredData = data.filter(row =>
-    row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.cargo.toLowerCase().includes(searchText.toLowerCase()) 
+  const filteredData = data.filter(
+    (row) =>
+      row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.cargo.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
       <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
@@ -90,17 +90,21 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
               </tr>
             </thead>
             <tbody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <tr 
-                  key={index} 
-                  onClick={() => handleRowClick(row.nombre)}
-                  className={`cursor-pointer ${selectedRemitente === row.nombre ? 'bg-blue-100' : ''}`}
-                >
-                  <td className="border-b py-2 px-4">{row.nombre}</td>
-                  <td className="border-b py-2 px-4">{row.empresa}</td>
-                  <td className="border-b py-2 px-4">{row.cargo}</td>
-                </tr>
-              ))}
+              {filteredData
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <tr
+                    key={index}
+                    onClick={() => handleRowClick(row.nombre)}
+                    className={`cursor-pointer ${
+                      selectedRemitente === row.nombre ? "bg-blue-100" : ""
+                    }`}
+                  >
+                    <td className="border-b py-2 px-4">{row.nombre}</td>
+                    <td className="border-b py-2 px-4">{row.empresa}</td>
+                    <td className="border-b py-2 px-4">{row.cargo}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -117,7 +121,9 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
             </button>
             <button
               type="button"
-              onClick={() => handleChangePage(Math.min(totalPages - 1, page + 1))}
+              onClick={() =>
+                handleChangePage(Math.min(totalPages - 1, page + 1))
+              }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
               disabled={page >= totalPages - 1}
             >
@@ -126,7 +132,11 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-sm">Folios por pág:</span>
-            <select value={rowsPerPage} onChange={handleChangeRowsPerPage} className="border border-gray-300 rounded px-2 py-1 text-sm">
+            <select
+              value={rowsPerPage}
+              onChange={handleChangeRowsPerPage}
+              className="border border-gray-300 rounded px-2 py-1 text-sm"
+            >
               <option value={5}>5</option>
               <option value={10}>10</option>
             </select>
@@ -136,7 +146,7 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={props.onClose}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Cancelar
@@ -154,4 +164,4 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
   );
 };
 
-export default ModalRemitente;
+export default ModalRemitenteEnvio;

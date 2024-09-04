@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
-import { FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import axios from 'axios';
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import axios from "axios";
 
 interface ModalRemitenteProps {
   isOpen: boolean;
@@ -8,21 +8,23 @@ interface ModalRemitenteProps {
   onSave: (name: string) => void;
 }
 
-const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) => {
+const ModalRemitente = (props: ModalRemitenteProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchText, setSearchText] = useState('');
-  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(
+    null
+  );
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/oficiousuext');
-        console.log('API Response:', response.data.data);
+        const response = await axios.get("/api/oficiousuext");
+        console.log("API Response:", response.data.data);
         setData(response.data.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -33,7 +35,9 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -49,25 +53,35 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
 
   const handleSave = () => {
     if (selectedRemitente) {
-      onSave(selectedRemitente);
-      onClose();
+      props.onSave(selectedRemitente);
+      props.onClose();
     }
   };
 
-  const filteredData = data.filter(row =>
-    row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
-    row.cargo.toLowerCase().includes(searchText.toLowerCase())
+  const filteredData = data.filter(
+    (row) =>
+      row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
+      row.cargo.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${isOpen ? 'block' : 'hidden'}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Remitente</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Seleccionar Remitente
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -84,23 +98,29 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="font-bold border-b py-2 px-4">NOMBRE COMPLETO</th>
+                <th className="font-bold border-b py-2 px-4">
+                  NOMBRE COMPLETO
+                </th>
                 <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
                 <th className="font-bold border-b py-2 px-4">CARGO</th>
               </tr>
             </thead>
             <tbody>
-              {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <tr 
-                  key={index} 
-                  onClick={() => handleRowClick(row.nombre)}
-                  className={`cursor-pointer ${selectedRemitente === row.nombre ? 'bg-blue-100' : ''}`}
-                >
-                  <td className="border-b py-2 px-4">{row.nombre}</td>
-                  <td className="border-b py-2 px-4">{row.empresa}</td>
-                  <td className="border-b py-2 px-4">{row.cargo}</td>
-                </tr>
-              ))}
+              {filteredData
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <tr
+                    key={index}
+                    onClick={() => handleRowClick(row.nombre)}
+                    className={`cursor-pointer ${
+                      selectedRemitente === row.nombre ? "bg-blue-100" : ""
+                    }`}
+                  >
+                    <td className="border-b py-2 px-4">{row.nombre}</td>
+                    <td className="border-b py-2 px-4">{row.empresa}</td>
+                    <td className="border-b py-2 px-4">{row.cargo}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -117,7 +137,9 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
             </button>
             <button
               type="button"
-              onClick={() => handleChangePage(Math.min(totalPages - 1, page + 1))}
+              onClick={() =>
+                handleChangePage(Math.min(totalPages - 1, page + 1))
+              }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
               disabled={page >= totalPages - 1}
             >
@@ -126,7 +148,11 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-sm">Folios por pág:</span>
-            <select value={rowsPerPage} onChange={handleChangeRowsPerPage} className="border border-gray-300 rounded px-2 py-1 text-sm">
+            <select
+              value={rowsPerPage}
+              onChange={handleChangeRowsPerPage}
+              className="border border-gray-300 rounded px-2 py-1 text-sm"
+            >
               <option value={5}>5</option>
               <option value={10}>10</option>
             </select>
@@ -136,7 +162,7 @@ const ModalRemitente: FC<ModalRemitenteProps> = ({ isOpen, onClose, onSave }) =>
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={props.onClose}
             className="bg-[#641c34] text-white py-2 px-4 rounded"
           >
             Cancelar

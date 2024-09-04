@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-interface ModalListProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -16,24 +16,26 @@ const getCurrentDate = () => {
   return `${year}-${month}-${day}`;
 };
 
-const ModalList: React.FC<ModalListProps> = ({ isOpen, onClose }) => {
+const ModalList = (
+  props: Props //React.FC<ModalListProps> = ({ isOpen, onClose }) =>
+) => {
   const todayDate = getCurrentDate();
-  const [datos, setDatos] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/datos");
-        setDatos(response.data);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
+  // const [datos, setDatos] = useState([]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get("/api/datos");
+  //       setDatos(response.data);
+  //     } catch (error) {
+  //       console.error("Error al obtener los datos:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
-  if (!isOpen) return null;
+  // if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
@@ -153,7 +155,7 @@ const ModalList: React.FC<ModalListProps> = ({ isOpen, onClose }) => {
         </div>
         <div className="absolute bottom-4 right-4">
           <button
-            onClick={onClose}
+            onClick={props.onClose}
             className="p-2 text-white bg-primary-900 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 transition-all"
           >
             Cancelar
