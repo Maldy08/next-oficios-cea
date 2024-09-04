@@ -11,12 +11,14 @@ interface ClientComponentProps {
   rows: any[];
   departamentos: any; // Añadido departamentos aquí
   datosEmpleados: any[];
+  datosRemitente: any[];
 }
 
 export default function ClientComponent({
   rows,
   departamentos,
   datosEmpleados,
+  datosRemitente,
 }: ClientComponentProps) {
   const [modalType, setModalType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -139,6 +141,7 @@ export default function ClientComponent({
           onSave={handleSave}
           departamentos={departamentos} // Pasa departamentos al modal
           datosEmpleados={datosEmpleados}
+          datosRemitente={datosRemitente}
         />
       )}
 

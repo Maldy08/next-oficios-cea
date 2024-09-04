@@ -17,20 +17,6 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
   );
   const [data, setData] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/oficiousuext");
-        console.log("API Response:", response.data.data);
-        setData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };

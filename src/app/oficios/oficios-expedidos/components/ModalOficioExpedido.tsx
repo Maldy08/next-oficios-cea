@@ -19,12 +19,20 @@ interface Empleados {
   idPue: number;
 }
 
+interface Remitente {
+  idExterno: number;
+  nombre: string;
+  empresa: string;
+  cargo: string;
+}
+
 interface ModalOficioExpedidoProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
   departamentos: Departamento[];
   datosEmpleados: Empleados[];
+  datosRemitente: Remitente[];
 }
 
 export default function ModalOficioExpedido({
@@ -33,6 +41,7 @@ export default function ModalOficioExpedido({
   onSave,
   departamentos,
   datosEmpleados,
+  datosRemitente,
 }: ModalOficioExpedidoProps) {
   const {
     textareaRows,
@@ -359,6 +368,7 @@ export default function ModalOficioExpedido({
           isOpen={showRemitenteModal}
           onClose={() => setShowRemitenteModal(false)}
           onSave={handleSaveRemitente}
+          datosRemitente={datosRemitente}
         />
 
         <ModalResponsableEnvio

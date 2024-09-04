@@ -32,6 +32,7 @@ export default async function OficiosExpedidosPage() {
         rows={rows}
         departamentos={departamentos}
         datosEmpleados={datosEmpleados}
+        datosRemitente={datosRemitente}
       />
     </div>
   );

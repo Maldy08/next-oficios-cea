@@ -6,6 +6,14 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
+  datosRemitente: Remitente[];
+}
+
+interface Remitente {
+  idExterno: number;
+  nombre: string;
+  empresa: string;
+  cargo: string;
 }
 
 const ModalRemitente = (props: Props) => {
@@ -16,20 +24,6 @@ const ModalRemitente = (props: Props) => {
     null
   );
   const [data, setData] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/api/oficiousuext");
-        console.log("API Response:", response.data.data);
-        setData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -58,7 +52,7 @@ const ModalRemitente = (props: Props) => {
     }
   };
 
-  const filteredData = data.filter(
+  const filteredData = props.datosRemitente.filter(
     (row) =>
       row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
       row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -108,9 +102,9 @@ const ModalRemitente = (props: Props) => {
             <tbody>
               {filteredData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
+                .map((row) => (
                   <tr
-                    key={index}
+                    key={row.idExterno}
                     onClick={() => handleRowClick(row.nombre)}
                     className={`cursor-pointer ${
                       selectedRemitente === row.nombre ? "bg-blue-100" : ""
