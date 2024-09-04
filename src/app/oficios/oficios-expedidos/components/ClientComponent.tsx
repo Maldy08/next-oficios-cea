@@ -7,7 +7,6 @@ import TableComponent from "./table";
 import ModalOficioExpedido from "./ModalOficioExpedido";
 import ModalList from "./components table/ModalList";
 
-
 interface ClientComponentProps {
   rows: any[];
   departamentos: any; // Añadido departamentos aquí
@@ -43,7 +42,6 @@ export default function ClientComponent({
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
-
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLSelectElement>

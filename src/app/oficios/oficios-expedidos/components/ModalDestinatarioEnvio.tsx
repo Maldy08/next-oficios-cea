@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import axios from "axios";
 
 interface ModalDestinatarioProps {
   isOpen: boolean;
@@ -15,12 +16,7 @@ interface Empleados {
   idPue: number;
 }
 
-const ModalDestinatario = ({
-  isOpen,
-  onClose,
-  onSave,
-  datosEmpleados,
-}: ModalDestinatarioProps) => {
+const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState("");
@@ -28,7 +24,7 @@ const ModalDestinatario = ({
     string | null
   >(null);
 
-  if (!isOpen) return null;
+  if (!props.isOpen) return null;
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -52,13 +48,13 @@ const ModalDestinatario = ({
 
   const handleSave = () => {
     if (selectedDestinatario) {
-      onSave(selectedDestinatario);
-      onClose();
+      props.onSave(selectedDestinatario);
+      props.onClose();
     }
   };
 
   // Filtra los datos asegurándose de que `datosEmpleados` es un array
-  const filteredData = datosEmpleados.filter(
+  const filteredData = props.datosEmpleados.filter(
     (row) =>
       row.nombreCompleto.toLowerCase().includes(searchText.toLowerCase()) ||
       row.descripcionDepto.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -70,7 +66,7 @@ const ModalDestinatario = ({
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
-        isOpen ? "block" : "hidden"
+        props.isOpen ? "block" : "hidden"
       }`}
     >
       <div
@@ -169,7 +165,7 @@ const ModalDestinatario = ({
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={props.onClose}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Cancelar
