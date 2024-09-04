@@ -1,4 +1,4 @@
-import { DepartamentosRepository } from "@/app/application/interfaces/departamentos-repository";
+import { DepartamentosRepository } from "@/app/application/interfaces/departamentos.interface.repository";
 import { Departamentos } from "@/app/domain/entities";
 import { DbAdapter } from "../adapters/db.adapter";
 import { Result } from "@/app/domain/common/result";
