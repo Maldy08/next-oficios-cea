@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
 
