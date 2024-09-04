@@ -5,6 +5,14 @@ interface Departamento {
   descripcion: string;
 }
 
+interface Remitentes {
+  id: number;
+  nombre: string;
+  departamento: string;
+  cargo: string;
+  empresa: string; // Añade esta propiedad si es necesaria
+}
+
 const UseModalOficioExpedido = ({ departamentos }: { departamentos: Departamento[] }) => {
   const [textareaRows, setTextareaRows] = useState(3);
   const [currentDate, setCurrentDate] = useState<string>(new Date().toLocaleDateString());
@@ -19,6 +27,7 @@ const UseModalOficioExpedido = ({ departamentos }: { departamentos: Departamento
   const [personaEntregaName, setPersonaEntregaName] = useState('');
   const [destinatarioType, setDestinatarioType] = useState<'Interno' | 'Externo' | ''>('');
   const [selectedArea, setSelectedArea] = useState('');
+  const [remitentes, setRemitentes] = useState<Remitentes[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {

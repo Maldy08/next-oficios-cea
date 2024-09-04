@@ -14,13 +14,15 @@ export default async function OficiosExpedidosPage() {
   const dataDepartamentos = await responseDepartamentos.json();
   const departamentos = dataDepartamentos.data || []; // Datos de departamentos para el modal
 
+  // Hacer la llamada a la API para obtener los empleados para el modal de remitente
   const empleados = await fetch("http://localhost:3000/api/empleados");
   const empleados2 = await empleados.json();
   const datosEmpleados = empleados2.data || [];
 
-  const remitente = await fetch("http://localhost:3000/api/oficiousuext");
-  const remitente2 = await remitente.json();
-  const datosRemitente = remitente2.data || [];
+  // Hacer la llamada a la API para obtener datos del modal de remitente
+  const responseRemitente = await fetch("http://localhost:3000/api/oficiousuext");
+  const dataRemitente = await responseRemitente.json();
+  const remitentes = dataRemitente.data || [];
 
   // Renderizar el componente servidor con los datos obtenidos
   return (
@@ -32,7 +34,11 @@ export default async function OficiosExpedidosPage() {
         rows={rows}
         departamentos={departamentos}
         datosEmpleados={datosEmpleados}
+<<<<<<< HEAD
         datosRemitente={datosRemitente}
+=======
+        remitentes={remitentes} // Pasar datos del remitente
+>>>>>>> development
       />
     </div>
   );

@@ -11,14 +11,23 @@ interface ClientComponentProps {
   rows: any[];
   departamentos: any; // Añadido departamentos aquí
   datosEmpleados: any[];
+<<<<<<< HEAD
   datosRemitente: any[];
+=======
+  remitentes: any[]; // Añadir remitentes aquí
+>>>>>>> development
 }
+
 
 export default function ClientComponent({
   rows,
   departamentos,
   datosEmpleados,
+<<<<<<< HEAD
   datosRemitente,
+=======
+  remitentes, // Recibe los datos de remitentes aquí
+>>>>>>> development
 }: ClientComponentProps) {
   const [modalType, setModalType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -53,6 +62,7 @@ export default function ClientComponent({
     setPage(newPage);
   };
 
+  
   const filteredRows = rows.filter(
     (row) =>
       row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -141,7 +151,11 @@ export default function ClientComponent({
           onSave={handleSave}
           departamentos={departamentos} // Pasa departamentos al modal
           datosEmpleados={datosEmpleados}
+<<<<<<< HEAD
           datosRemitente={datosRemitente}
+=======
+          remitentes={remitentes} // Pasa remitentes al modal
+>>>>>>> development
         />
       )}
 

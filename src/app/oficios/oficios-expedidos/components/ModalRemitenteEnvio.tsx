@@ -1,11 +1,23 @@
+<<<<<<< HEAD
+=======
+"use client";
+
+>>>>>>> development
 import { useState, useEffect } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
+
+interface remitentes {
+  nombre: string;
+  empresa: string;
+  cargo: string;
+}
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
+<<<<<<< HEAD
   datosRemitente: Remitente[];
 }
 
@@ -14,24 +26,30 @@ interface Remitente {
   nombre: string;
   empresa: string;
   cargo: string;
+=======
+  remitentes: remitentes[];
+>>>>>>> development
 }
 
-const ModalRemitente = (props: Props) => {
+const ModalRemitenteEnvio = (props: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState("");
+<<<<<<< HEAD
   const [selectedRemitente, setSelectedRemitente] = useState<string | null>(
     null
   );
   const [data, setData] = useState<any[]>([]);
+=======
+  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
+  const [data, setData] = useState<remitentes[]>(props.remitentes);
+>>>>>>> development
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -67,15 +85,10 @@ const ModalRemitente = (props: Props) => {
         props.isOpen ? "block" : "hidden"
       }`}
     >
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50"
-        aria-hidden="true"
-      ></div>
+      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
-            Seleccionar Remitente
-          </h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Remitente</h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -92,9 +105,7 @@ const ModalRemitente = (props: Props) => {
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="font-bold border-b py-2 px-4">
-                  NOMBRE COMPLETO
-                </th>
+                <th className="font-bold border-b py-2 px-4">NOMBRE COMPLETO</th>
                 <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
                 <th className="font-bold border-b py-2 px-4">CARGO</th>
               </tr>
@@ -174,4 +185,4 @@ const ModalRemitente = (props: Props) => {
   );
 };
 
-export default ModalRemitente;
+export default ModalRemitenteEnvio;

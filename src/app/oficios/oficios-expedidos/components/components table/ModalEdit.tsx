@@ -378,8 +378,7 @@ export default function ModalOficioExpedido({
           <ModalRemitenteEnvio
             isOpen={showRemitenteModal}
             onClose={() => setShowRemitenteModal(false)}
-            onSave={handleSaveRemitente}
-          />
+            onSave={handleSaveRemitente} remitentes={[]}          />
         )}
 
         {showResponsableModal && (
