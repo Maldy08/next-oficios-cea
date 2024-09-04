@@ -1,6 +1,5 @@
-import { FC, useState, useEffect } from "react";
+import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import axios from "axios";
 
 interface ModalDestinatarioProps {
   isOpen: boolean;
@@ -16,12 +15,12 @@ interface Empleados {
   idPue: number;
 }
 
-const ModalDestinatario: FC<ModalDestinatarioProps> = ({
+const ModalDestinatario = ({
   isOpen,
   onClose,
   onSave,
   datosEmpleados,
-}) => {
+}: ModalDestinatarioProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchText, setSearchText] = useState("");

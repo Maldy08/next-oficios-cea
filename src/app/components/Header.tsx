@@ -40,8 +40,4 @@ export const Header = async () => {
       </nav>
     </header>
   );
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 938c066acc15df9732b1410304861ac86e1b3496
