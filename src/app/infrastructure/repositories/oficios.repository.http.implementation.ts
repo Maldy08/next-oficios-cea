@@ -5,12 +5,13 @@ import { Result } from "@/app/domain/common/result";
 import { OficiosMapper } from "../mappers/oficios.mapper";
 
 export class OficioRepositoryHttpImplementation implements OficiosRepository {
-
-    // Asegúrate de que la ruta aquí sea 'oficios' y no 'oficiousuext'
     async getAllOficios(): Promise<Oficios[]> {
+        try{
         const { data } = await DbAdapter.get<Result<Oficios[]>>("oficios");
-
-        // Mapea los resultados correctamente
         return data.map((oficio) => OficiosMapper.mapFromApiToDomain(oficio));
+    } catch (error) {
+        console.error("Error fetching departamentos from repository:", error);
+        throw new Error("Error fetching departamentos from repository");
+    }
     }
 }

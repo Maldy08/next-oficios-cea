@@ -1,25 +1,21 @@
-import { getOficioUsuExternos } from "@/app/infrastructure/data-access/oficiousuexterno/get-oficio-usu-externo.data-access";
-import { OficioUsuExterno } from "@/app/domain/entities";
+import { getOficios } from "@/app/infrastructure/data-access/oficios/get-oficios";
 
 export default async function PruebasPage() {
-    const oficiosExternos = await getOficioUsuExternos();
+    const oficios = await getOficios();
 
     return (
         <div>
-            <h1>Lista de Oficios Externos</h1>
+            <h1>Lista de Oficios</h1>
             <div>
-                {oficiosExternos.length > 0 ? (
-                    oficiosExternos.map((oficioExterno) => (
-                        <div key={oficioExterno.idExterno}>
-                            <h2>{oficioExterno.nombre}</h2>
-                            <p>Empresa: {oficioExterno.empresa}</p>
-                            <p>Cargo: {oficioExterno.cargo}</p>
-                            <p>Fecha Captura: {new Date(oficioExterno.fechaCaptura).toLocaleDateString()}</p>
-                        </div>
-                    ))
-                ) : (
-                    <p>No se encontraron datos</p>
-                )}
+                {oficios.map((oficio) => (
+                    <div key={oficio.folio}>
+                        <h2>{oficio.noOficio}</h2>
+                        <p>Remitente: {oficio.remNombre} - {oficio.remCargo}</p>
+                        <p>Destinatario: {oficio.destNombre} - {oficio.destCargo}</p>
+                        <p>Tema: {oficio.tema}</p>
+                        <p>Fecha: {new Date(oficio.fecha).toLocaleDateString()}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );

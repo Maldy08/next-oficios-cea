@@ -1,7 +1,7 @@
 import { Empleados } from "@/app/domain/entities";
 
 export class EmpleadosMapper {
-    static mapFromApiToDomain(result: any): Empleados {
+    static mapFromApiToDomain(result: Empleados): Empleados {
         return {
             activo: result.activo,
             empleado: result.empleado,

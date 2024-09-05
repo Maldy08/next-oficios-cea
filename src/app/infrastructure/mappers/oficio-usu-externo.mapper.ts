@@ -2,7 +2,7 @@
 import { OficioUsuExterno } from "@/app/domain/entities";
 
 export class OficioUsuExternoMapper {
-    static mapFromApiToDomain(result: any): OficioUsuExterno {
+    static mapFromApiToDomain(result: OficioUsuExterno): OficioUsuExterno {
         return {
             idExterno: result.idExterno,
             empresa: result.empresa,
