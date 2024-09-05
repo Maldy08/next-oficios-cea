@@ -19,12 +19,8 @@ interface Empleados {
   idPue: number;
 }
 
-<<<<<<< HEAD
-interface Remitente {
-  idExterno: number;
-=======
 interface remitentes {
->>>>>>> development
+  id: number;
   nombre: string;
   empresa: string;
   cargo: string;
@@ -36,11 +32,7 @@ interface ModalOficioExpedidoProps {
   onSave: () => void;
   departamentos: Departamento[];
   datosEmpleados: Empleados[];
-<<<<<<< HEAD
-  datosRemitente: Remitente[];
-=======
   remitentes: remitentes[];
->>>>>>> development
 }
 
 export default function ModalOficioExpedido({
@@ -49,11 +41,7 @@ export default function ModalOficioExpedido({
   onSave,
   departamentos,
   datosEmpleados,
-<<<<<<< HEAD
-  datosRemitente,
-=======
   remitentes,
->>>>>>> development
 }: ModalOficioExpedidoProps) {
   const {
     textareaRows,
@@ -380,11 +368,7 @@ export default function ModalOficioExpedido({
           isOpen={showRemitenteModal}
           onClose={() => setShowRemitenteModal(false)}
           onSave={handleSaveRemitente}
-<<<<<<< HEAD
-          datosRemitente={datosRemitente}
-=======
           remitentes={remitentes} // Esto debería funcionar si los tipos coinciden
->>>>>>> development
         />
 
         <ModalResponsableEnvio
