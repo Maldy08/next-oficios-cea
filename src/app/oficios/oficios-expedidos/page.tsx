@@ -12,20 +12,20 @@ export default async function OficiosExpedidosPage() {
   const rows = dataOficios.data || []; // Datos de oficios para la tabla
 
   // Hacer la llamada a la API para obtener los departamentos
-  const departamentos = await getDepartamentos();
+  //const departamentos = await getDepartamentos();
 
-  // const responseDepartamentos = await fetch(
-  //   "http://localhost:3000/api/departamentos"
-  // );
-  // const dataDepartamentos = await responseDepartamentos.json();
-  // const departamentos = dataDepartamentos.data || []; // Datos de departamentos para el modal
+  const responseDepartamentos = await fetch(
+    "http://localhost:3000/api/departamentos"
+  );
+  const dataDepartamentos = await responseDepartamentos.json();
+  const departamentos = dataDepartamentos.data || []; // Datos de departamentos para el modal
 
   // Hacer la llamada a la API para obtener los empleados para el modal de remitente
-  // const empleados = await fetch("http://localhost:3000/api/empleados");
-  // const empleados2 = await empleados.json();
-  // const datosEmpleados = empleados2.data || [];
+  const empleados = await fetch("http://localhost:3000/api/empleados");
+  const empleados2 = await empleados.json();
+  const datosEmpleados = empleados2.data || [];
 
-  const datosEmpleados = await getEmpleados();
+  //const datosEmpleados = await getEmpleados();
 
   // Hacer la llamada a la API para obtener datos del modal de remitente
   const responseRemitente = await fetch(
