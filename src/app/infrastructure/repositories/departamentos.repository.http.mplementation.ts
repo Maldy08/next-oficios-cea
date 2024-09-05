@@ -1,8 +1,5 @@
-import {
-  DepartamentosRepository,
-  EmpleadosRepository,
-} from "@/app/application/interfaces/departamentos.interface.repository";
-import { Departamentos, Empleados } from "@/app/domain/entities";
+import { DepartamentosRepository } from "@/app/application/interfaces/departamentos.interface.repository";
+import { Departamentos } from "@/app/domain/entities";
 import { DbAdapter } from "../adapters/db.adapter";
 import { Result } from "@/app/domain/common/result";
 import {
@@ -14,24 +11,16 @@ export class DepartamentosRepositoryHttpImplementation
   implements DepartamentosRepository
 {
   async getAllDepartamentos(): Promise<Departamentos[]> {
-    const { data } = await DbAdapter.get<Result<Departamentos[]>>(
-      "departamentos"
-    );
-
-    return data.map((departamento) =>
-      DepartamentosMapper.mapFromApiToDomain(departamento)
-    );
-  }
-}
-
-export class EmpleadosRepositoryHttpImplementation
-  implements EmpleadosRepository
-{
-  async getAllEmpleados(): Promise<Empleados[]> {
-    const { data } = await DbAdapter.get<Result<Empleados[]>>("nombreCompleto");
-
-    return data.map((empleados) =>
-      EmpleadosMapper.mapFromApiEmpleados(empleados)
-    );
+    try {
+      const { data } = await DbAdapter.get<Result<Departamentos[]>>(
+        "departamentos"
+      ); // Ruta correcta
+      return data.map((departamento) =>
+        DepartamentosMapper.mapFromApiToDomain(departamento)
+      );
+    } catch (error) {
+      console.error("Error fetching departamentos from repository:", error);
+      throw new Error("Error fetching departamentos from repository");
+    }
   }
 }

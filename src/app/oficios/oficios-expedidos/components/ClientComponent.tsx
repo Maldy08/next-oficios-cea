@@ -9,9 +9,9 @@ import ModalList from "./components table/ModalList";
 
 interface ClientComponentProps {
   rows: any[];
-  departamentos: any; // Añadido departamentos aquí
+  departamentos: any[]; // Cambiado a array
   datosEmpleados: any[];
-  remitentes: any[]; // Añadir remitentes aquí
+  remitentes: any[]; // Añadido remitentes aquí
 }
 
 export default function ClientComponent({
