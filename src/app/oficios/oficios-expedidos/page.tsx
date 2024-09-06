@@ -16,12 +16,12 @@ export default async function PruebasPage() {
         <div className="p-6">
             <h1 className="text-lg font-bold mb-4">Oficio Expedidos</h1>
             
-            {/* Pasar los datos al componente cliente */}
+            /* Pasar los datos al componente cliente */
             <ClientComponent
-                  departamentos={departamentos}   // Los departamentos
-                  remitentes={oficiosExternos}     // Los remitentes (oficios externos)
-                  datosEmpleados={empleados}       // Los datos de los empleados
-                  rows={oficios}                   // Las filas de la tabla (oficios)
+                  departamentos={departamentos}   
+                  remitentes={oficiosExternos}     
+                  datosEmpleados={empleados}       
+                  rows={oficios}                   
             />
         </div>
     );
