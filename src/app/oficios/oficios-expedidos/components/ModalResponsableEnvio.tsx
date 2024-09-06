@@ -64,6 +64,8 @@ const ModalResponsableEnvio = (props: Props) => {
   );
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
+  console.log(filteredData);
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
@@ -118,9 +120,9 @@ const ModalResponsableEnvio = (props: Props) => {
               <tbody>
                 {filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map((row, index) => (
                     <tr
-                      key={row.idPue}
+                      key={index}
                       onClick={() => handleRowClick(row.nombreCompleto || "")}
                       className={`cursor-pointer ${
                         selectedResponsable === row.nombreCompleto

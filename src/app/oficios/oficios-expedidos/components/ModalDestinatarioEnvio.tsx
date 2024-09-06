@@ -105,9 +105,9 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
             <tbody>
               {filteredData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
+                .map((row, index) => (
                   <tr
-                    key={row.idPue}
+                    key={index}
                     onClick={() => handleRowClick(row.nombreCompleto)}
                     className={`cursor-pointer ${
                       selectedDestinatario === row.nombreCompleto

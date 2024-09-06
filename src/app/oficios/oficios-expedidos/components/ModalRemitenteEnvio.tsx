@@ -104,9 +104,9 @@ const ModalRemitenteEnvio = (props: Props) => {
             <tbody>
               {filteredData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
+                .map((row, index) => (
                   <tr
-                    key={row.id}
+                    key={index}
                     onClick={() => handleRowClick(row.nombre)}
                     className={`cursor-pointer ${
                       selectedRemitente === row.nombre ? "bg-blue-100" : ""
