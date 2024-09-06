@@ -16,7 +16,6 @@ export default async function PruebasPage() {
         <div className="p-6">
             <h1 className="text-lg font-bold mb-4">Oficio Expedidos</h1>
             
-            /* Pasar los datos al componente cliente */
             <ClientComponent
                   departamentos={departamentos}   
                   remitentes={oficiosExternos}     
