@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import ModalEdit from "./components table/ModalEdit";
 import TableComponent from "./table";
 import ModalOficioExpedido from "./ModalOficioExpedido";
 import ModalList from "./components table/ModalList";
+import UseClienteComponets from "../Hooks/UseClientComponent";
 
 interface ClientComponentProps {
   rows: any[];
@@ -20,59 +21,29 @@ export default function ClientComponent({
   datosEmpleados,
   remitentes, // Recibe los datos de remitentes aquí
 }: ClientComponentProps) {
-  const [modalType, setModalType] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Estado para las filas por página
-  const [page, setPage] = useState<number>(0); // Estado para la página actual
-
-  const handleOpenModal = (type: string) => {
-    setModalType(type);
-  };
-
-  const handleCloseModal = () => {
-    setModalType(null);
-  };
-
-  const handleSave = () => {
-    console.log("Datos guardados");
-    handleCloseModal();
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reiniciar la página al cambiar el número de filas
-  };
-
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const filteredRows = rows.filter(
-    (row) =>
-      row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (typeof row.tipo === "string" ? row.tipo.toLowerCase() : "").includes(
-        searchTerm.toLowerCase()
-      ) ||
-      row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (typeof row.estatus === "string"
-        ? row.estatus.toLowerCase()
-        : ""
-      ).includes(searchTerm.toLowerCase())
-  );
-
-  const paginatedRows = filteredRows.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const {
+    modalType,
+    setModalType,
+    searchTerm,
+    setSearchTerm,
+    rowsPerPage,
+    setRowsPerPage,
+    page,
+    setPage,
+    handleOpenModal,
+    handleCloseModal,
+    handleSave,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    filteredRows,
+    paginatedRows,
+    handleSearchChange,
+  } = UseClienteComponets({
+    rows: rows,
+    departamentos: departamentos,
+    datosEmpleados: datosEmpleados,
+    remitentes: remitentes,
+  });
 
   return (
     <>
