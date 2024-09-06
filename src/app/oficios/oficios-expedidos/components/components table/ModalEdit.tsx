@@ -27,6 +27,9 @@ interface Empleados {
   idPue: number;
 }
 
+
+
+
 export default function ModalOficioExpedido({
   isOpen,
   onClose,

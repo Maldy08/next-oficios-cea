@@ -105,9 +105,9 @@ const ModalPersonaEnvio: FC<ModalPersonaEnvioProps> = ({
             <tbody>
               {filteredData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
+                .map((row, index) => (
                   <tr
-                    key={row.idPue}
+                    key={index}
                     onClick={() => handleRowClick(row)}
                     className={`cursor-pointer ${
                       selectedPersona === row.nombreCompleto

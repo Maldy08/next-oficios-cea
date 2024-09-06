@@ -9,11 +9,10 @@ import ModalList from "./components table/ModalList";
 
 interface ClientComponentProps {
   rows: any[];
-  departamentos: any; // Añadido departamentos aquí
+  departamentos: any[]; // Cambiado a array
   datosEmpleados: any[];
-  remitentes: any[]; // Añadir remitentes aquí
+  remitentes: any[]; // Añadido remitentes aquí
 }
-
 
 export default function ClientComponent({
   rows,
@@ -54,7 +53,6 @@ export default function ClientComponent({
     setPage(newPage);
   };
 
-  
   const filteredRows = rows.filter(
     (row) =>
       row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -163,3 +161,5 @@ export default function ClientComponent({
     </>
   );
 }
+
+
