@@ -118,9 +118,9 @@ const ModalResponsableEnvio = (props: Props) => {
               <tbody>
                 {filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
+                  .map((row, index) => (
                     <tr
-                      key={row.idPue}
+                      key={index}
                       onClick={() => handleRowClick(row.nombreCompleto || "")}
                       className={`cursor-pointer ${
                         selectedResponsable === row.nombreCompleto
