@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useModal } from "../Hooks/useModal";
+import { useModal } from '../Hooks/useModal'; 
 
 interface Empleado {
   nombreCompleto: string;
@@ -14,7 +14,7 @@ interface Empleado {
 interface ModalResponsableEnvioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (item: Empleado) => void;
+  onSave: (name: string) => void;
   datosEmpleados: Empleado[];
 }
 
@@ -27,16 +27,24 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
     setCurrentPage,
     rowsPerPage,
     setRowsPerPage,
-    totalPages,
-    selectedItem,
-    handleRowClick,
-    handleSave
+    totalPages
   } = useModal({
     data: props.datosEmpleados,
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
   });
 
+  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
+
   if (!props.isOpen) return null;
+
+  const handleRowClick = (nombreCompleto: string) => setSelectedResponsable(nombreCompleto);
+
+  const handleSave = () => {
+    if (selectedResponsable) {
+      props.onSave(selectedResponsable);
+      props.onClose();
+    }
+  };
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
@@ -69,8 +77,8 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
               {paginatedData.map((row, index) => (
                 <tr
                   key={index}
-                  onClick={() => handleRowClick(row)}
-                  className={`cursor-pointer ${selectedItem === row ? "bg-blue-100" : ""}`}
+                  onClick={() => handleRowClick(row.nombreCompleto)}
+                  className={`cursor-pointer ${selectedResponsable === row.nombreCompleto ? "bg-blue-100" : ""}`}
                 >
                   <td className="border-b py-2 px-4">{row.nombreCompleto}</td>
                   <td className="border-b py-2 px-4">{row.descripcionDepto}</td>
@@ -123,7 +131,7 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
           </button>
           <button
             type="button"
-            onClick={() => handleSave(props.onSave, props.onClose)}
+            onClick={handleSave}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar

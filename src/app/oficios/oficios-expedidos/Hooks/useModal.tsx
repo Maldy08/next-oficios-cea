@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 interface UseModalParams<T> {
   data: T[];
@@ -14,22 +14,25 @@ export function useModal<T extends Record<string, any>>({
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-  const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
-    return data.filter(item =>
-      columnsToFilter.some(column =>
-        String(item[column]).toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [searchTerm, data, columnsToFilter]);
+  // Filtrado de datos
+  const filteredData = (data || []).filter(item =>
+    columnsToFilter.some(column =>
+      String(item[column]).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+  
 
-  const paginatedData = useMemo(() => {
-    const start = currentPage * rowsPerPage;
-    const end = start + rowsPerPage;
-    return filteredData.slice(start, end);
-  }, [currentPage, rowsPerPage, filteredData]);
-
+  // Paginación
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  
+  const paginatedData = filteredData.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage
+  );
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm]);
 
   const handleRowClick = (item: T) => {
     setSelectedItem(item);
