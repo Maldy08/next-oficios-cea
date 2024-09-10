@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
+import ModalA from "../Hooks/useModal";
 
 interface ModalDestinatarioProps {
+  remitentes: remitentes[];
   isOpen: boolean;
   onClose: () => void;
   onSave: (selectedDestinatario: string) => void;
-  datosEmpleados: Empleados[];
 }
 
-interface Empleados {
+interface remitentes {
+  id: number;
+  nombre: string;
+  empresa: string;
+  cargo: string;
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
@@ -17,51 +22,37 @@ interface Empleados {
 }
 
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchText, setSearchText] = useState("");
-  const [selectedDestinatario, setSelectedDestinatario] = useState<
-    string | null
-  >(null);
+  const {
+    page,
+    setPage,
+    rowsPerPage,
+    setRowsPerPage,
+    searchText,
+    setSearchText,
+    selectedRemitente,
+    setSelectedRemitente,
+    data,
+    setData,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    handleSearchChange,
+    handleRowClick,
+    handleSave,
+    filterData,
+    totalPages,
+    selectedDestinatario,
+  } = ModalA({
+    isOpen: false,
+    onClose: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    onSave: function (selectedDestinatario: string): void {
+      throw new Error("Function not implemented.");
+    },
+    remitentes: props.remitentes,
+  });
 
-  if (!props.isOpen) return null;
-
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-    setPage(0); // Resetear la página al buscar
-  };
-
-  const handleRowClick = (nombre: string) => {
-    setSelectedDestinatario(nombre);
-  };
-
-  const handleSave = () => {
-    if (selectedDestinatario) {
-      props.onSave(selectedDestinatario);
-      props.onClose();
-    }
-  };
-
-  // Filtra los datos asegurándose de que `datosEmpleados` es un array
-  const filteredData = props.datosEmpleados.filter(
-    (row) =>
-      row.nombreCompleto.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.descripcionDepto.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.descripcionPuesto.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  console.log("entro a destinatario envio  123456789132");
 
   return (
     <div
@@ -103,9 +94,9 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
               </tr>
             </thead>
             <tbody>
-              {filteredData
+              {filterData(data)
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
+                .map((row: any, index: any) => (
                   <tr
                     key={index}
                     onClick={() => handleRowClick(row.nombreCompleto)}

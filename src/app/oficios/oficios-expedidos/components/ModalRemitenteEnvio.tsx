@@ -3,12 +3,18 @@
 import { useState, useEffect } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
+import ModalA from "../Hooks/useModal";
+import { Anybody } from "next/font/google";
 
 interface remitentes {
   id: number;
   nombre: string;
   empresa: string;
   cargo: string;
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
+  idPue: number;
 }
 
 interface Props {
@@ -19,49 +25,34 @@ interface Props {
 }
 
 const ModalRemitenteEnvio = (props: Props) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchText, setSearchText] = useState("");
-  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(
-    null
-  );
-  const [data, setData] = useState<remitentes[]>(props.remitentes);
-
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-    setPage(0);
-  };
-
-  const handleRowClick = (name: string) => {
-    setSelectedRemitente(name);
-  };
-
-  const handleSave = () => {
-    if (selectedRemitente) {
-      props.onSave(selectedRemitente);
-      props.onClose();
-    }
-  };
-
-  const filteredData = props.remitentes.filter(
-    (row) =>
-      row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.cargo.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const {
+    page,
+    setPage,
+    rowsPerPage,
+    setRowsPerPage,
+    searchText,
+    setSearchText,
+    selectedRemitente,
+    setSelectedRemitente,
+    data,
+    setData,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    handleSearchChange,
+    handleRowClick,
+    handleSave,
+    filterData,
+    totalPages,
+  } = ModalA({
+    isOpen: false,
+    onClose: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    onSave: function (selectedDestinatario: string): void {
+      throw new Error("Function not implemented.");
+    },
+    remitentes: props.remitentes,
+  });
 
   return (
     <div
@@ -102,9 +93,9 @@ const ModalRemitenteEnvio = (props: Props) => {
               </tr>
             </thead>
             <tbody>
-              {filteredData
+              {filterData(data)
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
+                .map((row: any, index: any) => (
                   <tr
                     key={index}
                     onClick={() => handleRowClick(row.nombre)}

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 interface ClientComponentProps {
   rows: any[];
-  departamentos: any[]; // Cambiado a array
+  departamentos: string[]; // Cambiado a array
   datosEmpleados: any[];
   remitentes: any[]; // Añadido remitentes aquí
 }
