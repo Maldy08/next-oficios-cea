@@ -34,9 +34,6 @@ interface remitentes {
   cargo: string;
 }
 
-
-
-
 export default function ModalOficioExpedido({
   isOpen,
   onClose,
@@ -387,11 +384,12 @@ export default function ModalOficioExpedido({
 
         {showRemitenteModal && (
           <ModalRemitenteEnvio
-            isOpen={showRemitenteModal}
-            onClose={() => setShowRemitenteModal(false)}
-            onSave={handleSaveRemitente}
-            remitentes={remitentes}          
-            />
+          isOpen={showRemitenteModal}
+          onClose={() => setShowRemitenteModal(false)}
+          onSave={handleSaveRemitente}
+          remitentes={remitentes} 
+        />
+        
         )}
 
         {showResponsableModal && (
