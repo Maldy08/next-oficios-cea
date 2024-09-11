@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useModal } from '../Hooks/useModal'; 
+import { useModal } from "../Hooks/useModal";
 
 interface Empleado {
   nombreCompleto: string;
@@ -27,17 +27,24 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
     setCurrentPage,
     rowsPerPage,
     setRowsPerPage,
-    totalPages
+    totalPages,
   } = useModal({
     data: props.datosEmpleados,
-    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
+    columnsToFilter: [
+      "nombreCompleto",
+      "descripcionDepto",
+      "descripcionPuesto",
+    ],
   });
 
-  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
+  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(
+    null
+  );
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) => setSelectedResponsable(nombreCompleto);
+  const handleRowClick = (nombreCompleto: string) =>
+    setSelectedResponsable(nombreCompleto);
 
   const handleSave = () => {
     if (selectedResponsable) {
@@ -46,25 +53,21 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
     }
   };
 
-<<<<<<< HEAD
-  const filteredData = props.datosEmpleados.filter(
-    (row) =>
-      row.nombreCompleto.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.descripcionDepto.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.descripcionPuesto.toLowerCase().includes(searchText.toLowerCase())
-  );
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-  console.log(filteredData);
-
-=======
->>>>>>> roberto
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Responsable</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Seleccionar Responsable
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -81,7 +84,9 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="font-bold border-b py-2 px-4">Nombre Completo</th>
+                <th className="font-bold border-b py-2 px-4">
+                  Nombre Completo
+                </th>
                 <th className="font-bold border-b py-2 px-4">Departamento</th>
                 <th className="font-bold border-b py-2 px-4">Puesto</th>
               </tr>
@@ -91,48 +96,22 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
                 <tr
                   key={index}
                   onClick={() => handleRowClick(row.nombreCompleto)}
-                  className={`cursor-pointer ${selectedResponsable === row.nombreCompleto ? "bg-blue-100" : ""}`}
+                  className={`cursor-pointer ${
+                    selectedResponsable === row.nombreCompleto
+                      ? "bg-blue-100"
+                      : ""
+                  }`}
                 >
                   <td className="border-b py-2 px-4">{row.nombreCompleto}</td>
                   <td className="border-b py-2 px-4">{row.descripcionDepto}</td>
-                  <td className="border-b py-2 px-4">{row.descripcionPuesto}</td>
+                  <td className="border-b py-2 px-4">
+                    {row.descripcionPuesto}
+                  </td>
                 </tr>
-<<<<<<< HEAD
-              </thead>
-              <tbody>
-                {filteredData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => (
-                    <tr
-                      key={index}
-                      onClick={() => handleRowClick(row.nombreCompleto || "")}
-                      className={`cursor-pointer ${
-                        selectedResponsable === row.nombreCompleto
-                          ? "bg-blue-100"
-                          : ""
-                      }`}
-                    >
-                      <td className="border-b py-2 px-4">
-                        {row.nombreCompleto || ""}
-                      </td>
-                      <td className="border-b py-2 px-4">
-                        {row.descripcionDepto || ""}
-                      </td>
-                      <td className="border-b py-2 px-4">
-                        {row.descripcionPuesto || ""}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-=======
               ))}
             </tbody>
           </table>
         </div>
->>>>>>> roberto
 
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center space-x-2">
@@ -146,7 +125,9 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
             </button>
             <button
               type="button"
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
+              }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
               disabled={currentPage >= totalPages - 1}
             >
