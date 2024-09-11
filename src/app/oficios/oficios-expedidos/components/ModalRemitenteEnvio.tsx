@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useModal } from "../Hooks/useModal";
+import TableComponentModales from "./TablecomponentModales";
 
 interface Remitente {
   nombre: string;
@@ -46,6 +47,21 @@ const ModalRemitenteEnvio = (props: Props) => {
     throw new Error("Function not implemented.");
   }
 
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Remitente) => row.nombre,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Remitente) => row.empresa,
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Remitente) => row.cargo,
+    },
+  ];
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
@@ -73,7 +89,14 @@ const ModalRemitenteEnvio = (props: Props) => {
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
+        <TableComponentModales<Remitente>
+          data={paginatedData}
+          columns={columns}
+          //onRowClick={handleRowClick}
+        ></TableComponentModales>
+
+        {/* Aqui esta la tabla no generica 
+         <div className="flex-grow overflow-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr>
@@ -100,7 +123,7 @@ const ModalRemitenteEnvio = (props: Props) => {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
 
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center space-x-2">
