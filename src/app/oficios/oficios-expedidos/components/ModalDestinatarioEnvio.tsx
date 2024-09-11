@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useModal } from "../Hooks/useModal";
+import TableComponentModales from "./TablecomponentModales";
 
-interface Empleado {
+interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number;
 }
 
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
-  datosEmpleados: Empleado[];
+  datosEmpleados: Empleados[];
 }
 
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
@@ -35,7 +35,26 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       "descripcionDepto",
       "descripcionPuesto",
     ],
+    onClose: props.onClose,
+    onSave: (selectedDestinatario: string) => {
+      props.onSave(selectedDestinatario);
+    },
   });
+
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Empleados) => row.nombreCompleto,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Empleados) => row.descripcionDepto,
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Empleados) => row.descripcionPuesto,
+    },
+  ];
 
   const [selectedDestinatario, setSelectedDestinatario] = useState<
     string | null
@@ -80,7 +99,14 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
+        <TableComponentModales<Empleados>
+          data={paginatedData}
+          columns={columns}
+          //onRowClick={handleRowClick}
+        ></TableComponentModales>
+
+        {/* Aqui esta la tabla sin aplicar la tabla generica */}
+        {/* <div className="flex-grow overflow-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr>
@@ -111,7 +137,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
 
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center space-x-2">

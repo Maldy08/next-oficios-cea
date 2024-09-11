@@ -33,6 +33,10 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
       "descripcionDepto",
       "descripcionPuesto",
     ],
+    onClose: props.onClose, // Pasando la función onClose desde los props
+    onSave: (selectedName: string) => {
+      props.onSave(selectedName); // Pasando la función onSave desde los props
+    },
   });
 
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
