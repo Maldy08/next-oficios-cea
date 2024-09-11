@@ -1,13 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+<<<<<<< HEAD
 import axios from "axios";
 import ModalA from "../Hooks/useModal";
 import { Anybody } from "next/font/google";
 
 interface remitentes {
   id: number;
+=======
+import { useModal } from "../Hooks/useModal";
+
+interface Remitente {
+>>>>>>> roberto
   nombre: string;
   empresa: string;
   cargo: string;
@@ -18,14 +24,15 @@ interface remitentes {
 }
 
 interface Props {
+  remitentes: Remitente[];
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
-  remitentes: remitentes[];
 }
 
 const ModalRemitenteEnvio = (props: Props) => {
   const {
+<<<<<<< HEAD
     page,
     setPage,
     rowsPerPage,
@@ -45,14 +52,39 @@ const ModalRemitenteEnvio = (props: Props) => {
     totalPages,
   } = ModalA({
     isOpen: false,
+=======
+    setSelectedRemitente,
+    selectedRemitente,
+    searchTerm,
+    setSearchTerm,
+    paginatedData,
+    currentPage,
+    setCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    totalPages,
+    handleSave,
+    handleRowClick,
+  } = useModal({
+    data: props.remitentes,
+    columnsToFilter: ["nombre", "empresa", "cargo"],
+>>>>>>> roberto
     onClose: function (): void {
       throw new Error("Function not implemented.");
     },
     onSave: function (selectedDestinatario: string): void {
       throw new Error("Function not implemented.");
     },
+<<<<<<< HEAD
     remitentes: props.remitentes,
   });
+=======
+  });
+
+  function onSave(item: Remitente): void {
+    throw new Error("Function not implemented.");
+  }
+>>>>>>> roberto
 
   return (
     <div
@@ -73,8 +105,8 @@ const ModalRemitenteEnvio = (props: Props) => {
             <input
               type="text"
               placeholder="Buscar..."
-              value={searchText}
-              onChange={handleSearchChange}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full border-b border-gray-300 py-2 px-3 text-sm rounded-none focus:border-blue-500 focus:outline-none"
             />
             <FaSearch className="absolute right-2 top-2 text-gray-400 cursor-pointer" />
@@ -86,6 +118,7 @@ const ModalRemitenteEnvio = (props: Props) => {
             <thead>
               <tr>
                 <th className="font-bold border-b py-2 px-4">
+<<<<<<< HEAD
                   NOMBRE COMPLETO
                 </th>
                 <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
@@ -108,6 +141,28 @@ const ModalRemitenteEnvio = (props: Props) => {
                     <td className="border-b py-2 px-4">{row.cargo}</td>
                   </tr>
                 ))}
+=======
+                  Nombre Completo
+                </th>
+                <th className="font-bold border-b py-2 px-4">Empresa</th>
+                <th className="font-bold border-b py-2 px-4">Cargo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedData.map((row: any, index: any) => (
+                <tr
+                  key={index}
+                  onClick={() => handleRowClick(row.nombre)}
+                  className={`cursor-pointer ${
+                    selectedRemitente === row.nombre ? "bg-blue-100" : ""
+                  }`}
+                >
+                  <td className="border-b py-2 px-4">{row.nombre}</td>
+                  <td className="border-b py-2 px-4">{row.empresa}</td>
+                  <td className="border-b py-2 px-4">{row.cargo}</td>
+                </tr>
+              ))}
+>>>>>>> roberto
             </tbody>
           </table>
         </div>
@@ -116,28 +171,28 @@ const ModalRemitenteEnvio = (props: Props) => {
           <div className="flex items-center space-x-2">
             <button
               type="button"
-              onClick={() => handleChangePage(Math.max(0, page - 1))}
+              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={page === 0}
+              disabled={currentPage === 0}
             >
               <FaChevronLeft />
             </button>
             <button
               type="button"
               onClick={() =>
-                handleChangePage(Math.min(totalPages - 1, page + 1))
+                setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
               }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={page >= totalPages - 1}
+              disabled={currentPage >= totalPages - 1}
             >
               <FaChevronRight />
             </button>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="text-sm">Folios por pág:</span>
+            <span className="text-sm">Filas por pág:</span>
             <select
               value={rowsPerPage}
-              onChange={handleChangeRowsPerPage}
+              onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
               className="border border-gray-300 rounded px-2 py-1 text-sm"
             >
               <option value={5}>5</option>
@@ -156,7 +211,7 @@ const ModalRemitenteEnvio = (props: Props) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={() => handleSave(onSave, props.onClose)}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar

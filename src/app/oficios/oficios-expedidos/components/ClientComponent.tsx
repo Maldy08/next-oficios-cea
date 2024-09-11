@@ -1,20 +1,29 @@
+<<<<<<< HEAD
 "use client";
 
 import { ChangeEvent, useState } from "react";
+=======
+import { useState } from 'react';
+>>>>>>> roberto
 import { FiSearch } from "react-icons/fi";
-import ModalEdit from "./components table/ModalEdit";
 import TableComponent from "./table";
 import ModalOficioExpedido from "./ModalOficioExpedido";
+import ModalEdit from "./components table/ModalEdit";
 import ModalList from "./components table/ModalList";
+<<<<<<< HEAD
 import UseClienteComponets from "../Hooks/UseClientComponent";
+=======
+import { Departamentos, Empleados, Oficios, OficioUsuExterno } from '@/app/domain/entities';
+>>>>>>> roberto
 
 interface ClientComponentProps {
-  rows: any[];
-  departamentos: any[]; // Cambiado a array
-  datosEmpleados: any[];
-  remitentes: any[]; // Añadido remitentes aquí
+  rows: Oficios[];
+  departamentos: Departamentos[];
+  datosEmpleados: Empleados[];
+  remitentes: OficioUsuExterno[];
 }
 
+<<<<<<< HEAD
 export default function ClientComponent({
   rows,
   departamentos,
@@ -24,12 +33,42 @@ export default function ClientComponent({
   const {
     modalType,
     setModalType,
+=======
+const UseClientComponent = ({ rows, departamentos, datosEmpleados, remitentes }: ClientComponentProps) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+  const [modalType, setModalType] = useState<string | null>(null);
+
+  const paginatedRows = rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+
+  const handleOpenModal = (type: string) => setModalType(type);
+  const handleCloseModal = () => setModalType(null);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangePage = (newPage: number) => setPage(newPage);
+
+  const handleSave = () => {
+    // Lógica para guardar los cambios
+  };
+
+  return {
+>>>>>>> roberto
     searchTerm,
     setSearchTerm,
     rowsPerPage,
     setRowsPerPage,
     page,
     setPage,
+<<<<<<< HEAD
     handleOpenModal,
     handleCloseModal,
     handleSave,
@@ -44,6 +83,39 @@ export default function ClientComponent({
     datosEmpleados: datosEmpleados,
     remitentes: remitentes,
   });
+=======
+    modalType,
+    setModalType,
+    paginatedRows,
+    handleOpenModal,
+    handleCloseModal,
+    handleSearchChange,
+    handleChangeRowsPerPage,
+    handleChangePage,
+    handleSave,
+  };
+};
+
+const ClientComponent = ({
+  rows,
+  departamentos,
+  datosEmpleados,
+  remitentes,
+}: ClientComponentProps) => {
+  const {
+    searchTerm,
+    handleSearchChange,
+    rowsPerPage,
+    handleChangeRowsPerPage,
+    page,
+    handleChangePage,
+    modalType,
+    handleOpenModal,
+    handleCloseModal,
+    paginatedRows,
+    handleSave,
+  } = UseClientComponent({ rows, departamentos, datosEmpleados, remitentes });
+>>>>>>> roberto
 
   return (
     <>
@@ -96,7 +168,7 @@ export default function ClientComponent({
           </button>
           <button
             onClick={() => handleChangePage(page + 1)}
-            disabled={(page + 1) * rowsPerPage >= filteredRows.length}
+            disabled={(page + 1) * rowsPerPage >= rows.length}
             className="p-2 border border-gray-300 rounded-md"
           >
             Siguiente
@@ -104,15 +176,15 @@ export default function ClientComponent({
         </div>
       </div>
 
-      {/* Aquí están los modales */}
+      {/* Modales */}
       {modalType === "oficioExpedido" && (
         <ModalOficioExpedido
           isOpen={modalType === "oficioExpedido"}
           onClose={handleCloseModal}
           onSave={handleSave}
-          departamentos={departamentos} // Pasa departamentos al modal
+          departamentos={departamentos}
           datosEmpleados={datosEmpleados}
-          remitentes={remitentes} // Pasa remitentes al modal
+          remitentes={remitentes}
         />
       )}
 
@@ -131,4 +203,6 @@ export default function ClientComponent({
       )}
     </>
   );
-}
+};
+
+export default ClientComponent;

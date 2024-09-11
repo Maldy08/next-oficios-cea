@@ -12,6 +12,7 @@ interface ModalOficioExpedidoProps {
   onSave: () => void;
   departamentos: Departamento[];
   datosEmpleados: Empleados[];
+  remitentes: remitentes[];
 }
 
 interface Departamento {
@@ -27,12 +28,22 @@ interface Empleados {
   idPue: number;
 }
 
+interface remitentes {
+  nombre: string;
+  empresa: string;
+  cargo: string;
+}
+
+
+
+
 export default function ModalOficioExpedido({
   isOpen,
   onClose,
   onSave,
   departamentos,
   datosEmpleados,
+  remitentes,
 }: ModalOficioExpedidoProps) {
   const [textareaRows, setTextareaRows] = useState(3);
   const [currentDate, setCurrentDate] = useState("");
@@ -378,7 +389,9 @@ export default function ModalOficioExpedido({
           <ModalRemitenteEnvio
             isOpen={showRemitenteModal}
             onClose={() => setShowRemitenteModal(false)}
-            onSave={handleSaveRemitente} remitentes={[]}          />
+            onSave={handleSaveRemitente}
+            remitentes={remitentes}          
+            />
         )}
 
         {showResponsableModal && (
