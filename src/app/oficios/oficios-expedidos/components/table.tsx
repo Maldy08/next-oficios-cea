@@ -1,13 +1,15 @@
 import { Oficios } from "@/app/domain/entities";
 import React from "react";
 import { FiEdit, FiEye, FiList } from "react-icons/fi";
-
+import ModalPersonaEnvio from "./ModalResponsableEnvio";
 interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
   idPue: number;
 }
+
+interface Nada {}
 
 interface TableProps {
   rows: Oficios[];
@@ -17,12 +19,7 @@ interface TableProps {
   datosEmpleados: Empleados[];
 }
 
-const TableComponent: React.FC<TableProps> = ({
-  rows,
-  handleOpenModal,
-  handleCloseModal,
-  modalType,
-}) => {
+const TableComponent = (props: TableProps) => {
   return (
     <div className="">
       <div className="overflow-x-auto overflow-y-auto">
@@ -45,31 +42,31 @@ const TableComponent: React.FC<TableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {rows.length === 0 ? (
+            {props.rows.length === 0 ? (
               <tr>
                 <td colSpan={9} className="text-center py-4">
                   No hay datos disponibles
                 </td>
               </tr>
             ) : (
-              rows.map((row, index) => (
+              props.rows.map((row, index) => (
                 <tr key={index} className="border-t ">
                   <td className="py-2 px-4">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleOpenModal("edit")}
+                        onClick={() => props.handleOpenModal("edit")}
                         className="text-gray-600 hover:text-primary-900"
                       >
                         <FiEdit />
                       </button>
                       <button
-                        onClick={() => handleOpenModal("view")}
+                        onClick={() => props.handleOpenModal("view")}
                         className="text-gray-600 hover:text-primary-900"
                       >
                         <FiEye />
                       </button>
                       <button
-                        onClick={() => handleOpenModal("list")}
+                        onClick={() => props.handleOpenModal("list")}
                         className="text-gray-600 hover:text-primary-900"
                       >
                         <FiList />

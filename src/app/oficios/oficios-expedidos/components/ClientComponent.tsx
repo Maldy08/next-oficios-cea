@@ -171,6 +171,7 @@ const ClientComponent = ({
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           departamentos={departamentos}
+          remitentes={remitentes}
         />
       )}
 

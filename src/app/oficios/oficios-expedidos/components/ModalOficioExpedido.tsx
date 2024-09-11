@@ -20,14 +20,9 @@ interface Empleados {
 }
 
 interface remitentes {
-  id: number;
   nombre: string;
   empresa: string;
   cargo: string;
-  nombreCompleto: string;
-  descripcionDepto: string;
-  descripcionPuesto: string;
-  idPue: number;
 }
 
 interface ModalOficioExpedidoProps {
@@ -366,7 +361,7 @@ export default function ModalOficioExpedido({
           isOpen={showDestinatarioModal}
           onClose={() => setShowDestinatarioModal(false)}
           onSave={handleSaveDestinatario}
-          remitentes={remitentes}
+          datosEmpleados={datosEmpleados}
         />
         <ModalRemitenteEnvio
           isOpen={showRemitenteModal}

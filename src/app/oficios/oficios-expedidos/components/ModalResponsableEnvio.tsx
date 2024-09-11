@@ -1,24 +1,22 @@
-"use client";
-
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useModal } from "../Hooks/useModal";
+import TableComponentModales from "./TablecomponentModales";
 
-interface Empleado {
+interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number;
 }
 
-interface ModalResponsableEnvioProps {
+interface ModalPersonaEnvioProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
-  datosEmpleados: Empleado[];
+  datosEmpleados: Empleados[];
 }
 
-const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
+const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
   const {
     searchTerm,
     setSearchTerm,
@@ -37,21 +35,35 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
     ],
   });
 
-  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(
-    null
-  );
+  const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) =>
-    setSelectedResponsable(nombreCompleto);
+  const handleRowClick = (persona: Empleados) =>
+    setSelectedPersona(persona.nombreCompleto);
 
   const handleSave = () => {
-    if (selectedResponsable) {
-      props.onSave(selectedResponsable);
+    if (selectedPersona) {
+      props.onSave(selectedPersona);
       props.onClose();
     }
   };
+
+  // Define las columnas de la tabla
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Empleados) => row.nombreCompleto,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Empleados) => row.descripcionDepto,
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Empleados) => row.descripcionPuesto,
+    },
+  ];
 
   return (
     <div
@@ -66,7 +78,7 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">
-            Seleccionar Responsable
+            Seleccionar Persona de Envío
           </h2>
           <div className="relative w-full max-w-[300px]">
             <input
@@ -80,38 +92,12 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="font-bold border-b py-2 px-4">
-                  Nombre Completo
-                </th>
-                <th className="font-bold border-b py-2 px-4">Departamento</th>
-                <th className="font-bold border-b py-2 px-4">Puesto</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map((row, index) => (
-                <tr
-                  key={index}
-                  onClick={() => handleRowClick(row.nombreCompleto)}
-                  className={`cursor-pointer ${
-                    selectedResponsable === row.nombreCompleto
-                      ? "bg-blue-100"
-                      : ""
-                  }`}
-                >
-                  <td className="border-b py-2 px-4">{row.nombreCompleto}</td>
-                  <td className="border-b py-2 px-4">{row.descripcionDepto}</td>
-                  <td className="border-b py-2 px-4">
-                    {row.descripcionPuesto}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {/* Aquí usas el componente genérico de la tabla */}
+        <TableComponentModales<Empleados>
+          data={paginatedData}
+          columns={columns}
+          onRowClick={handleRowClick}
+        ></TableComponentModales>
 
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center space-x-2">
@@ -168,4 +154,4 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
   );
 };
 
-export default ModalResponsableEnvio;
+export default ModalPersonaEnvio;
