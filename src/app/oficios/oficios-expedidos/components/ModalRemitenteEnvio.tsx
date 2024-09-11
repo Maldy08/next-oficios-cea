@@ -2,18 +2,9 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-<<<<<<< HEAD
-import axios from "axios";
-import ModalA from "../Hooks/useModal";
-import { Anybody } from "next/font/google";
-
-interface remitentes {
-  id: number;
-=======
 import { useModal } from "../Hooks/useModal";
 
 interface Remitente {
->>>>>>> roberto
   nombre: string;
   empresa: string;
   cargo: string;
@@ -32,27 +23,6 @@ interface Props {
 
 const ModalRemitenteEnvio = (props: Props) => {
   const {
-<<<<<<< HEAD
-    page,
-    setPage,
-    rowsPerPage,
-    setRowsPerPage,
-    searchText,
-    setSearchText,
-    selectedRemitente,
-    setSelectedRemitente,
-    data,
-    setData,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    handleSearchChange,
-    handleRowClick,
-    handleSave,
-    filterData,
-    totalPages,
-  } = ModalA({
-    isOpen: false,
-=======
     setSelectedRemitente,
     selectedRemitente,
     searchTerm,
@@ -68,23 +38,17 @@ const ModalRemitenteEnvio = (props: Props) => {
   } = useModal({
     data: props.remitentes,
     columnsToFilter: ["nombre", "empresa", "cargo"],
->>>>>>> roberto
     onClose: function (): void {
       throw new Error("Function not implemented.");
     },
     onSave: function (selectedDestinatario: string): void {
       throw new Error("Function not implemented.");
     },
-<<<<<<< HEAD
-    remitentes: props.remitentes,
-  });
-=======
   });
 
   function onSave(item: Remitente): void {
     throw new Error("Function not implemented.");
   }
->>>>>>> roberto
 
   return (
     <div
@@ -118,30 +82,6 @@ const ModalRemitenteEnvio = (props: Props) => {
             <thead>
               <tr>
                 <th className="font-bold border-b py-2 px-4">
-<<<<<<< HEAD
-                  NOMBRE COMPLETO
-                </th>
-                <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
-                <th className="font-bold border-b py-2 px-4">CARGO</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filterData(data)
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row: any, index: any) => (
-                  <tr
-                    key={index}
-                    onClick={() => handleRowClick(row.nombre)}
-                    className={`cursor-pointer ${
-                      selectedRemitente === row.nombre ? "bg-blue-100" : ""
-                    }`}
-                  >
-                    <td className="border-b py-2 px-4">{row.nombre}</td>
-                    <td className="border-b py-2 px-4">{row.empresa}</td>
-                    <td className="border-b py-2 px-4">{row.cargo}</td>
-                  </tr>
-                ))}
-=======
                   Nombre Completo
                 </th>
                 <th className="font-bold border-b py-2 px-4">Empresa</th>
@@ -162,7 +102,6 @@ const ModalRemitenteEnvio = (props: Props) => {
                   <td className="border-b py-2 px-4">{row.cargo}</td>
                 </tr>
               ))}
->>>>>>> roberto
             </tbody>
           </table>
         </div>

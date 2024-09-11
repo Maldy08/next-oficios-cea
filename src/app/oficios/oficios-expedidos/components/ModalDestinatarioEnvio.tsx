@@ -2,27 +2,9 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-<<<<<<< HEAD
-import axios from "axios";
-import ModalA from "../Hooks/useModal";
-
-interface ModalDestinatarioProps {
-  remitentes: remitentes[];
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (selectedDestinatario: string) => void;
-}
-
-interface remitentes {
-  id: number;
-  nombre: string;
-  empresa: string;
-  cargo: string;
-=======
-import { useModal } from '../Hooks/useModal'; 
+import { useModal } from "../Hooks/useModal";
 
 interface Empleado {
->>>>>>> roberto
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
@@ -38,38 +20,6 @@ interface ModalDestinatarioProps {
 
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const {
-<<<<<<< HEAD
-    page,
-    setPage,
-    rowsPerPage,
-    setRowsPerPage,
-    searchText,
-    setSearchText,
-    selectedRemitente,
-    setSelectedRemitente,
-    data,
-    setData,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    handleSearchChange,
-    handleRowClick,
-    handleSave,
-    filterData,
-    totalPages,
-    selectedDestinatario,
-  } = ModalA({
-    isOpen: false,
-    onClose: function (): void {
-      throw new Error("Function not implemented.");
-    },
-    onSave: function (selectedDestinatario: string): void {
-      throw new Error("Function not implemented.");
-    },
-    remitentes: props.remitentes,
-  });
-
-  console.log("entro a destinatario envio  123456789132");
-=======
     searchTerm,
     setSearchTerm,
     paginatedData,
@@ -77,17 +27,24 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     setCurrentPage,
     rowsPerPage,
     setRowsPerPage,
-    totalPages
+    totalPages,
   } = useModal({
     data: props.datosEmpleados,
-    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
+    columnsToFilter: [
+      "nombreCompleto",
+      "descripcionDepto",
+      "descripcionPuesto",
+    ],
   });
 
-  const [selectedDestinatario, setSelectedDestinatario] = useState<string | null>(null);
+  const [selectedDestinatario, setSelectedDestinatario] = useState<
+    string | null
+  >(null);
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) => setSelectedDestinatario(nombreCompleto);
+  const handleRowClick = (nombreCompleto: string) =>
+    setSelectedDestinatario(nombreCompleto);
 
   const handleSave = () => {
     if (selectedDestinatario) {
@@ -95,14 +52,22 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       props.onClose();
     }
   };
->>>>>>> roberto
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Destinatario</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Seleccionar Destinatario
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -119,47 +84,31 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="font-bold border-b py-2 px-4">Nombre Completo</th>
+                <th className="font-bold border-b py-2 px-4">
+                  Nombre Completo
+                </th>
                 <th className="font-bold border-b py-2 px-4">Departamento</th>
                 <th className="font-bold border-b py-2 px-4">Puesto</th>
               </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
-              {filterData(data)
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row: any, index: any) => (
-                  <tr
-                    key={index}
-                    onClick={() => handleRowClick(row.nombreCompleto)}
-                    className={`cursor-pointer ${
-                      selectedDestinatario === row.nombreCompleto
-                        ? "bg-blue-100"
-                        : ""
-                    }`}
-                  >
-                    <td className="border-b py-2 px-4">{row.nombreCompleto}</td>
-                    <td className="border-b py-2 px-4">
-                      {row.descripcionDepto}
-                    </td>
-                    <td className="border-b py-2 px-4">
-                      {row.descripcionPuesto}
-                    </td>
-                  </tr>
-                ))}
-=======
               {paginatedData.map((row, index) => (
                 <tr
                   key={index}
                   onClick={() => handleRowClick(row.nombreCompleto)}
-                  className={`cursor-pointer ${selectedDestinatario === row.nombreCompleto ? "bg-blue-100" : ""}`}
+                  className={`cursor-pointer ${
+                    selectedDestinatario === row.nombreCompleto
+                      ? "bg-blue-100"
+                      : ""
+                  }`}
                 >
                   <td className="border-b py-2 px-4">{row.nombreCompleto}</td>
                   <td className="border-b py-2 px-4">{row.descripcionDepto}</td>
-                  <td className="border-b py-2 px-4">{row.descripcionPuesto}</td>
+                  <td className="border-b py-2 px-4">
+                    {row.descripcionPuesto}
+                  </td>
                 </tr>
               ))}
->>>>>>> roberto
             </tbody>
           </table>
         </div>
@@ -176,7 +125,9 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
             </button>
             <button
               type="button"
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
+              }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
               disabled={currentPage >= totalPages - 1}
             >

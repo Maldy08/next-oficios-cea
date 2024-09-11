@@ -1,20 +1,15 @@
-<<<<<<< HEAD
-"use client";
-
-import { ChangeEvent, useState } from "react";
-=======
-import { useState } from 'react';
->>>>>>> roberto
+import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import TableComponent from "./table";
 import ModalOficioExpedido from "./ModalOficioExpedido";
 import ModalEdit from "./components table/ModalEdit";
 import ModalList from "./components table/ModalList";
-<<<<<<< HEAD
-import UseClienteComponets from "../Hooks/UseClientComponent";
-=======
-import { Departamentos, Empleados, Oficios, OficioUsuExterno } from '@/app/domain/entities';
->>>>>>> roberto
+import {
+  Departamentos,
+  Empleados,
+  Oficios,
+  OficioUsuExterno,
+} from "@/app/domain/entities";
 
 interface ClientComponentProps {
   rows: Oficios[];
@@ -23,24 +18,21 @@ interface ClientComponentProps {
   remitentes: OficioUsuExterno[];
 }
 
-<<<<<<< HEAD
-export default function ClientComponent({
+const UseClientComponent = ({
   rows,
   departamentos,
   datosEmpleados,
-  remitentes, // Recibe los datos de remitentes aquí
-}: ClientComponentProps) {
-  const {
-    modalType,
-    setModalType,
-=======
-const UseClientComponent = ({ rows, departamentos, datosEmpleados, remitentes }: ClientComponentProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  remitentes,
+}: ClientComponentProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const [modalType, setModalType] = useState<string | null>(null);
 
-  const paginatedRows = rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  const paginatedRows = rows.slice(
+    page * rowsPerPage,
+    (page + 1) * rowsPerPage
+  );
 
   const handleOpenModal = (type: string) => setModalType(type);
   const handleCloseModal = () => setModalType(null);
@@ -49,7 +41,9 @@ const UseClientComponent = ({ rows, departamentos, datosEmpleados, remitentes }:
     setSearchTerm(event.target.value);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -61,29 +55,12 @@ const UseClientComponent = ({ rows, departamentos, datosEmpleados, remitentes }:
   };
 
   return {
->>>>>>> roberto
     searchTerm,
     setSearchTerm,
     rowsPerPage,
     setRowsPerPage,
     page,
     setPage,
-<<<<<<< HEAD
-    handleOpenModal,
-    handleCloseModal,
-    handleSave,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    filteredRows,
-    paginatedRows,
-    handleSearchChange,
-  } = UseClienteComponets({
-    rows: rows,
-    departamentos: departamentos,
-    datosEmpleados: datosEmpleados,
-    remitentes: remitentes,
-  });
-=======
     modalType,
     setModalType,
     paginatedRows,
@@ -115,7 +92,6 @@ const ClientComponent = ({
     paginatedRows,
     handleSave,
   } = UseClientComponent({ rows, departamentos, datosEmpleados, remitentes });
->>>>>>> roberto
 
   return (
     <>

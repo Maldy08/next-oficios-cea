@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-import { useState } from "react";
-
-interface ClientComponentProps {
-  rows: any[];
-  departamentos: string[]; // Cambiado a array
-  datosEmpleados: any[];
-  remitentes: any[]; // Añadido remitentes aquí
-}
-
-const UseClienteComponets = (props: ClientComponentProps) => {
-  const [modalType, setModalType] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Estado para las filas por página
-  const [page, setPage] = useState<number>(0);
-
-=======
 "use client";
 
 import { useState } from "react";
@@ -43,76 +26,39 @@ export default function ClientComponent({
   const [page, setPage] = useState<number>(0);
 
   // Abrir modal con tipo
->>>>>>> roberto
   const handleOpenModal = (type: string) => {
     setModalType(type);
   };
 
-<<<<<<< HEAD
-=======
   // Cerrar modal
->>>>>>> roberto
   const handleCloseModal = () => {
     setModalType(null);
   };
 
-<<<<<<< HEAD
-=======
   // Guardar cambios y cerrar modal
->>>>>>> roberto
   const handleSave = () => {
     console.log("Datos guardados");
     handleCloseModal();
   };
 
-<<<<<<< HEAD
-=======
   // Controlar búsqueda
->>>>>>> roberto
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-<<<<<<< HEAD
-=======
   // Cambiar número de filas por página
->>>>>>> roberto
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-<<<<<<< HEAD
-    setPage(0); // Reiniciar la página al cambiar el número de filas
-  };
-
-=======
     setPage(0);
   };
 
   // Cambiar de página
->>>>>>> roberto
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
   };
 
-<<<<<<< HEAD
-  const filteredRows = props.rows.filter(
-    (row) =>
-      row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (typeof row.tipo === "string" ? row.tipo.toLowerCase() : "").includes(
-        searchTerm.toLowerCase()
-      ) ||
-      row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (typeof row.estatus === "string"
-        ? row.estatus.toLowerCase()
-        : ""
-      ).includes(searchTerm.toLowerCase())
-  );
-
-=======
   // Filtrar filas basado en el término de búsqueda
   const filteredRows = rows.filter(
     (row) =>
@@ -126,35 +72,11 @@ export default function ClientComponent({
   );
 
   // Paginación de las filas filtradas
->>>>>>> roberto
   const paginatedRows = filteredRows.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
 
-<<<<<<< HEAD
-  return {
-    modalType,
-    setModalType,
-    searchTerm,
-    setSearchTerm,
-    rowsPerPage,
-    setRowsPerPage,
-    page,
-    setPage,
-    handleOpenModal,
-    handleCloseModal,
-    handleSave,
-    handleChangePage,
-    handleChangeRowsPerPage,
-    filteredRows,
-    paginatedRows,
-    handleSearchChange,
-  };
-};
-
-export default UseClienteComponets;
-=======
   return (
     <>
       {/* Barra de búsqueda y botón de nuevo oficio */}
@@ -244,4 +166,3 @@ export default UseClienteComponets;
     </>
   );
 }
->>>>>>> roberto
