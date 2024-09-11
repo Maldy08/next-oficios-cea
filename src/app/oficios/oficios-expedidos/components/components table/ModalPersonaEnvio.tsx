@@ -1,8 +1,11 @@
+"use client";
+
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import TableComponente from '../../components/tablecomponente'; // Asegúrate de ajustar la ruta según tu estructura de archivos
 import { useModal } from '../../Hooks/useModal'; 
 
-interface Empleados {
+interface Empleado {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
@@ -12,8 +15,23 @@ interface ModalPersonaEnvioProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
-  datosEmpleados: Empleados[];
+  datosEmpleados: Empleado[];
 }
+
+const columns = ['Nombre Completo', 'Departamento', 'Puesto'];
+
+const accessor = (item: Empleado, column: string) => {
+  switch (column) {
+    case 'Nombre Completo':
+      return item.nombreCompleto;
+    case 'Departamento':
+      return item.descripcionDepto;
+    case 'Puesto':
+      return item.descripcionPuesto;
+    default:
+      return '';
+  }
+};
 
 const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
   const {
@@ -34,7 +52,7 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (persona: string) => setSelectedPersona(persona);
+  const handleRowClick = (nombreCompleto: string) => setSelectedPersona(nombreCompleto);
 
   const handleSave = () => {
     if (selectedPersona) {
@@ -62,28 +80,11 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="font-bold border-b py-2 px-4">Nombre Completo</th>
-                <th className="font-bold border-b py-2 px-4">Departamento</th>
-                <th className="font-bold border-b py-2 px-4">Cargo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map((row, index) => (
-                <tr
-                  key={index}
-                  onClick={() => handleRowClick(row.nombreCompleto)}
-                  className={`cursor-pointer ${selectedPersona === row.nombreCompleto ? "bg-blue-100" : ""}`}
-                >
-                  <td className="border-b py-2 px-4">{row.nombreCompleto}</td>
-                  <td className="border-b py-2 px-4">{row.descripcionDepto}</td>
-                  <td className="border-b py-2 px-4">{row.descripcionPuesto}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TableComponente<Empleado>
+            data={paginatedData}
+            columns={columns}
+            accessor={accessor}
+          />
         </div>
 
         <div className="flex justify-between items-center mt-4">

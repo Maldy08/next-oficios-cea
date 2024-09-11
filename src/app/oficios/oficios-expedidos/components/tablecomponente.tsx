@@ -1,16 +1,12 @@
 import React from 'react';
 
-interface Column<T> {
-  header: string;
-  accessor: (item: T) => React.ReactNode;
-}
-
 interface TableComponenteProps<T> {
   data: T[];
-  columns: Column<T>[];
+  columns: string[]; // Ahora solo es un arreglo de strings
+  accessor: (item: T, column: string) => string | number; // Función para acceder a los datos
 }
 
-function TableComponente<T>({ data, columns }: TableComponenteProps<T>) {
+function TableComponente<T>({ data, columns, accessor }: TableComponenteProps<T>) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -21,7 +17,7 @@ function TableComponente<T>({ data, columns }: TableComponenteProps<T>) {
                 key={index}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                {column.header}
+                {column}
               </th>
             ))}
           </tr>
@@ -34,7 +30,7 @@ function TableComponente<T>({ data, columns }: TableComponenteProps<T>) {
                   key={colIndex}
                   className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
                 >
-                  {column.accessor(item)}
+                  {accessor(item, column)}
                 </td>
               ))}
             </tr>

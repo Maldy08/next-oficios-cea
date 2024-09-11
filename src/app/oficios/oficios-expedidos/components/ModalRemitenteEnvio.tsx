@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import TableComponente from '../components/tablecomponente'; // Importa el componente genérico
 import { useModal } from '../Hooks/useModal'; 
 
 interface Remitente {
@@ -16,6 +17,25 @@ interface Props {
   onSave: (name: string) => void;
   remitentes: Remitente[];
 }
+
+const columns = [
+  'Nombre',
+  'Empresa',
+  'Cargo'
+];
+
+const accessor = (item: Remitente, column: string) => {
+  switch (column) {
+    case 'Nombre':
+      return item.nombre;
+    case 'Empresa':
+      return item.empresa;
+    case 'Cargo':
+      return item.cargo;
+    default:
+      return '';
+  }
+};
 
 const ModalRemitenteEnvio = (props: Props) => {
   const {
@@ -64,28 +84,11 @@ const ModalRemitenteEnvio = (props: Props) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="font-bold border-b py-2 px-4">Nombre Completo</th>
-                <th className="font-bold border-b py-2 px-4">Empresa</th>
-                <th className="font-bold border-b py-2 px-4">Cargo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.map((row, index) => (
-                <tr
-                  key={index}
-                  onClick={() => handleRowClick(row.nombre)}
-                  className={`cursor-pointer ${selectedRemitente === row.nombre ? "bg-blue-100" : ""}`}
-                >
-                  <td className="border-b py-2 px-4">{row.nombre}</td>
-                  <td className="border-b py-2 px-4">{row.empresa}</td>
-                  <td className="border-b py-2 px-4">{row.cargo}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TableComponente<Remitente>
+            data={paginatedData}
+            columns={columns}
+            accessor={accessor}
+          />
         </div>
 
         <div className="flex justify-between items-center mt-4">
