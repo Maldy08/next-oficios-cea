@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useModal } from '../Hooks/useModal'; 
+import { useModal } from "../Hooks/useModal";
 
 interface Remitente {
   nombre: string;
@@ -11,14 +11,16 @@ interface Remitente {
 }
 
 interface Props {
+  remitentes: Remitente[];
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
-  remitentes: Remitente[];
 }
 
 const ModalRemitenteEnvio = (props: Props) => {
   const {
+    setSelectedRemitente,
+    selectedRemitente,
     searchTerm,
     setSearchTerm,
     paginatedData,
@@ -26,31 +28,39 @@ const ModalRemitenteEnvio = (props: Props) => {
     setCurrentPage,
     rowsPerPage,
     setRowsPerPage,
-    totalPages
+    totalPages,
+    handleSave,
+    handleRowClick,
   } = useModal({
     data: props.remitentes,
-    columnsToFilter: ['nombre', 'empresa', 'cargo']
+    columnsToFilter: ["nombre", "empresa", "cargo"],
+    onClose: function (): void {
+      throw new Error("Function not implemented.");
+    },
+    onSave: function (selectedDestinatario: string): void {
+      throw new Error("Function not implemented.");
+    },
   });
 
-  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
-
-  if (!props.isOpen) return null;
-
-  const handleRowClick = (nombre: string) => setSelectedRemitente(nombre);
-
-  const handleSave = () => {
-    if (selectedRemitente) {
-      props.onSave(selectedRemitente);
-      props.onClose();
-    }
-  };
+  function onSave(item: Remitente): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Remitente</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Seleccionar Remitente
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -67,17 +77,21 @@ const ModalRemitenteEnvio = (props: Props) => {
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="font-bold border-b py-2 px-4">Nombre Completo</th>
+                <th className="font-bold border-b py-2 px-4">
+                  Nombre Completo
+                </th>
                 <th className="font-bold border-b py-2 px-4">Empresa</th>
                 <th className="font-bold border-b py-2 px-4">Cargo</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((row, index) => (
+              {paginatedData.map((row: any, index: any) => (
                 <tr
                   key={index}
                   onClick={() => handleRowClick(row.nombre)}
-                  className={`cursor-pointer ${selectedRemitente === row.nombre ? "bg-blue-100" : ""}`}
+                  className={`cursor-pointer ${
+                    selectedRemitente === row.nombre ? "bg-blue-100" : ""
+                  }`}
                 >
                   <td className="border-b py-2 px-4">{row.nombre}</td>
                   <td className="border-b py-2 px-4">{row.empresa}</td>
@@ -100,7 +114,9 @@ const ModalRemitenteEnvio = (props: Props) => {
             </button>
             <button
               type="button"
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
+              }
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
               disabled={currentPage >= totalPages - 1}
             >
@@ -130,7 +146,7 @@ const ModalRemitenteEnvio = (props: Props) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={() => handleSave(onSave, props.onClose)}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar
