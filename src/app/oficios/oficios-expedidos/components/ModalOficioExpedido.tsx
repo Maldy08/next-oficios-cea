@@ -367,7 +367,7 @@ export default function ModalOficioExpedido({
           isOpen={showRemitenteModal}
           onClose={() => setShowRemitenteModal(false)}
           onSave={handleSaveRemitente}
-          remitentes={remitentes} // Esto debería funcionar si los tipos coinciden
+          remitentes={remitentes}
         />
 
         <ModalResponsableEnvio

@@ -1,85 +1,85 @@
-import { useState } from 'react';
+"use client";
+
+import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import TableComponent from "./table";
-import ModalOficioExpedido from "./ModalOficioExpedido";
-import ModalEdit from "./components table/ModalEdit";
-import ModalList from "./components table/ModalList";
-import { Departamentos, Empleados, Oficios, OficioUsuExterno } from '@/app/domain/entities';
+import ModalEdit from "../components/components table/ModalEdit";
+import TableComponent from "../components/table";
+import ModalOficioExpedido from "../components/ModalOficioExpedido";
+import ModalList from "../components/components table/ModalList";
 
 interface ClientComponentProps {
-  rows: Oficios[];
-  departamentos: Departamentos[];
-  datosEmpleados: Empleados[];
-  remitentes: OficioUsuExterno[];
+  rows: any[];
+  departamentos: any[];
+  datosEmpleados: any[];
+  remitentes: any[];
 }
 
-const UseClientComponent = ({ rows, departamentos, datosEmpleados, remitentes }: ClientComponentProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(0);
-  const [modalType, setModalType] = useState<string | null>(null);
-
-  const paginatedRows = rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-
-  const handleOpenModal = (type: string) => setModalType(type);
-  const handleCloseModal = () => setModalType(null);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleChangePage = (newPage: number) => setPage(newPage);
-
-  const handleSave = () => {
-    // Lógica para guardar los cambios
-  };
-
-  return {
-    searchTerm,
-    setSearchTerm,
-    rowsPerPage,
-    setRowsPerPage,
-    page,
-    setPage,
-    modalType,
-    setModalType,
-    paginatedRows,
-    handleOpenModal,
-    handleCloseModal,
-    handleSearchChange,
-    handleChangeRowsPerPage,
-    handleChangePage,
-    handleSave,
-  };
-};
-
-const ClientComponent = ({
+export default function ClientComponent({
   rows,
   departamentos,
   datosEmpleados,
   remitentes,
-}: ClientComponentProps) => {
-  const {
-    searchTerm,
-    handleSearchChange,
-    rowsPerPage,
-    handleChangeRowsPerPage,
-    page,
-    handleChangePage,
-    modalType,
-    handleOpenModal,
-    handleCloseModal,
-    paginatedRows,
-    handleSave,
-  } = UseClientComponent({ rows, departamentos, datosEmpleados, remitentes });
+}: ClientComponentProps) {
+  const [modalType, setModalType] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [page, setPage] = useState<number>(0);
+
+  // Abrir modal con tipo
+  const handleOpenModal = (type: string) => {
+    setModalType(type);
+  };
+
+  // Cerrar modal
+  const handleCloseModal = () => {
+    setModalType(null);
+  };
+
+  // Guardar cambios y cerrar modal
+  const handleSave = () => {
+    console.log("Datos guardados");
+    handleCloseModal();
+  };
+
+  // Controlar búsqueda
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  // Cambiar número de filas por página
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Cambiar de página
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  // Filtrar filas basado en el término de búsqueda
+  const filteredRows = rows.filter(
+    (row) =>
+      row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.tipo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.estatus?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Paginación de las filas filtradas
+  const paginatedRows = filteredRows.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <>
+      {/* Barra de búsqueda y botón de nuevo oficio */}
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => handleOpenModal("oficioExpedido")}
@@ -100,6 +100,7 @@ const ClientComponent = ({
         </div>
       </div>
 
+      {/* Tabla con los datos filtrados y paginados */}
       <TableComponent
         rows={paginatedRows}
         handleOpenModal={handleOpenModal}
@@ -129,7 +130,7 @@ const ClientComponent = ({
           </button>
           <button
             onClick={() => handleChangePage(page + 1)}
-            disabled={(page + 1) * rowsPerPage >= rows.length}
+            disabled={(page + 1) * rowsPerPage >= filteredRows.length}
             className="p-2 border border-gray-300 rounded-md"
           >
             Siguiente
@@ -156,7 +157,6 @@ const ClientComponent = ({
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           departamentos={departamentos}
-          remitentes={remitentes}
         />
       )}
 
@@ -165,6 +165,4 @@ const ClientComponent = ({
       )}
     </>
   );
-};
-
-export default ClientComponent;
+}

@@ -3,10 +3,10 @@ import { getOficioUsuExternos } from "@/app/infrastructure/data-access/oficiousu
 import { getEmpleados } from "@/app/infrastructure/data-access/empleados/get-empleados";
 import { getOficios } from "@/app/infrastructure/data-access/oficios/get-oficios";
 import { Departamentos, OficioUsuExterno, Empleados, Oficios } from "@/app/domain/entities";
-import ClientComponent from "./components/ClientComponent"; // Ajusta la ruta si es necesario
+import UseClientComponent from "./Hooks/UseClientComponent"; // Donde se maneja la lógica del cliente
 
 export default async function PruebasPage() {
-    // Usar const para obtener los datos
+    // Obtener los datos de manera asíncrona
     const departamentos: Departamentos[] = await getDepartamentos();
     const oficiosExternos: OficioUsuExterno[] = await getOficioUsuExternos();
     const empleados: Empleados[] = await getEmpleados();
@@ -16,11 +16,12 @@ export default async function PruebasPage() {
         <div className="p-6">
             <h1 className="text-lg font-bold mb-4">Oficio Expedidos</h1>
             
-            <ClientComponent
-                  departamentos={departamentos}   
-                  remitentes={oficiosExternos}     
-                  datosEmpleados={empleados}       
-                  rows={oficios}                   
+            {/* Aquí pasas los datos al componente que maneja la lógica de cliente */}
+            <UseClientComponent
+                departamentos={departamentos}
+                remitentes={oficiosExternos}
+                datosEmpleados={empleados}
+                rows={oficios}
             />
         </div>
     );

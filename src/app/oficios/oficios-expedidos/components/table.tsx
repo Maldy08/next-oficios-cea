@@ -1,3 +1,4 @@
+import { Oficios } from "@/app/domain/entities";
 import React from "react";
 import { FiEdit, FiEye, FiList } from "react-icons/fi";
 
@@ -9,11 +10,11 @@ interface Empleados {
 }
 
 interface TableProps {
-  rows: any[];
+  rows: Oficios[];
   handleOpenModal: (type: string) => void;
   handleCloseModal: () => void;
   modalType: string | null;
-  datosEmpleados: any[];
+  datosEmpleados: Empleados[];
 }
 
 const TableComponent: React.FC<TableProps> = ({
