@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import TableComponente from '../components/tablecomponente';
-import { useModal } from '../Hooks/useModal';
 
 interface Remitente {
   nombre: string;
@@ -36,33 +35,19 @@ const accessor = (item: Remitente, column: string) => {
 };
 
 const ModalRemitenteEnvio = (props: Props) => {
-  const {
-    searchTerm,
-    setSearchTerm,
-    paginatedData,
-    currentPage,
-    setCurrentPage,
-    rowsPerPage,
-    setRowsPerPage,
-    totalPages
-  } = useModal({
-    data: props.remitentes,
-    columnsToFilter: ['nombre', 'empresa', 'cargo']
-  });
-
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
 
-  if (!props.isOpen) return null;
-
   const handleSave = () => {
-    console.log('Guardando remitente:', selectedRemitente); // Verifica el valor al guardar
     if (selectedRemitente) {
       props.onSave(selectedRemitente);
       props.onClose();
     } else {
-      console.log('No hay remitente seleccionado.'); // Mensaje si no hay remitente seleccionado
+      console.log('No hay remitente seleccionado.');
     }
   };
+
+  if (!props.isOpen) return null;
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
@@ -83,45 +68,14 @@ const ModalRemitenteEnvio = (props: Props) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-        <TableComponente<Remitente>
-          data={paginatedData}
-          columns={columns}
-          accessor={accessor}
-          onRowClick={setSelectedRemitente}
-          columnKeyForRowClick="Nombre" // Pasa la clave de columna correcta aquí
-/>
-        </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={currentPage === 0}
-            >
-              <FaChevronLeft />
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={currentPage >= totalPages - 1}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">Filas por pág:</span>
-            <select
-              value={rowsPerPage}
-              onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-            </select>
-          </div>
+          <TableComponente<Remitente>
+            data={props.remitentes}
+            columns={columns}
+            accessor={accessor}
+            onRowClick={setSelectedRemitente}
+            columnKeyForRowClick="Nombre"
+            searchTerm={searchTerm}  // Solo pasa el término de búsqueda
+          />
         </div>
 
         <div className="flex justify-end space-x-4 mt-4">

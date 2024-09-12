@@ -79,44 +79,13 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
 
         <div className="flex-grow overflow-auto">
           <TableComponente<Empleado>
-            data={paginatedData}
+            data={props.datosEmpleados}
             columns={columns}
             accessor={accessor}
-            onRowClick={setSelectedPersona} // Pasamos la función directamente
+            onRowClick={setSelectedPersona}
             columnKeyForRowClick="Nombre Completo"
+            searchTerm={searchTerm}  // Pasar el término de búsqueda
           />
-        </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={currentPage === 0}
-            >
-              <FaChevronLeft />
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={currentPage >= totalPages - 1}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">Filas por pág:</span>
-            <select
-              value={rowsPerPage}
-              onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-            </select>
-          </div>
         </div>
 
         <div className="flex justify-end space-x-4 mt-4">
