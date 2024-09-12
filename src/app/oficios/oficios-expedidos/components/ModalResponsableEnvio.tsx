@@ -51,8 +51,6 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) => setSelectedResponsable(nombreCompleto);
-
   const handleSave = () => {
     if (selectedResponsable) {
       props.onSave(selectedResponsable);
@@ -83,6 +81,8 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
             data={paginatedData}
             columns={columns}
             accessor={accessor} // Pasa la función accessor
+            onRowClick={setSelectedResponsable} // Pasamos la función directamente
+            columnKeyForRowClick="Nombre Completo" 
           />
         </div>
 

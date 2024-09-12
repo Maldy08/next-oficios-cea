@@ -63,12 +63,13 @@ export default function ClientComponent({
   const filteredRows = rows.filter(
     (row) =>
       row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.tipo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.estatus?.toLowerCase().includes(searchTerm.toLowerCase())
+      row.remDepen?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.tipo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.noOficio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.remNombre?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.destNombre?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.estatus?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+
   );
 
   // Paginación de las filas filtradas
@@ -157,6 +158,7 @@ export default function ClientComponent({
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           departamentos={departamentos}
+          remitentes={remitentes}
         />
       )}
 

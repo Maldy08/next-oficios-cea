@@ -51,8 +51,6 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) => setSelectedDestinatario(nombreCompleto);
-
   const handleSave = () => {
     if (selectedDestinatario) {
       props.onSave(selectedDestinatario);
@@ -79,10 +77,12 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-        <TableComponente<Empleado>
+          <TableComponente<Empleado>
             data={paginatedData}
             columns={columns}
-            accessor={accessor} // Pasa la función accessor
+            accessor={accessor}
+            onRowClick={setSelectedDestinatario} // Pasamos la función directamente
+            columnKeyForRowClick="Nombre Completo"
           />
         </div>
 

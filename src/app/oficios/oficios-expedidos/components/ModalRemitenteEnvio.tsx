@@ -1,9 +1,7 @@
-"use client";
-
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import TableComponente from '../components/tablecomponente'; // Importa el componente genérico
-import { useModal } from '../Hooks/useModal'; 
+import TableComponente from '../components/tablecomponente';
+import { useModal } from '../Hooks/useModal';
 
 interface Remitente {
   nombre: string;
@@ -56,12 +54,13 @@ const ModalRemitenteEnvio = (props: Props) => {
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombre: string) => setSelectedRemitente(nombre);
-
   const handleSave = () => {
+    console.log('Guardando remitente:', selectedRemitente); // Verifica el valor al guardar
     if (selectedRemitente) {
       props.onSave(selectedRemitente);
       props.onClose();
+    } else {
+      console.log('No hay remitente seleccionado.'); // Mensaje si no hay remitente seleccionado
     }
   };
 
@@ -84,11 +83,13 @@ const ModalRemitenteEnvio = (props: Props) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-          <TableComponente<Remitente>
-            data={paginatedData}
-            columns={columns}
-            accessor={accessor}
-          />
+        <TableComponente<Remitente>
+          data={paginatedData}
+          columns={columns}
+          accessor={accessor}
+          onRowClick={setSelectedRemitente}
+          columnKeyForRowClick="Nombre" // Pasa la clave de columna correcta aquí
+/>
         </div>
 
         <div className="flex justify-between items-center mt-4">

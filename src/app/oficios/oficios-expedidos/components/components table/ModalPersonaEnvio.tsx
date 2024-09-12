@@ -52,8 +52,6 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) => setSelectedPersona(nombreCompleto);
-
   const handleSave = () => {
     if (selectedPersona) {
       props.onSave(selectedPersona);
@@ -84,6 +82,8 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
             data={paginatedData}
             columns={columns}
             accessor={accessor}
+            onRowClick={setSelectedPersona} // Pasamos la función directamente
+            columnKeyForRowClick="Nombre Completo"
           />
         </div>
 
