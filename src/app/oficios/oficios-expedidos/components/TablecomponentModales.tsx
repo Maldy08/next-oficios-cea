@@ -1,20 +1,31 @@
 import React from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface Column<T> {
   header: string;
-  accessor: (item: T) => string | number; // Ajuste para no usar React.ReactNode
+  accessor: (item: T) => string | number;
 }
 
 interface TableComponentModalesProps<T> {
   data: T[];
   columns: Column<T>[];
-  onRowClick?: (item: T) => void;
+  onRowClick: (item: T) => void;
+  currentPage: number;
+  rowsPerPage: number;
+  totalPages: number;
+  setCurrentPage: (page: number) => void;
+  setRowsPerPage: (rows: number) => void;
 }
 
 function TableComponentModales<T>({
   data,
   columns,
   onRowClick,
+  currentPage,
+  rowsPerPage,
+  totalPages,
+  setCurrentPage,
+  setRowsPerPage,
 }: TableComponentModalesProps<T>) {
   return (
     <div className="overflow-x-auto">
@@ -43,14 +54,49 @@ function TableComponentModales<T>({
                   key={colIndex}
                   className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
                 >
-                  {column.accessor(item)}{" "}
-                  {/* Esto ahora retorna string o number */}
+                  {column.accessor(item)}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Paginación */}
+      <div className="flex justify-between items-center mt-4">
+        <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            disabled={currentPage === 0}
+          >
+            <FaChevronLeft />
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setCurrentPage(Math.min(totalPages - 1, currentPage + 1))
+            }
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            disabled={currentPage >= totalPages - 1}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm">Filas por pág:</span>
+          <select
+            value={rowsPerPage}
+            onChange={(e) => setRowsPerPage(parseInt(e.target.value, 10))}
+            className="border border-gray-300 rounded px-2 py-1 text-sm"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+          </select>
+        </div>
+      </div>
     </div>
   );
 }
