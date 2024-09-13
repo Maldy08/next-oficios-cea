@@ -9,8 +9,7 @@ interface Column<T> {
 interface TableComponentModalesProps<T> {
   data: T[];
   columns: Column<T>[];
-  onRowClick: (item: T) => void;
-  // onRowClick: (item: T) => void;
+  onRowClick?: (item: T) => void;
   currentPage: number;
   rowsPerPage: number;
   totalPages: number;

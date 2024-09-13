@@ -102,7 +102,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         <TableComponentModales<Empleados>
           data={paginatedData}
           columns={columns}
-          onRowClick={handleRowClick}
+          //onRowClick={handleRowClick}
           currentPage={currentPage}
           rowsPerPage={rowsPerPage}
           totalPages={totalPages}
