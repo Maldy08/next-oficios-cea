@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface TableComponenteProps<T> {
@@ -20,30 +20,26 @@ function TableComponente<T>({
 }: TableComponenteProps<T>) {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Valor inicial
+  const [selectedRowValue, setSelectedRowValue] = useState<string | null>(null); // Valor único de la fila seleccionada
 
   // Filtrado de datos
-  const filteredData = useMemo(
-    () => data.filter(item =>
-      columns.some(column =>
-        (accessor(item, column) as string).toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    ),
-    [data, columns, accessor, searchTerm]
+  const filteredData = data.filter(item =>
+    columns.some(column =>
+      (accessor(item, column) as string).toLowerCase().includes(searchTerm.toLowerCase())
+    )
   );
 
   // Paginación de datos
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const paginatedData = useMemo(
-    () => filteredData.slice(
-      currentPage * rowsPerPage,
-      (currentPage + 1) * rowsPerPage
-    ),
-    [filteredData, currentPage, rowsPerPage]
+  const paginatedData = filteredData.slice(
+    currentPage * rowsPerPage,
+    (currentPage + 1) * rowsPerPage
   );
 
   const handleRowClick = (rowIndex: number) => {
     const value = accessor(paginatedData[rowIndex], columnKeyForRowClick) as string;
     onRowClick(value);
+    setSelectedRowValue(value); // Establece la fila seleccionada con su valor único
   };
 
   return (
@@ -63,22 +59,27 @@ function TableComponente<T>({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {paginatedData.map((item, rowIndex) => (
-            <tr
-              key={rowIndex}
-              onClick={() => handleRowClick(rowIndex)}
-              className={`cursor-pointer ${rowIndex % 2 === 0 ? 'bg-gray-100' : 'bg-white'} hover:bg-gray-200`}
-            >
-              {columns.map((column, colIndex) => (
-                <td
-                  key={colIndex}
-                  className="px-6 py-4 text-sm font-medium text-gray-900"
-                >
-                  {accessor(item, column)}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {paginatedData.map((item, rowIndex) => {
+            const rowValue = accessor(item, columnKeyForRowClick) as string;
+            return (
+              <tr
+                key={rowIndex}
+                onClick={() => handleRowClick(rowIndex)}
+                className={`cursor-pointer ${
+                  rowValue === selectedRowValue ? 'bg-blue-200' : (rowIndex % 2 === 0 ? 'bg-gray-100' : 'bg-white')
+                } hover:bg-gray-200`}
+              >
+                {columns.map((column, colIndex) => (
+                  <td
+                    key={colIndex}
+                    className="px-6 py-4 text-sm font-medium text-gray-900"
+                  >
+                    {accessor(item, column)}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
