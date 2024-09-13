@@ -9,8 +9,6 @@ interface Empleados {
   idPue: number;
 }
 
-interface Nada {}
-
 interface TableProps {
   rows: Oficios[];
   handleOpenModal: (type: string) => void;

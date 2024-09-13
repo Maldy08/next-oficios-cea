@@ -1,100 +1,52 @@
+"use client";
+
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import TableComponent from "./table";
-import ModalOficioExpedido from "./ModalOficioExpedido";
-import ModalEdit from "./components table/ModalEdit";
-import ModalList from "./components table/ModalList";
-import {
-  Departamentos,
-  Empleados,
-  Oficios,
-  OficioUsuExterno,
-} from "@/app/domain/entities";
-
+import ModalEdit from "../components/components table/ModalEdit";
+import TableComponent from "../components/table";
+import ModalOficioExpedido from "../components/ModalOficioExpedido";
+import ModalList from "../components/components table/ModalList";
+import UseClienteComponent from "../Hooks/UseClientComponent";
 interface ClientComponentProps {
-  rows: Oficios[];
-  departamentos: Departamentos[];
-  datosEmpleados: Empleados[];
-  remitentes: OficioUsuExterno[];
+  rows: any[];
+  departamentos: any[];
+  datosEmpleados: any[];
+  remitentes: any[];
 }
 
-const UseClientComponent = ({
+export default function ClientComponent({
   rows,
   departamentos,
   datosEmpleados,
   remitentes,
-}: ClientComponentProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(0);
-  const [modalType, setModalType] = useState<string | null>(null);
-
-  const paginatedRows = rows.slice(
-    page * rowsPerPage,
-    (page + 1) * rowsPerPage
-  );
-
-  const handleOpenModal = (type: string) => setModalType(type);
-  const handleCloseModal = () => setModalType(null);
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleChangePage = (newPage: number) => setPage(newPage);
-
-  const handleSave = () => {
-    // Lógica para guardar los cambios
-  };
-
-  return {
+}: ClientComponentProps) {
+  const {
+    modalType,
+    setModalType,
     searchTerm,
     setSearchTerm,
     rowsPerPage,
     setRowsPerPage,
     page,
     setPage,
-    modalType,
-    setModalType,
-    paginatedRows,
     handleOpenModal,
     handleCloseModal,
-    handleSearchChange,
-    handleChangeRowsPerPage,
-    handleChangePage,
     handleSave,
-  };
-};
-
-const ClientComponent = ({
-  rows,
-  departamentos,
-  datosEmpleados,
-  remitentes,
-}: ClientComponentProps) => {
-  const {
-    searchTerm,
-    handleSearchChange,
-    rowsPerPage,
     handleChangeRowsPerPage,
-    page,
     handleChangePage,
-    modalType,
-    handleOpenModal,
-    handleCloseModal,
+    filteredRows,
     paginatedRows,
-    handleSave,
-  } = UseClientComponent({ rows, departamentos, datosEmpleados, remitentes });
+    handleSearchChange,
+  } = UseClienteComponent({
+    rows,
+    departamentos,
+    datosEmpleados,
+    remitentes,
+  });
 
   return (
     <>
+      {/* Barra de búsqueda y botón de nuevo oficio */}
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => handleOpenModal("oficioExpedido")}
@@ -115,6 +67,7 @@ const ClientComponent = ({
         </div>
       </div>
 
+      {/* Tabla con los datos filtrados y paginados */}
       <TableComponent
         rows={paginatedRows}
         handleOpenModal={handleOpenModal}
@@ -144,7 +97,7 @@ const ClientComponent = ({
           </button>
           <button
             onClick={() => handleChangePage(page + 1)}
-            disabled={(page + 1) * rowsPerPage >= rows.length}
+            disabled={(page + 1) * rowsPerPage >= filteredRows.length}
             className="p-2 border border-gray-300 rounded-md"
           >
             Siguiente
@@ -180,6 +133,4 @@ const ClientComponent = ({
       )}
     </>
   );
-};
-
-export default ClientComponent;
+}

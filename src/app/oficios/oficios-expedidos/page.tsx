@@ -8,8 +8,7 @@ import {
   Empleados,
   Oficios,
 } from "@/app/domain/entities";
-import UseClientComponent from "./Hooks/UseClientComponent"; // Donde se maneja la lógica del cliente
-
+import ClientComponent from "./components/ClientComponent";
 export default async function PruebasPage() {
   // Obtener los datos de manera asíncrona
   const departamentos: Departamentos[] = await getDepartamentos();
@@ -22,7 +21,7 @@ export default async function PruebasPage() {
       <h1 className="text-lg font-bold mb-4">Oficio Expedidos</h1>
 
       {/* Aquí pasas los datos al componente que maneja la lógica de cliente */}
-      <UseClientComponent
+      <ClientComponent
         departamentos={departamentos}
         remitentes={oficiosExternos}
         datosEmpleados={empleados}
