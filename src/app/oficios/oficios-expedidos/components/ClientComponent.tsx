@@ -39,9 +39,6 @@ export default function ClientComponent({
     handleSearchChange,
   } = UseClienteComponent({
     rows,
-    departamentos,
-    datosEmpleados,
-    remitentes,
   });
 
   return (

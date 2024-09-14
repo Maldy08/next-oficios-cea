@@ -1,25 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { FiSearch } from "react-icons/fi";
-import ModalEdit from "../components/components table/ModalEdit";
-import TableComponent from "../components/table";
-import ModalOficioExpedido from "../components/ModalOficioExpedido";
-import ModalList from "../components/components table/ModalList";
 
 interface ClientComponentProps {
   rows: any[];
-  departamentos: any[];
-  datosEmpleados: any[];
-  remitentes: any[];
 }
 
-export default function UseClienteComponent({
-  rows,
-  departamentos,
-  datosEmpleados,
-  remitentes,
-}: ClientComponentProps) {
+export default function UseClienteComponent({ rows }: ClientComponentProps) {
   const [modalType, setModalType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);

@@ -5,6 +5,7 @@ import ModalDestinatarioEnvio from "../ModalDestinatarioEnvio";
 import ModalRemitenteEnvio from "../ModalRemitenteEnvio";
 import ModalResponsableEnvio from "../ModalResponsableEnvio";
 import ModalPersonaEnvio from "./ModalPersonaEnvio";
+import UseModalOficioExpedido from "../../Hooks/UseModalOficioExpedido";
 
 interface ModalOficioExpedidoProps {
   isOpen: boolean;
@@ -34,9 +35,6 @@ interface remitentes {
   cargo: string;
 }
 
-
-
-
 export default function ModalOficioExpedido({
   isOpen,
   onClose,
@@ -45,55 +43,38 @@ export default function ModalOficioExpedido({
   datosEmpleados,
   remitentes,
 }: ModalOficioExpedidoProps) {
-  const [textareaRows, setTextareaRows] = useState(3);
-  const [currentDate, setCurrentDate] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
-  const [showRemitenteModal, setShowRemitenteModal] = useState(false);
-  const [showResponsableModal, setShowResponsableModal] = useState(false);
-  const [showPersonaEnvioModal, setShowPersonaEnvioModal] = useState(false);
-  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
-  const [remitenteName, setRemitenteName] = useState<string>("");
-  const [responsableName, setResponsableName] = useState<string>("");
-  const [personaEntregaName, setPersonaEntregaName] = useState<string>("");
-  const [destinatarioType, setDestinatarioType] = useState("");
-  const [selectedArea, setSelectedArea] = useState<string>("");
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    if (file && file.type !== "application/pdf") {
-      alert("Por favor, selecciona un archivo PDF.");
-      setSelectedFile(null);
-    } else {
-      setSelectedFile(file);
-    }
-  };
-
-  const handleSaveDestinatario = (name: string) => {
-    setDestinatarioName(name);
-    setShowDestinatarioModal(false);
-  };
-
-  const handleSaveRemitente = (name: string) => {
-    setRemitenteName(name);
-    setShowRemitenteModal(false);
-  };
-
-  const handleSaveResponsable = (name: string) => {
-    setResponsableName(name);
-    setShowResponsableModal(false);
-  };
-
-  const handleSavePersonaEnvio = (name: string) => {
-    setPersonaEntregaName(name);
-    setShowPersonaEnvioModal(false);
-  };
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedArea(event.target.value);
-  };
-
-  if (!isOpen) return null;
+  const {
+    textareaRows,
+    setTextareaRows,
+    currentDate,
+    setCurrentDate,
+    selectedFile,
+    handleFileChange,
+    showDestinatarioModal,
+    setShowDestinatarioModal,
+    showRemitenteModal,
+    setShowRemitenteModal,
+    showResponsableModal,
+    setShowResponsableModal,
+    showPersonaEnvioModal,
+    setShowPersonaEnvioModal,
+    destinatarioName,
+    setDestinatarioName,
+    remitenteName,
+    setRemitenteName,
+    destinatarioType,
+    setDestinatarioType,
+    responsableName,
+    setResponsableName,
+    personaEntregaName,
+    setPersonaEntregaName,
+    selectedArea,
+    handleSelectChange,
+    handleSaveDestinatario,
+    handleSaveRemitente,
+    handleSaveResponsable,
+    handleSavePersonaEnvio,
+  } = UseModalOficioExpedido({ departamentos });
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
@@ -390,8 +371,8 @@ export default function ModalOficioExpedido({
             isOpen={showRemitenteModal}
             onClose={() => setShowRemitenteModal(false)}
             onSave={handleSaveRemitente}
-            remitentes={remitentes}          
-            />
+            remitentes={remitentes}
+          />
         )}
 
         {showResponsableModal && (

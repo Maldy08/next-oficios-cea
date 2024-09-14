@@ -75,8 +75,6 @@ export default function ModalOficioExpedido({
     handleSavePersonaEnvio,
   } = UseModalOficioExpedido({ departamentos });
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
       <div
