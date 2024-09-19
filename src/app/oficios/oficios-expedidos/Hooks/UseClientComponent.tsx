@@ -14,7 +14,7 @@ interface ClientComponentProps {
   remitentes: any[];
 }
 
-export default function ClientComponent({
+export default function UseClienteComponent({
   rows,
   departamentos,
   datosEmpleados,
@@ -63,13 +63,12 @@ export default function ClientComponent({
   const filteredRows = rows.filter(
     (row) =>
       row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remDepen?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.tipo?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.noOficio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.remNombre?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.destNombre?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.estatus?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-
+      row.remDepen?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.tipo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.noOficio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.remNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.destNombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.estatus?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Paginación de las filas filtradas
@@ -78,93 +77,22 @@ export default function ClientComponent({
     page * rowsPerPage + rowsPerPage
   );
 
-  return (
-    <>
-      {/* Barra de búsqueda y botón de nuevo oficio */}
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={() => handleOpenModal("oficioExpedido")}
-          className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-        >
-          INGRESAR OFICIO EXPEDIDO
-        </button>
-
-        <div className="w-1/2 relative">
-          <input
-            type="text"
-            placeholder="Buscar"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full p-2 border border-gray-300 rounded pl-10"
-          />
-          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-        </div>
-      </div>
-
-      {/* Tabla con los datos filtrados y paginados */}
-      <TableComponent
-        rows={paginatedRows}
-        handleOpenModal={handleOpenModal}
-        handleCloseModal={handleCloseModal}
-        modalType={modalType}
-        datosEmpleados={datosEmpleados}
-      />
-
-      {/* Paginación */}
-      <div className="flex justify-end items-center mt-4">
-        <select
-          value={rowsPerPage}
-          onChange={handleChangeRowsPerPage}
-          className="mr-4 p-2 border border-gray-300 rounded-md"
-        >
-          <option value={5}>5 filas</option>
-          <option value={10}>10 filas</option>
-          <option value={25}>25 filas</option>
-        </select>
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleChangePage(page - 1)}
-            disabled={page === 0}
-            className="p-2 border border-gray-300 rounded-md"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => handleChangePage(page + 1)}
-            disabled={(page + 1) * rowsPerPage >= filteredRows.length}
-            className="p-2 border border-gray-300 rounded-md"
-          >
-            Siguiente
-          </button>
-        </div>
-      </div>
-
-      {/* Modales */}
-      {modalType === "oficioExpedido" && (
-        <ModalOficioExpedido
-          isOpen={modalType === "oficioExpedido"}
-          onClose={handleCloseModal}
-          onSave={handleSave}
-          departamentos={departamentos}
-          datosEmpleados={datosEmpleados}
-          remitentes={remitentes}
-        />
-      )}
-
-      {modalType === "edit" && (
-        <ModalEdit
-          isOpen={modalType === "edit"}
-          onClose={handleCloseModal}
-          onSave={handleSave}
-          datosEmpleados={datosEmpleados}
-          departamentos={departamentos}
-          remitentes={remitentes}
-        />
-      )}
-
-      {modalType === "list" && (
-        <ModalList isOpen={modalType === "list"} onClose={handleCloseModal} />
-      )}
-    </>
-  );
+  return {
+    modalType,
+    setModalType,
+    searchTerm,
+    setSearchTerm,
+    rowsPerPage,
+    setRowsPerPage,
+    page,
+    setPage,
+    handleOpenModal,
+    handleCloseModal,
+    handleSave,
+    handleChangeRowsPerPage,
+    handleChangePage,
+    filteredRows,
+    paginatedRows,
+    handleSearchChange,
+  };
 }

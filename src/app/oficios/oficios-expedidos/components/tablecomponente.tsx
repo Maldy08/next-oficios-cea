@@ -39,7 +39,7 @@ function TableComponente<T>({
   const handleRowClick = (rowIndex: number) => {
     const value = accessor(paginatedData[rowIndex], columnKeyForRowClick) as string;
     onRowClick(value);
-    setSelectedRowValue(value); // Establece la fila seleccionada con su valor único
+    setSelectedRowValue(value); 
   };
 
   return (

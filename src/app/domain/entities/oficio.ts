@@ -1,4 +1,5 @@
 export interface Oficios {
+    some(arg0: (field: any) => any): unknown;
     ejercicio:         number;
     folio:             number;
     eor:               number;
