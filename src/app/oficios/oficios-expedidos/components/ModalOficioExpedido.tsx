@@ -8,7 +8,7 @@ import {
   ModalPersonaEnvio,
   UseModalOficioExpedido,
 } from '../'; // Ajusta la ruta según sea necesario
-import { FaUserPlus } from 'react-icons/fa';
+import { FaSearch, FaUserPlus } from 'react-icons/fa';
 
 interface Departamento {
   idCea: number;
@@ -296,7 +296,7 @@ export default function ModalOficioExpedido({
           value={values.personaEntrega}
           onClick={() => setShowPersonaEnvioModal(true)}
         />
-        <FaUserPlus
+        <FaSearch
           onClick={() => setShowPersonaEnvioModal(true)}
           className="absolute right-2 top-2 text-gray-400 cursor-pointer"
         />

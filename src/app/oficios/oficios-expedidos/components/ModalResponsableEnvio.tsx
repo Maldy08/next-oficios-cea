@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 import { useModal } from '../Hooks/useModal'; 
-import TableComponente from '../components/tablecomponente'; // Importa el componente genérico
+import TableComponente from '../components/tablecomponente';
 
 interface Empleado {
   nombreCompleto: string;
@@ -48,13 +48,17 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
   });
 
   const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   if (!props.isOpen) return null;
 
   const handleSave = () => {
-    if (selectedResponsable) {
+    if (!selectedResponsable) {
+      setError('Debes seleccionar un responsable');
+    } else {
       props.onSave(selectedResponsable);
       props.onClose();
+      setError(null); // Limpiar error si se guarda correctamente
     }
   };
 
@@ -81,11 +85,16 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
             data={props.datosEmpleados}
             columns={columns}
             accessor={accessor}
-            onRowClick={setSelectedResponsable}
+            onRowClick={(nombreCompleto) => {
+              setSelectedResponsable(nombreCompleto);
+              setError(null); // Limpiar error al seleccionar un responsable
+            }}
             columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}  // Pasar el término de búsqueda
+            searchTerm={searchTerm}
           />
         </div>
+
+        {error && <div className="text-red-500">{error}</div>}
 
         <div className="flex justify-end space-x-4 mt-4">
           <button

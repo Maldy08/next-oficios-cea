@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import TableComponente from '../components/tablecomponente'; // Asegúrate de ajustar la ruta según tu estructura de archivos
+import { FaSearch } from 'react-icons/fa';
+import TableComponente from '../components/tablecomponente'; 
 import { useModal } from '../Hooks/useModal'; 
 
 interface Empleado {
@@ -36,27 +36,24 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const {
     searchTerm,
     setSearchTerm,
-    paginatedData,
-    currentPage,
-    setCurrentPage,
-    rowsPerPage,
-    setRowsPerPage,
-    totalPages
   } = useModal({
     data: props.datosEmpleados,
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
   });
 
   const [selectedDestinatario, setSelectedDestinatario] = useState<string | null>(null);
-
-  if (!props.isOpen) return null;
+  const [error, setError] = useState<string | null>(null);
 
   const handleSave = () => {
-    if (selectedDestinatario) {
+    if (!selectedDestinatario) {
+      setError('Debes seleccionar un destinatario');
+    } else {
       props.onSave(selectedDestinatario);
       props.onClose();
     }
   };
+
+  if (!props.isOpen) return null;
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
@@ -81,11 +78,16 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
             data={props.datosEmpleados}
             columns={columns}
             accessor={accessor}
-            onRowClick={setSelectedDestinatario}
+            onRowClick={(name) => {
+              setSelectedDestinatario(name);
+              setError(null); // Limpiar error al seleccionar un destinatario
+            }}
             columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}  // Pasar el término de búsqueda
+            searchTerm={searchTerm}
           />
         </div>
+
+        {error && <div className="text-red-500">{error}</div>}
 
         <div className="flex justify-end space-x-4 mt-4">
           <button

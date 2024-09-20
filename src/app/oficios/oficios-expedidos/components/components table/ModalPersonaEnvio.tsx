@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import TableComponente from '../../components/tablecomponente'; // Asegúrate de ajustar la ruta según tu estructura de archivos
-import { useModal } from '../../Hooks/useModal'; 
+import TableComponente from '../../components/tablecomponente';
+import { useModal } from '../../Hooks/useModal';
 
 interface Empleado {
   nombreCompleto: string;
@@ -49,13 +49,17 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
   });
 
   const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   if (!props.isOpen) return null;
 
   const handleSave = () => {
-    if (selectedPersona) {
+    if (!selectedPersona) {
+      setError('Debes seleccionar una persona');
+    } else {
       props.onSave(selectedPersona);
       props.onClose();
+      setError(null); // Limpiar error si se guarda correctamente
     }
   };
 
@@ -82,11 +86,16 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
             data={props.datosEmpleados}
             columns={columns}
             accessor={accessor}
-            onRowClick={setSelectedPersona}
+            onRowClick={(nombreCompleto) => {
+              setSelectedPersona(nombreCompleto);
+              setError(null); // Limpiar error al seleccionar una persona
+            }}
             columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}  // Pasar el término de búsqueda
+            searchTerm={searchTerm}
           />
         </div>
+
+        {error && <div className="text-red-500">{error}</div>}
 
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center space-x-2">

@@ -37,13 +37,15 @@ const accessor = (item: Remitente, column: string) => {
 const ModalRemitenteEnvio = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSave = () => {
-    if (selectedRemitente) {
+    if (!selectedRemitente) {
+      setError('Debes seleccionar un remitente');
+    } else {
       props.onSave(selectedRemitente);
       props.onClose();
-    } else {
-      console.log('No hay remitente seleccionado.');
+      setError(null); // Limpiar error si se guarda correctamente
     }
   };
 
@@ -72,11 +74,16 @@ const ModalRemitenteEnvio = (props: Props) => {
             data={props.remitentes}
             columns={columns}
             accessor={accessor}
-            onRowClick={setSelectedRemitente}
+            onRowClick={(nombre) => {
+              setSelectedRemitente(nombre);
+              setError(null); // Limpiar error al seleccionar un remitente
+            }}
             columnKeyForRowClick="Nombre"
-            searchTerm={searchTerm}  // Solo pasa el término de búsqueda
+            searchTerm={searchTerm}
           />
         </div>
+
+        {error && <div className="text-red-500">{error}</div>}
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
