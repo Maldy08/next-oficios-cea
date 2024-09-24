@@ -4,7 +4,7 @@ interface UseModalParams<T> {
   data: T[];
   columnsToFilter: (keyof T)[];
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (item: T) => void; // Cambiado de (name: string) => void a (item: T) => void
 }
 
 export function useModal<T extends Record<string, any>>({

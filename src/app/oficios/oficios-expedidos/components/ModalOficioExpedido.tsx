@@ -552,9 +552,11 @@ export default function ModalOficioExpedido({
               <ModalDestinatarioEnvio
                 isOpen={showDestinatarioModal}
                 onClose={() => setShowDestinatarioModal(false)}
-                onSave={(nombre) => {
-                  setDestinatarioName(nombre);
-                  setFieldValue("destinatarioName", nombre);
+                onSave={(datosEmpleados) => {
+                  // Aquí estamos guardando solo el nombre del destinatario
+                  const nombreDestinatario = datosEmpleados.nombreCompleto; // O la propiedad que almacene el nombre
+                  setDestinatarioName(nombreDestinatario);
+                  setFieldValue("destinatarioName", nombreDestinatario);
                   setShowDestinatarioModal(false);
                 }}
                 datosEmpleados={datosEmpleados}
@@ -562,9 +564,10 @@ export default function ModalOficioExpedido({
               <ModalRemitenteEnvio
                 isOpen={showRemitenteModal}
                 onClose={() => setShowRemitenteModal(false)}
-                onSave={(nombre) => {
-                  setRemitenteName(nombre);
-                  setFieldValue("remitenteName", nombre);
+                onSave={(remitente) => {
+                  const nombreRemitente = remitente.nombre; // O la propiedad que almacene el nombre
+                  setRemitenteName(remitente.nombre); // Asegúrate de asignar solo el nombre del objeto Remitente
+                  setFieldValue("remitenteName", remitente.nombre); // Asigna el nombre, no el objeto completo
                   setShowRemitenteModal(false);
                 }}
                 remitentes={remitentes}
@@ -572,9 +575,13 @@ export default function ModalOficioExpedido({
               <ModalResponsableEnvio
                 isOpen={showResponsableModal}
                 onClose={() => setShowResponsableModal(false)}
-                onSave={(nombre) => {
-                  setResponsableName(nombre);
-                  setFieldValue("responsableName", nombre);
+                onSave={(datosEmpleados) => {
+                  const nombreResposableEnvio = datosEmpleados.nombreCompleto; // O la propiedad que almacene el nombre
+                  setResponsableName(datosEmpleados.nombreCompleto);
+                  setFieldValue(
+                    "responsableName",
+                    datosEmpleados.nombreCompleto
+                  );
                   setShowResponsableModal(false);
                 }}
                 datosEmpleados={datosEmpleados}
@@ -582,9 +589,13 @@ export default function ModalOficioExpedido({
               <ModalPersonaEnvio
                 isOpen={showPersonaEnvioModal}
                 onClose={() => setShowPersonaEnvioModal(false)}
-                onSave={(nombre) => {
-                  setPersonaEntregaName(nombre);
-                  setFieldValue("personaEntrega", nombre);
+                onSave={(datosEmpleados) => {
+                  const nombrePersonaEnvio = datosEmpleados.nombreCompleto; // O la propiedad que almacene el nombre
+                  setPersonaEntregaName(datosEmpleados.nombreCompleto);
+                  setFieldValue(
+                    "personaEntrega",
+                    datosEmpleados.nombreCompleto
+                  );
                   setShowPersonaEnvioModal(false);
                 }}
                 datosEmpleados={datosEmpleados}

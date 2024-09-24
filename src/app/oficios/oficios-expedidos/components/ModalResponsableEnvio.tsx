@@ -12,7 +12,7 @@ interface Empleados {
 interface ModalPersonaEnvioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
 }
 
@@ -26,6 +26,8 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
     rowsPerPage,
     setRowsPerPage,
     totalPages,
+    selectedItem,
+    handleRowClick,
   } = useModal({
     data: props.datosEmpleados,
     columnsToFilter: [
@@ -33,26 +35,18 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
       "descripcionDepto",
       "descripcionPuesto",
     ],
-    onClose: props.onClose, // Pasando la función onClose desde los props
-    onSave: (selectedName: string) => {
-      props.onSave(selectedName); // Pasando la función onSave desde los props
-    },
+    onClose: props.onClose,
+    onSave: props.onSave, // Dej
   });
-
-  const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
 
   if (!props.isOpen) return null;
 
-  const handleRowClick = (persona: Empleados) =>
-    setSelectedPersona(persona.nombreCompleto);
-
-  const handleSave = () => {
-    if (selectedPersona) {
-      props.onSave(selectedPersona);
-      props.onClose();
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
-  };
-
+  }
   // Define las columnas de la tabla
   const columns = [
     {
@@ -118,7 +112,7 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={onSave}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar

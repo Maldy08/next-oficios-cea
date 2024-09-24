@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface Column<T> {
@@ -27,6 +27,15 @@ function TableComponentModales<T>({
   setCurrentPage,
   setRowsPerPage,
 }: TableComponentModalesProps<T>) {
+  const [selectedRow, setSelectedRow] = useState<number | null>(null); // Estado para almacenar la fila seleccionada
+
+  const handleRowClick = (index: number, item: T) => {
+    setSelectedRow(index); // Guardar el índice de la fila seleccionada
+    if (onRowClick) {
+      onRowClick(item); // Llamar la función onRowClick si está definida
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -46,13 +55,15 @@ function TableComponentModales<T>({
           {data.map((item, rowIndex) => (
             <tr
               key={rowIndex}
-              onClick={() => onRowClick && onRowClick(item)}
-              className="cursor-pointer hover:bg-blue-100"
+              onClick={() => handleRowClick(rowIndex, item)}
+              className={`cursor-pointer hover:bg-blue-100 ${
+                selectedRow === rowIndex ? "bg-blue-200" : ""
+              }`} // Aplicar color de fondo si la fila está seleccionada
             >
               {columns.map((column, colIndex) => (
                 <td
                   key={colIndex}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                  className="px-6 py-4 text-sm text-gray-900 break-words whitespace-normal" // Aquí se asegura el ajuste de texto
                 >
                   {column.accessor(item)}
                 </td>

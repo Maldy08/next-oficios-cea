@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { useModal } from "../Hooks/useModal";
 import TableComponentModales from "./TablecomponentModales";
 
@@ -15,13 +15,11 @@ interface Props {
   remitentes: Remitente[];
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (remitente: Remitente) => void; // Cambiamos a tipo 'Remitente'
 }
 
 const ModalRemitenteEnvio = (props: Props) => {
   const {
-    setSelectedRemitente,
-    selectedRemitente,
     searchTerm,
     setSearchTerm,
     paginatedData,
@@ -30,23 +28,16 @@ const ModalRemitenteEnvio = (props: Props) => {
     rowsPerPage,
     setRowsPerPage,
     totalPages,
-    handleSave,
     handleRowClick,
+    selectedItem, // Aquí obtenemos el item seleccionado, que es de tipo Remitente
   } = useModal({
     data: props.remitentes,
     columnsToFilter: ["nombre", "empresa", "cargo"],
-    onClose: function (): void {
-      throw new Error("Function not implemented.");
-    },
-    onSave: function (selectedDestinatario: string): void {
-      throw new Error("Function not implemented.");
-    },
+    onClose: props.onClose,
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
 
-  function onSave(item: Remitente): void {
-    throw new Error("Function not implemented.");
-  }
-
+  // Definir columnas de la tabla
   const columns = [
     {
       header: "Nombre Completo",
@@ -61,6 +52,16 @@ const ModalRemitenteEnvio = (props: Props) => {
       accessor: (row: Remitente) => row.cargo,
     },
   ];
+
+  // Función para guardar el remitente seleccionado y cerrar el modal
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
+    }
+  }
+
+  if (!props.isOpen) return null;
 
   return (
     <div
@@ -110,7 +111,7 @@ const ModalRemitenteEnvio = (props: Props) => {
           </button>
           <button
             type="button"
-            onClick={() => handleSave(onSave, props.onClose)}
+            onClick={onSave} // Guardar el remitente seleccionado
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar

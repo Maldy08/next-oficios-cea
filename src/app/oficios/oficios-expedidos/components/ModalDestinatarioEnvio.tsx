@@ -14,7 +14,7 @@ interface Empleados {
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (datosEmpleados: Empleados) => void; // Cambiamos a tipo 'Remitente'
   datosEmpleados: Empleados[];
 }
 
@@ -28,6 +28,8 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     rowsPerPage,
     setRowsPerPage,
     totalPages,
+    selectedItem,
+    handleRowClick,
   } = useModal({
     data: props.datosEmpleados,
     columnsToFilter: [
@@ -36,9 +38,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       "descripcionPuesto",
     ],
     onClose: props.onClose,
-    onSave: (selectedDestinatario: string) => {
-      props.onSave(selectedDestinatario);
-    },
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
 
   const columns = [
@@ -56,21 +56,14 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     },
   ];
 
-  const [selectedDestinatario, setSelectedDestinatario] = useState<
-    string | null
-  >(null);
-
   if (!props.isOpen) return null;
 
-  const handleRowClick = (nombreCompleto: string) =>
-    setSelectedDestinatario(nombreCompleto);
-
-  const handleSave = () => {
-    if (selectedDestinatario) {
-      props.onSave(selectedDestinatario);
-      props.onClose();
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
-  };
+  }
 
   return (
     <div
@@ -102,7 +95,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         <TableComponentModales<Empleados>
           data={paginatedData}
           columns={columns}
-          //onRowClick={handleRowClick}
+          onRowClick={handleRowClick}
           currentPage={currentPage}
           rowsPerPage={rowsPerPage}
           totalPages={totalPages}
@@ -120,7 +113,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={onSave}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar
