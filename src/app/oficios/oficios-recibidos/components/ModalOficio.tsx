@@ -144,11 +144,15 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                 <div className="flex-1 mb-4 sm:mb-0">
                   <label className="block mb-2">Número de Oficio</label>
                   <Field
-                    name="numeroOficio"
-                    type="text"
-                    placeholder="Número de Oficio"
-                    className="border border-gray-300 rounded p-2 w-full text-sm"
-                  />
+        id="numeroOficio"
+        name="numeroOficio"
+        type="text"  
+        placeholder="Número de oficio"
+        className="border border-gray-300 rounded p-2 w-full"
+        onInput={(e: { target: { value: string; }; }) => {
+          e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Solo permite números
+        }}
+      />
                   <ErrorMessage name="numeroOficio" component="div" className="text-red-600" />
                 </div>
                 <div className="flex-1 mb-4 sm:mb-0">
@@ -381,9 +385,8 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                   <button
                 type="submit"
                 className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-                disabled={isSubmitting} // Evitar múltiples envíos
               >
-                {isSubmitting ? 'Guardando...' : 'Guardar'}
+                Guardar
               </button>
                 </div>
               </div>

@@ -270,7 +270,7 @@ export default function ModalOficioExpedido({
       <Field
         id="numeroOficio"
         name="numeroOficio"
-        type="text"  // Cambia a "text" para evitar las flechas
+        type="text"  
         placeholder="Número de oficio"
         className="border border-gray-300 rounded p-2 w-full"
         onInput={(e: { target: { value: string; }; }) => {
