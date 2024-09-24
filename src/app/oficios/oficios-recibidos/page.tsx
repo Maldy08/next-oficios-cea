@@ -1,9 +1,23 @@
-"use client";
+import { getDepartamentos } from "@/app/infrastructure/data-access/departamentos/get-departamentos.data-access";
+import { getOficioUsuExternos } from "@/app/infrastructure/data-access/oficiousuexterno/get-oficio-usu-externo.data-access";
+import { getEmpleados } from "@/app/infrastructure/data-access/empleados/get-empleados";
+import { getOficios } from "@/app/infrastructure/data-access/oficios/get-oficios";
+import {
+  Departamentos,
+  OficioUsuExterno,
+  Empleados,
+  Oficios,
+} from "@/app/domain/entities";
 
 import { useState } from "react";
 import ModalOficio from "./components/ModalOficio";
 
-export default function OficiosRecibidosPage() {
+export default async function OficiosRecibidosPage() {
+  const departamentos: Departamentos[] = await getDepartamentos();
+  const oficiosExternos: OficioUsuExterno[] = await getOficioUsuExternos();
+  const empleados: Empleados[] = await getEmpleados();
+  const oficios: Oficios[] = await getOficios();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
