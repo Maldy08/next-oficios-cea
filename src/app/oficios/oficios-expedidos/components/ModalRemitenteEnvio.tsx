@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import TableComponente from '../components/tablecomponente';
 
 interface Remitente {
@@ -34,16 +36,31 @@ const accessor = (item: Remitente, column: string) => {
   }
 };
 
+// Definimos el esquema de validación de Yup
+const validationSchema = Yup.object().shape({
+  selectedRemitente: Yup.string().required('Debes seleccionar un remitente'),
+});
+
 const ModalRemitenteEnvio = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Configuramos Formik
+  const formik = useFormik({
+    initialValues: {
+      selectedRemitente: '',
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      // Este método no se usa porque el botón es de tipo button
+    },
+  });
+
   const handleSave = () => {
-    if (!selectedRemitente) {
+    if (!formik.values.selectedRemitente) {
       setError('Debes seleccionar un remitente');
     } else {
-      props.onSave(selectedRemitente);
+      props.onSave(formik.values.selectedRemitente);
       props.onClose();
       setError(null); // Limpiar error si se guarda correctamente
     }
@@ -75,7 +92,7 @@ const ModalRemitenteEnvio = (props: Props) => {
             columns={columns}
             accessor={accessor}
             onRowClick={(nombre) => {
-              setSelectedRemitente(nombre);
+              formik.setFieldValue('selectedRemitente', nombre);
               setError(null); // Limpiar error al seleccionar un remitente
             }}
             columnKeyForRowClick="Nombre"

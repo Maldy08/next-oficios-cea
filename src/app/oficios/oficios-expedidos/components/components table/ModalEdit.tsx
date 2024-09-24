@@ -111,12 +111,12 @@ export default function ModalOficioExpedido({
       validateOnBlur={false}
       onSubmit={(values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-        
+      
         if (!values.personaEntrega) errors.personaEntrega = 'Persona que entrega es requerida';
         if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
         if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
         if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
-
+      
         if (Object.keys(errors).length) {
           setErrors(errors);
           setTouched({
@@ -126,9 +126,13 @@ export default function ModalOficioExpedido({
             responsableName: true,
           });
         } else {
-          onSave();
-        }
+          // Pasa los valores completos a onSave
+          const onSave = (values: any) => 
+            // Lógica para guardar datos utilizando los valores
+            console.log(values); // Imprime los valores que estás recibiendo
+          };
       }}
+      
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
@@ -140,7 +144,7 @@ export default function ModalOficioExpedido({
               <h2 className="text-lg font-semibold mb-4">Editar Oficio Expedidos</h2>
 
               <div className="flex flex-col space-y-4">
-                {/* Folio y Selección */}
+                {/* Folio*/}
                 <div className="flex flex-col sm:flex-row sm:items-center mb-4 space-y-24 sm:space-y-0 sm:space-x-24">
                   <div className="flex items-center">
                     <span className="w-24 sm:w-12">Folio:</span>
@@ -153,6 +157,7 @@ export default function ModalOficioExpedido({
                     <ErrorMessage name="folio" component="div" className="text-red-600" />
                   </div>
 
+                  {/* Selección */}
                   <div className="flex flex-col">
                     <div className="relative">
                       <div className="flex items-center space-x-3">
@@ -280,8 +285,8 @@ export default function ModalOficioExpedido({
     </div>
 
                 {/* Remitente */}
-<div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
-  <div className="flex-grow">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="flex flex-col">
     <label htmlFor="remitenteName" className="block mb-2">
       Nombre del Remitente
     </label>

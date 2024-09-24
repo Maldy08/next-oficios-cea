@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import TableComponente from '../components/tablecomponente'; 
 import { useModal } from '../Hooks/useModal'; 
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 interface Empleado {
   nombreCompleto: string;
@@ -32,6 +34,11 @@ const accessor = (item: Empleado, column: string) => {
   }
 };
 
+// Definimos el esquema de validación de Yup
+const validationSchema = Yup.object().shape({
+  selectedDestinatario: Yup.string().required('Debes seleccionar un destinatario'),
+});
+
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const {
     searchTerm,
@@ -41,19 +48,30 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
   });
 
-  const [selectedDestinatario, setSelectedDestinatario] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSave = () => {
-    if (!selectedDestinatario) {
-      setError('Debes seleccionar un destinatario');
-    } else {
-      props.onSave(selectedDestinatario);
-      props.onClose();
-    }
-  };
+  // Configuramos Formik
+  const formik = useFormik({
+    initialValues: {
+      selectedDestinatario: '',
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      // Este método no se usa porque el botón es de tipo button
+    },
+  });
 
   if (!props.isOpen) return null;
+
+  const handleSave = () => {
+    if (!formik.values.selectedDestinatario) {
+      setError('Debes seleccionar un destinatario');
+    } else {
+      props.onSave(formik.values.selectedDestinatario);
+      props.onClose();
+      setError(null); // Limpiar error si se guarda correctamente
+    }
+  };
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
@@ -78,8 +96,8 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
             data={props.datosEmpleados}
             columns={columns}
             accessor={accessor}
-            onRowClick={(name) => {
-              setSelectedDestinatario(name);
+            onRowClick={(nombreCompleto) => {
+              formik.setFieldValue('selectedDestinatario', nombreCompleto);
               setError(null); // Limpiar error al seleccionar un destinatario
             }}
             columnKeyForRowClick="Nombre Completo"

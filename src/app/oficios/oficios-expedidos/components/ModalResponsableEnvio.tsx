@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useModal } from '../Hooks/useModal'; 
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import TableComponente from '../components/tablecomponente';
 
 interface Empleado {
@@ -32,6 +34,11 @@ const accessor = (item: Empleado, column: string) => {
   }
 };
 
+// Definimos el esquema de validación de Yup
+const validationSchema = Yup.object().shape({
+  selectedResponsable: Yup.string().required('Debes seleccionar un responsable'),
+});
+
 const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
   const {
     searchTerm,
@@ -47,16 +54,26 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
   });
 
-  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Configuramos Formik
+  const formik = useFormik({
+    initialValues: {
+      selectedResponsable: '',
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      // Este método no se usa porque el botón es de tipo button
+    },
+  });
 
   if (!props.isOpen) return null;
 
   const handleSave = () => {
-    if (!selectedResponsable) {
+    if (!formik.values.selectedResponsable) {
       setError('Debes seleccionar un responsable');
     } else {
-      props.onSave(selectedResponsable);
+      props.onSave(formik.values.selectedResponsable);
       props.onClose();
       setError(null); // Limpiar error si se guarda correctamente
     }
@@ -86,7 +103,7 @@ const ModalResponsableEnvio = (props: ModalResponsableEnvioProps) => {
             columns={columns}
             accessor={accessor}
             onRowClick={(nombreCompleto) => {
-              setSelectedResponsable(nombreCompleto);
+              formik.setFieldValue('selectedResponsable', nombreCompleto);
               setError(null); // Limpiar error al seleccionar un responsable
             }}
             columnKeyForRowClick="Nombre Completo"
