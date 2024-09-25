@@ -428,6 +428,7 @@ export default function ModalOficioExpedido({
       name="tema"
       type="text"
       placeholder="Tema del oficio"
+      autoComplete="off"
       className="border border-gray-300 rounded p-2 w-full"
     />
     <ErrorMessage name="tema" component="div" className="text-red-600" />
@@ -443,6 +444,7 @@ export default function ModalOficioExpedido({
       id="observaciones"
       name="observaciones"
       placeholder="Observaciones"
+      autoComplete="off"
       className="border border-gray-300 rounded p-2 w-full h-24"
     />
     <ErrorMessage name="observaciones" component="div" className="text-red-600" />

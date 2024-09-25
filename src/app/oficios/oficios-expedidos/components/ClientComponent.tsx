@@ -76,34 +76,6 @@ export default function ClientComponent({
         datosEmpleados={datosEmpleados}
       />
 
-      {/* Paginación */}
-      <div className="flex justify-end items-center mt-4">
-        <select
-          value={rowsPerPage}
-          onChange={handleChangeRowsPerPage}
-          className="mr-4 p-2 border border-gray-300 rounded-md"
-        >
-          <option value={5}>5 filas</option>
-          <option value={10}>10 filas</option>
-          <option value={25}>25 filas</option>
-        </select>
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleChangePage(page - 1)}
-            disabled={page === 0}
-            className="p-2 border border-gray-300 rounded-md"
-          >
-            Anterior
-          </button>
-          <button
-            onClick={() => handleChangePage(page + 1)}
-            disabled={(page + 1) * rowsPerPage >= filteredRows.length}
-            className="p-2 border border-gray-300 rounded-md"
-          >
-            Siguiente
-          </button>
-        </div>
-      </div>
 
       {/* Modales */}
       {modalType === "oficioExpedido" && (

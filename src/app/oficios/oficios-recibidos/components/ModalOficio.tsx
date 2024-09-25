@@ -26,7 +26,7 @@ const validationSchema = Yup.object().shape({
 interface ModalOficioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: any) => void;
+  onSave: () => void;
 }
 
 export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProps) {
@@ -62,30 +62,58 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
 
   return (
     <Formik
-      initialValues={{
-        selection: '',
-        fechaCaptura: '',
-        fechaLimite: '',
-        numeroOficio: '',
-        tema: '',
-        observaciones: '',
-        archivo: selectedFile,
-        selectedArea: selectedArea || '',
-        remitenteName: remitenteName || '',
-        destinatarioName: destinatarioName || '',
-        responsableName: responsableName || '',
-        destinatarioType: destinatarioType || '',
-        remitenteType: remitenteType || '',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={(values) => {
-        console.log(values); // Para verificar
-    onSave(values);
-    onClose();
+  initialValues={{
+    selection: '',
+    fechaCaptura: '',
+    fechaLimite: '',
+    numeroOficio: '',
+    tema: '',
+    observaciones: '',
+    archivo: selectedFile,
+    selectedArea: selectedArea || '',
+    remitenteName: remitenteName || '',
+    destinatarioName: destinatarioName || '',
+    responsableName: responsableName || '',
+    destinatarioType: destinatarioType || '',
   }}
-  validateOnChange={false}
-  validateOnBlur={false}
-    >
+  validationSchema={Yup.object({
+    selection: Yup.string().required('Debes seleccionar una opción'),
+    fechaCaptura: Yup.date().required('Fecha Captura es requerida'),
+    fechaLimite: Yup.date().required('Fecha Límite es requerida'),
+    numeroOficio: Yup.number().required('Número de Oficio es requerido'),
+    personaEntrega: Yup.string().required('Persona que entrega es requerida'),
+    tema: Yup.string().required('Tema es requerido'),
+    archivo: Yup.mixed().required('Archivo es requerido'),
+    selectedArea: Yup.string().required('Área o Departamento es requerido'),
+    remitenteName: Yup.string().required('Nombre del remitente es requerido'),
+    destinatarioName: Yup.string().required('Nombre del destinatario es requerido'),
+    responsableName: Yup.string().required('Nombre del responsable es requerido'),
+    destinatarioType: Yup.string().oneOf(['Interno', 'Externo'], 'Tipo de destinatario inválido').required('Tipo de destinatario es requerido'),
+  })}
+  validateOnChange={false}  // Desactiva la validación en cada cambio
+  validateOnBlur={false}    // Desactiva la validación en cada desenfoque
+  onSubmit={(values, { setErrors, setTouched }) => {
+    const errors: { [key: string]: string } = {};
+
+    // Validar campos requeridos
+    if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
+    if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
+    if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
+
+    // Si hay errores, actualizar el estado y no proceder con el guardado
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      setTouched({
+        remitenteName: true,
+        destinatarioName: true,
+        responsableName: true,
+      });
+    } else {
+      // Lógica de guardado al no haber errores
+      onSave();
+    }
+  }}
+>
       {({ setFieldValue, values,errors, touched, isSubmitting }) => (
         <Form className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
           <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto" style={{ maxHeight: '80vh' }}>
@@ -212,10 +240,6 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
 </div>
 
     </div>
-
-    {touched.remitenteType && errors.remitenteType && (
-      <div className="text-red-600">{errors.remitenteType}</div>
-    )}
 
     {/* Barra de texto de remitente */}
     <div className="relative flex items-center">

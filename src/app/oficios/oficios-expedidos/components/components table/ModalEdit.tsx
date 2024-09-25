@@ -111,12 +111,14 @@ export default function ModalOficioExpedido({
       validateOnBlur={false}
       onSubmit={(values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-      
+
+        // Validar solo si el valor está vacío
         if (!values.personaEntrega) errors.personaEntrega = 'Persona que entrega es requerida';
         if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
         if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
         if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
-      
+
+        // Si hay errores, se actualizan y no se envía el formulario
         if (Object.keys(errors).length) {
           setErrors(errors);
           setTouched({
@@ -126,11 +128,8 @@ export default function ModalOficioExpedido({
             responsableName: true,
           });
         } else {
-          // Pasa los valores completos a onSave
-          const onSave = (values: any) => 
-            // Lógica para guardar datos utilizando los valores
-            console.log(values); // Imprime los valores que estás recibiendo
-          };
+          onSave();
+        }
       }}
       
     >
@@ -176,6 +175,7 @@ export default function ModalOficioExpedido({
                           {errors.selection}
                         </div>
                       )}
+                      
                     </div>
                   </div>
 
@@ -405,6 +405,7 @@ export default function ModalOficioExpedido({
                     name="tema"
                     type="text"
                     placeholder="Tema"
+                    autoComplete="off"
                     className="border border-gray-300 rounded p-2 w-full"
                   />
                   <ErrorMessage name="tema" component="div" className="text-red-600" />
@@ -417,6 +418,7 @@ export default function ModalOficioExpedido({
                     name="observaciones"
                     as="textarea"
                     placeholder="Observaciones"
+                    
                     className="border border-gray-300 rounded p-2 w-full"
                   />
                   <ErrorMessage name="observaciones" component="div" className="text-red-600" />
