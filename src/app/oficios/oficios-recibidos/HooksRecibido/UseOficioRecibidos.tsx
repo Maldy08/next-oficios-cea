@@ -32,6 +32,7 @@ export default function UseOficioMODAL() {
   const [textareaRows, setTextareaRows] = useState(3);
   const [currentDate, setCurrentDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedArea, setSelectedArea] = useState("");
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -64,6 +65,8 @@ export default function UseOficioMODAL() {
   };
 
   return {
+    selectedArea,
+    setSelectedArea,
     handleFileChange,
     modalType,
     setModalType,
