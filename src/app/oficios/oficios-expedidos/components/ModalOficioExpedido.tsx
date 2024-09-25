@@ -207,7 +207,6 @@ export default function ModalOficioExpedido({
 
   {/* Área o Departamento y Fechas */}
   <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
-    {/* Área o Departamento */}
     <div className="flex-grow mb-4 sm:mb-0">
       <label htmlFor="areaSelect" className="block mb-2">
         Área o Departamento
