@@ -140,6 +140,7 @@ export default function ModalOficioExpedido({
             responsableName: true,
           });
         } else {
+          console.log("Los datos se aguardan bien", values);
           onSave();
         }
       }}

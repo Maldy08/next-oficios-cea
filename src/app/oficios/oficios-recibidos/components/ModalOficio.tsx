@@ -7,29 +7,6 @@ import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-// Validación con Yup
-const validationSchema = Yup.object().shape({
-  selection: Yup.string().required("Debes seleccionar una opción"),
-  fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
-  fechaLimite: Yup.date().required("Fecha Límite es requerida"),
-  numeroOficio: Yup.number().required("Número de Oficio es requerido"),
-  tema: Yup.string().required("Tema es requerido"),
-  observaciones: Yup.string(),
-  archivo: Yup.mixed().required("Archivo es requerido"),
-  selectedArea: Yup.string().required("Área o Departamento es requerido"),
-  remitenteName: Yup.string().required("Nombre del remitente es requerido"),
-  destinatarioName: Yup.string().required(
-    "Nombre del destinatario es requerido"
-  ),
-  responsableName: Yup.string().required("Nombre del responsable es requerido"),
-  destinatarioType: Yup.string()
-    .oneOf(["", "Interno", "Externo"], "Tipo de destinatario inválido")
-    .required("Tipo de destinatario es requerido"),
-  remitenteType: Yup.string()
-    .oneOf(["", "Interno", "Externo"], "Tipo de remitente inválido")
-    .required("Tipo de remitente es requirido"),
-});
-
 interface ModalOficioProps {
   isOpen: boolean;
   onClose: () => void;
@@ -49,6 +26,29 @@ interface remitentes {
   empresa: string;
   cargo: string;
 }
+
+// Validación con Yup
+const validationSchema = Yup.object().shape({
+  selection: Yup.string().required("Debes seleccionar una opción"),
+  fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
+  fechaLimite: Yup.date().required("Fecha Límite es requerida"),
+  numeroOficio: Yup.number().required("Número de Oficio es requerido"),
+  tema: Yup.string().required("Tema es requerido"),
+  observaciones: Yup.string(),
+  // archivo: Yup.mixed().required("Archivo es requerido"),
+  selectedArea: Yup.string().required("Área o Departamento es requerido"),
+  remitenteName: Yup.string().required("Nombre del remitente es requerido"),
+  destinatarioName: Yup.string().required(
+    "Nombre del destinatario es requerido"
+  ),
+  responsableName: Yup.string().required("Nombre del responsable es requerido"),
+  destinatarioType: Yup.string()
+    .oneOf(["", "Interno", "Externo"], "Tipo de destinatario inválido")
+    .required("Tipo de destinatario es requerido"),
+  remitenteType: Yup.string()
+    .oneOf(["", "Interno", "Externo"], "Tipo de remitente inválido")
+    .required("Tipo de remitente es requirido"),
+});
 
 export default function ModalOficio({
   isOpen,
@@ -106,31 +106,9 @@ export default function ModalOficio({
         destinatarioName: destinatarioName || "",
         responsableName: responsableName || "",
         destinatarioType: destinatarioType || "",
+        remitenteType: remitenteType || "",
       }}
-      validationSchema={Yup.object({
-        selection: Yup.string().required("Debes seleccionar una opción"),
-        fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
-        fechaLimite: Yup.date().required("Fecha Límite es requerida"),
-        numeroOficio: Yup.number().required("Número de Oficio es requerido"),
-        personaEntrega: Yup.string().required(
-          "Persona que entrega es requerida"
-        ),
-        tema: Yup.string().required("Tema es requerido"),
-        //archivo: Yup.mixed().required("Archivo es requerido"),
-        selectedArea: Yup.string().required("Área o Departamento es requerido"),
-        remitenteName: Yup.string().required(
-          "Nombre del remitente es requerido"
-        ),
-        destinatarioName: Yup.string().required(
-          "Nombre del destinatario es requerido"
-        ),
-        responsableName: Yup.string().required(
-          "Nombre del responsable es requerido"
-        ),
-        destinatarioType: Yup.string()
-          .oneOf(["Interno", "Externo"], "Tipo de destinatario inválido")
-          .required("Tipo de destinatario es requerido"),
-      })}
+      validationSchema={validationSchema}
       validateOnChange={false} // Desactiva la validación en cada cambio
       validateOnBlur={false} // Desactiva la validación en cada desenfoque
       onSubmit={(values, { setErrors, setTouched }) => {
@@ -152,14 +130,17 @@ export default function ModalOficio({
             destinatarioName: true,
             responsableName: true,
           });
+          // console.log("Los datos se aguardan bien ", values);
+          // onSave();
         } else {
           // Lógica de guardado al no haber errores
+          console.log("Los datos se aguardan ", values);
           onSave();
         }
       }}
     >
-      {({ setFieldValue, values, errors, touched, isSubmitting }) => (
-        <Form className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+      {({ setFieldValue, values, errors, touched }) => (
+        <Form>
           <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
             <div
               className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto"
@@ -304,6 +285,9 @@ export default function ModalOficio({
                         </label>
                       </div>
                     </label>
+                    {touched.remitenteType && errors.remitenteType && (
+                      <div className="text-red-600">{errors.remitenteType}</div>
+                    )}
                     <div className="relative">
                       <Field
                         id="remitenteName"
