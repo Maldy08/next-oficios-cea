@@ -5,6 +5,7 @@ import { FaSearch, FaUserPlus } from 'react-icons/fa';
 import ModalDestinatario from '../components/ModalDestinatario';
 import ModalRemitente from '../components/ModalRemitente';
 import ModalResponsable from '../components/ModalResponsable';
+import UseModalOficioRecibido from "../HooksRecibido/useModalOficioRecibido";
 
 // Validación con Yup
 const validationSchema = Yup.object().shape({
@@ -23,98 +24,121 @@ const validationSchema = Yup.object().shape({
   remitenteType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de remitente inválido').required('Tipo de remitente es requirido'),
 });
 
+interface Departamento {
+  idCea: number;
+  descripcion: string;
+}
+
+interface Empleados {
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
+  idPue: number;
+}
+
+interface remitentes {
+  nombre: string;
+  empresa: string;
+  cargo: string;
+}
+
 interface ModalOficioProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: () => void;
+  datosEmpleados: any[];
+  remitentes: any[];
+  departamentos: any[];
 }
 
-export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProps) {
-  const [remitenteType, setRemitenteType] = useState("");
-  const [destinatarioType, setDestinatarioType] = useState("");
-  const [remitenteName, setRemitenteName] = useState<string | null>(null);
-  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
-  const [responsableName, setResponsableName] = useState<string | null>(null);
-  const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
-  const [showRemitenteModal, setShowRemitenteModal] = useState(false);
-  const [showResponsableModal, setShowResponsableModal] = useState(false);
-  const [textareaRows, setTextareaRows] = useState(3);
-  const [currentDate, setCurrentDate] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedArea, setSelectedArea] = useState('');
-
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    setCurrentDate(today);
-  }, []);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null;
-    if (file && file.type !== "application/pdf") {
-      alert("Por favor, selecciona un archivo PDF.");
-      setSelectedFile(null);
-    } else {
-      setSelectedFile(file);
-    }
-  };
+export default function ModalOficio({
+  isOpen,
+  onClose,
+  onSave,
+  departamentos,
+  datosEmpleados,
+  remitentes,
+}: ModalOficioProps) {
+  const {
+    remitenteType,
+    setRemitenteType,
+    destinatarioType,
+    setDestinatarioType,
+    remitenteName,
+    destinatarioName,
+    responsableName,
+    showDestinatarioModal,
+    handleDestinatarioSave,
+    handleResponsableSave,
+    handleRemitenteSave,
+    showRemitenteModal,
+    textareaRows,
+    showResponsableModal,
+    currentDate,
+    selectedFile,
+    setTextareaRows,
+    searchTerm,
+    setSearchTerm,
+    rowsPerPage,
+    setRowsPerPage,
+    handleSave,
+    setShowDestinatarioModal,
+    setShowResponsableModal,
+    setShowRemitenteModal,
+    handleFileChange,
+    setDestinatarioName,
+    setRemitenteName,
+    setResponsableName,
+    selectedArea,
+    setSelectedArea,
+  } = UseModalOficioRecibido();
 
   if (!isOpen) return null;
 
   return (
     <Formik
   initialValues={{
+    folio: '',
     selection: '',
     fechaCaptura: '',
     fechaLimite: '',
     numeroOficio: '',
     tema: '',
     observaciones: '',
-    archivo: selectedFile,
-    selectedArea: selectedArea || '',
-    remitenteName: remitenteName || '',
-    destinatarioName: destinatarioName || '',
-    responsableName: responsableName || '',
-    destinatarioType: destinatarioType || '',
+    archivo: null,
+    selectedArea: '',
+    remitenteName: '',
+    destinatarioName: '',
+    responsableName: '',
+    destinatarioType: '',
   }}
-  validationSchema={Yup.object({
-    selection: Yup.string().required('Debes seleccionar una opción'),
-    fechaCaptura: Yup.date().required('Fecha Captura es requerida'),
-    fechaLimite: Yup.date().required('Fecha Límite es requerida'),
-    numeroOficio: Yup.number().required('Número de Oficio es requerido'),
-    personaEntrega: Yup.string().required('Persona que entrega es requerida'),
-    tema: Yup.string().required('Tema es requerido'),
-    archivo: Yup.mixed().required('Archivo es requerido'),
-    selectedArea: Yup.string().required('Área o Departamento es requerido'),
-    remitenteName: Yup.string().required('Nombre del remitente es requerido'),
-    destinatarioName: Yup.string().required('Nombre del destinatario es requerido'),
-    responsableName: Yup.string().required('Nombre del responsable es requerido'),
-    destinatarioType: Yup.string().oneOf(['Interno', 'Externo'], 'Tipo de destinatario inválido').required('Tipo de destinatario es requerido'),
-  })}
-  validateOnChange={false}  // Desactiva la validación en cada cambio
-  validateOnBlur={false}    // Desactiva la validación en cada desenfoque
-  onSubmit={(values, { setErrors, setTouched }) => {
-    const errors: { [key: string]: string } = {};
-
-    // Validar campos requeridos
-    if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
-    if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
-    if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
-
-    // Si hay errores, actualizar el estado y no proceder con el guardado
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      setTouched({
-        remitenteName: true,
-        destinatarioName: true,
-        responsableName: true,
-      });
-    } else {
-      // Lógica de guardado al no haber errores
-      onSave();
-    }
-  }}
->
-      {({ setFieldValue, values,errors, touched, isSubmitting }) => (
+  validationSchema={validationSchema}
+      validateOnChange={false} // Desactivar validación en cada cambio
+      validateOnBlur={false} // Desactivar validación en cada desenfoque
+      onSubmit={(values, { setErrors, setTouched }) => {
+        console.log('Submitting:', values); // Añadir esto para ver los valores del formulario
+        const errors: { [key: string]: string } = {};
+      
+        if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
+        if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
+        if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
+      
+        if (Object.keys(errors).length) {
+          setErrors(errors);
+          setTouched({
+            remitenteName: true,
+            destinatarioName: true,
+            responsableName: true,
+          });
+        } else {
+          console.log('Guardando datos...'); // Añadir para depurar
+          onSave();  // Aquí se guarda la información
+          onClose(); // Y aquí se cierra el modal
+        }
+      }}
+      
+    >
+      {({ setFieldValue, values, errors, touched }) => (
         <Form className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
           <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto" style={{ maxHeight: '80vh' }}>
             <h2 className="text-lg font-semibold mb-4">Ingresar Oficio Recibido</h2>
@@ -407,11 +431,11 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                     Cancelar
                   </button>
                   <button
-                type="submit"
-                className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-              >
-                Guardar
-              </button>
+      type="submit"
+      className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+    >
+      Guardar
+    </button>
                 </div>
               </div>
 
@@ -425,6 +449,7 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                   setShowDestinatarioModal(false);
                   setFieldValue('destinatarioName', name);
                 }}
+                datosEmpleados={datosEmpleados}
               />
             )}
 
@@ -437,6 +462,7 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                   setShowRemitenteModal(false);
                   setFieldValue('remitenteName', name);
                 }}
+                remitentes={remitentes}
               />
             )}
 
@@ -449,6 +475,7 @@ export default function ModalOficio({ isOpen, onClose, onSave }: ModalOficioProp
                   setShowResponsableModal(false);
                   setFieldValue('responsableName', name);
                 }}
+                datosEmpleados={datosEmpleados}
               />
             )}
             </div>

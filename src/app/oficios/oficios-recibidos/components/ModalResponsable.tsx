@@ -1,213 +1,130 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { useModal } from '../../oficios-expedidos/Hooks/useModal';  // Asegúrate de que el hook esté en el lugar correcto
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import TableComponente from '../../oficios-expedidos/components/tablecomponente';
+
+interface Empleado {
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
+  idPue: number;
+}
 
 interface ModalResponsableProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
+  datosEmpleados: Empleado[];
 }
 
-interface FormValues {
-  responsable: string;
-  searchText: string;
-}
+const columns = ['Nombre Completo', 'Departamento', 'Puesto'];
+
+const accessor = (item: Empleado, column: string) => {
+  switch (column) {
+    case 'Nombre Completo':
+      return item.nombreCompleto;
+    case 'Departamento':
+      return item.descripcionDepto;
+    case 'Puesto':
+      return item.descripcionPuesto;
+    default:
+      return '';
+  }
+};
+
+// Esquema de validación con Yup
+const validationSchema = Yup.object().shape({
+  selectedResponsable: Yup.string().required('Debes seleccionar un responsable'),
+});
 
 const ModalResponsable = (props: ModalResponsableProps) => {
-  const [data, setData] = useState<any[]>([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selectedResponsable, setSelectedResponsable] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (props.isOpen) {
-      const fetchData = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await axios.get("/api/empleados");
-          const result = response.data.data;
-
-          if (Array.isArray(result)) {
-            setData(result);
-          } else {
-            throw new Error("Datos de API no son un array");
-          }
-        } catch (error: any) {
-          setError(error.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-    }
-  }, [props.isOpen]);
-
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSelect = (name: string) => {
-    setSelectedResponsable(name);
-    setError(null);
-  };
-
-  const handleSave = () => {
-    if (!selectedResponsable) {
-      setError("Debes seleccionar un responsable");
-    } else {
-      props.onSave(selectedResponsable);
-      props.onClose();
-      setError(null);
-    }
-  };
-
-  // Esquema de validación de Yup
-  const validationSchema = Yup.object({
-    responsable: Yup.string().required("El responsable es requerido"),
-    searchText: Yup.string(),
+  const {
+    searchTerm,
+    setSearchTerm,
+    paginatedData, // Datos paginados desde el hook
+    currentPage,
+    setCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    totalPages,
+  } = useModal({
+    data: props.datosEmpleados,
+    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
   });
 
-  // Utilizamos Formik para manejar el estado de búsqueda
-  const formik = useFormik<FormValues>({
+  const [error, setError] = useState<string | null>(null);
+
+  // Configuración de Formik
+  const formik = useFormik({
     initialValues: {
-      responsable: "",
-      searchText: "",
+      selectedResponsable: '',
     },
     validationSchema,
     onSubmit: (values) => {
-      setPage(0); // Reseteamos la página al realizar la búsqueda
-      // Aquí puedes manejar el valor de `responsable` si es necesario
+      // No se usa directamente ya que se maneja con el botón de guardado
     },
   });
 
-  const filteredData = Array.isArray(data)
-    ? data.filter(
-        (row) =>
-          (row.nombreCompleto || "")
-            .toLowerCase()
-            .includes(formik.values.searchText.toLowerCase()) ||
-          (row.descripcionDepto || "")
-            .toLowerCase()
-            .includes(formik.values.searchText.toLowerCase()) ||
-          (row.descripcionPuesto || "")
-            .toLowerCase()
-            .includes(formik.values.searchText.toLowerCase())
-      )
-    : [];
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
   if (!props.isOpen) return null;
 
+  const handleSave = () => {
+    if (!formik.values.selectedResponsable) {
+      setError('Debes seleccionar un responsable');
+    } else {
+      props.onSave(formik.values.selectedResponsable);
+      props.onClose();
+      setError(null); // Limpiar error si se guarda correctamente
+    }
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
       <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Personal Externo</h2>
-          <form onSubmit={formik.handleSubmit} className="relative w-full max-w-[300px]">
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Responsable</h2>
+          <div className="relative w-full max-w-[300px]">
             <input
               type="text"
-              name="searchText"
               placeholder="Buscar..."
-              value={formik.values.searchText}
-              onChange={formik.handleChange}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full border-b border-gray-300 py-2 px-3 text-sm rounded-none focus:border-blue-500 focus:outline-none"
             />
-            <FaSearch onClick={formik.submitForm} className="absolute right-2 top-2 text-gray-400 cursor-pointer" />
-          </form>
+            <FaSearch className="absolute right-2 top-2 text-gray-400 cursor-pointer" />
+          </div>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          </div>
-        ) : (
-          <div className="flex-grow overflow-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="font-bold border-b py-2 px-4">NOMBRE COMPLETO</th>
-                  <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
-                  <th className="font-bold border-b py-2 px-4">CARGO</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <tr
-                    key={index}
-                    onClick={() => handleSelect(row.nombreCompleto || "")}
-                    className={`cursor-pointer ${
-                      selectedResponsable === row.nombreCompleto ? "bg-blue-100" : ""
-                    }`}
-                  >
-                    <td className="border-b py-2 px-4">{row.nombreCompleto || ""}</td>
-                    <td className="border-b py-2 px-4">{row.descripcionDepto || ""}</td>
-                    <td className="border-b py-2 px-4">{row.descripcionPuesto || ""}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div className="flex-grow overflow-auto">
+          <TableComponente<Empleado>
+            data={props.datosEmpleados}  
+            columns={columns}
+            accessor={accessor}
+            onRowClick={(nombreCompleto) => {
+              formik.setFieldValue('selectedResponsable', nombreCompleto);
+              setError(null); // Limpiar error al seleccionar un destinatario
+            }}
+            columnKeyForRowClick="Nombre Completo"
+            searchTerm={searchTerm}
+          />
+        </div>
 
         {error && <div className="text-red-500">{error}</div>}
-
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={() => handleChangePage(Math.max(0, page - 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={page === 0}
-            >
-              <FaChevronLeft />
-            </button>
-            <button
-              type="button"
-              onClick={() => handleChangePage(Math.min(totalPages - 1, page + 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={page >= totalPages - 1}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">Folios por pág:</span>
-            <select
-              value={rowsPerPage}
-              onChange={handleChangeRowsPerPage}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-            </select>
-          </div>
-        </div>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
             onClick={props.onClose}
-            className="bg-[#641c34] text-white py-2 px-4 rounded"
+            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Cancelar
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="bg-[#993233] text-white py-2 px-4 rounded"
+            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar
           </button>
