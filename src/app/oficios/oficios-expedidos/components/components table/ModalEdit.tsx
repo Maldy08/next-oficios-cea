@@ -285,9 +285,9 @@ export default function ModalOficioExpedido({
     </div>
 
                 {/* Remitente */}
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="flex flex-col">
-    <label htmlFor="remitenteName" className="block mb-2">
+                <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
+    <div className="flex-grow">
+      <label htmlFor="remitenteName" className="block mb-2">
       Nombre del Remitente
     </label>
     <div className="relative">

@@ -5,18 +5,13 @@ import ModalOficio from "./ModalOficio";
 import ModalResponsable from "./ModalResponsable";
 
 interface OficiosPageProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSave: () => void;
     remitentes: any[]; // Esto ya existe
     datosEmpleados: any[]; // Asegúrate de agregar esta línea
-    departamentos: any[];
   }
 
 export default function OficiosPage({
   remitentes,
   datosEmpleados,
-  departamentos,
 }: OficiosPageProps) {
   const { modalType, handleOpenModal, handleCloseModal, handleSave } =
     UseOficioR();
@@ -37,7 +32,6 @@ export default function OficiosPage({
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
-          departamentos={departamentos}
         />
       )}
     </div>

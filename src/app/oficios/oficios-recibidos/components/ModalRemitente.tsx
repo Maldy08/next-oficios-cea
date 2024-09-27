@@ -9,6 +9,7 @@ interface Remitente {
   nombre: string;
   empresa: string;
   cargo: string;
+  remSiglas: string;
 }
 
 interface ModalRemitenteProps {
@@ -18,7 +19,7 @@ interface ModalRemitenteProps {
   remitentes: Remitente[]; // Remitentes pasados por props
 }
 
-const columns = ['Nombre', 'Empresa', 'Cargo'];
+const columns = ['Nombre', 'Empresa', 'SIGLAS', 'Cargo'];
 
 const accessor = (item: Remitente, column: string) => {
   switch (column) {
@@ -26,12 +27,15 @@ const accessor = (item: Remitente, column: string) => {
       return item.nombre;
     case 'Empresa':
       return item.empresa;
+    case 'SIGLAS': // Aquí asegúrate que el nombre de la columna sea "SIGLAS"
+      return item.remSiglas; // Aquí se accede a item.remSiglas
     case 'Cargo':
       return item.cargo;
     default:
       return '';
   }
 };
+
 
 const validationSchema = Yup.object().shape({
   selectedRemitente: Yup.string().required('Debes seleccionar un remitente'),
@@ -47,7 +51,6 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
     },
     validationSchema,
     onSubmit: () => {
-      // No es necesario ya que usamos botón tipo 'button'
     },
   });
 

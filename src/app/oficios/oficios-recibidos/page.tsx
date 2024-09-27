@@ -14,6 +14,7 @@ import OficiosPage from "./components/OficiosRecibidos";
 export default async function OficiosRecibidosPage() {
   const oficiosExternos: OficioUsuExterno[] = await getOficioUsuExternos();
   const empleados: Empleados[] = await getEmpleados();
+  
 
   return (
     <div className="p-6">

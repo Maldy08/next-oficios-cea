@@ -16,18 +16,13 @@ const validationSchema = Yup.object().shape({
   tema: Yup.string().required('Tema es requerido'),
   observaciones: Yup.string(),
   archivo: Yup.mixed().required('Archivo es requerido'),
-  selectedArea: Yup.string().required('Área o Departamento es requerido'),
   remitenteName: Yup.string().required('Nombre del remitente es requerido'),
   destinatarioName: Yup.string().required('Nombre del destinatario es requerido'),
   responsableName: Yup.string().required('Nombre del responsable es requerido'),
   destinatarioType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de destinatario inválido').required('Tipo de destinatario es requerido'),
-  remitenteType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de remitente inválido').required('Tipo de remitente es requirido'),
+  remitenteType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de remitente inválido').required('Tipo de remitente es requerido'),
+  remSiglas: Yup.string().required('Siglas del remitente son requeridas'), // Añadido remSiglas como requerido
 });
-
-interface Departamento {
-  idCea: number;
-  descripcion: string;
-}
 
 interface Empleados {
   nombreCompleto: string;
@@ -40,6 +35,7 @@ interface remitentes {
   nombre: string;
   empresa: string;
   cargo: string;
+  remSiglas: string;
 }
 
 interface ModalOficioProps {
@@ -48,14 +44,12 @@ interface ModalOficioProps {
   onSave: () => void;
   datosEmpleados: any[];
   remitentes: any[];
-  departamentos: any[];
 }
 
 export default function ModalOficio({
   isOpen,
   onClose,
   onSave,
-  departamentos,
   datosEmpleados,
   remitentes,
 }: ModalOficioProps) {
@@ -89,54 +83,95 @@ export default function ModalOficio({
     setDestinatarioName,
     setRemitenteName,
     setResponsableName,
-    selectedArea,
-    setSelectedArea,
+    setRemSiglas,
+    remSiglas,
   } = UseModalOficioRecibido();
 
   if (!isOpen) return null;
 
   return (
     <Formik
-  initialValues={{
-    folio: '',
-    selection: '',
-    fechaCaptura: '',
-    fechaLimite: '',
-    numeroOficio: '',
-    tema: '',
-    observaciones: '',
-    archivo: null,
-    selectedArea: '',
-    remitenteName: '',
-    destinatarioName: '',
-    responsableName: '',
-    destinatarioType: '',
-  }}
-  validationSchema={validationSchema}
+      initialValues={{
+        folio: '',
+        selection: '',
+        fechaCaptura: '',
+        fechaLimite: '',
+        remSiglas: '', // Campo añadido
+        numeroOficio: '',
+        tema: '',
+        observaciones: '',
+        archivo: selectedFile,
+        remitenteName: remitenteName || '',
+        destinatarioName: destinatarioName || '',
+        responsableName: responsableName || '',
+        destinatarioType: destinatarioType || '',
+      }}
+      validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
       validateOnBlur={false} // Desactivar validación en cada desenfoque
-      onSubmit={(values, { setErrors, setTouched }) => {
-        console.log('Submitting:', values); // Añadir esto para ver los valores del formulario
+      onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
       
         if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
         if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
         if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
       
+        // Si hay errores, se actualizan y no se envía el formulario
         if (Object.keys(errors).length) {
           setErrors(errors);
           setTouched({
-            remitenteName: true,
-            destinatarioName: true,
-            responsableName: true,
+            // Marcar campos como tocados
           });
         } else {
-          console.log('Guardando datos...'); // Añadir para depurar
-          onSave();  // Aquí se guarda la información
-          onClose(); // Y aquí se cierra el modal
+          // Crear el objeto JSON
+          const objetoOficio = {
+            ejercicio: 2024,
+            folio: parseInt(values.folio, 10) || 0,
+            eor: 0,
+            tipo: 0,
+            noOficio: values.numeroOficio,
+            pdfpath: null, // Enviar como null
+            fecha: new Date().toISOString(),
+            fechaCaptura: new Date().toISOString(),
+            fechaAcuse: new Date().toISOString(),
+            fechaLimite: values.fechaLimite,
+            remDepen: "string", // Asignar según tu lógica
+            remSiglas: values.remSiglas, // Campo remSiglas añadido
+            remNombre: values.remitenteName,
+            remCargo: "string", // Asignar según tu lógica
+            destDepen: "string", // Asignar según tu lógica
+            destSiglas: "string", // Asignar según tu lógica
+            destNombre: values.destinatarioName,
+            destCargo: "string", // Asignar según tu lógica
+            tema: values.tema,
+            estatus: 0,
+            empqentrega: 0,
+            relacionoficio: "string", // Asignar según tu lógica
+            depto: 0,
+            deptoRespon: 0
+          };
+
+          // Enviar el objeto a la API
+          try {
+            const response = await fetch('http://200.56.97.5:7281/api/Oficios', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(objetoOficio),
+            });
+
+            if (!response.ok) {
+              throw new Error('Error en la solicitud');
+            }
+
+            // Aquí puedes manejar la respuesta
+            onSave(); // Llama a la función onSave si es necesario
+          } catch (error) {
+            console.error('Error al guardar el oficio:', error);
+          }
         }
       }}
-      
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
