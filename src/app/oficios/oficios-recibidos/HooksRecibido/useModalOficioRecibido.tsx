@@ -27,7 +27,6 @@ export default function UseOficioMODAL() {
   const [remitenteName, setRemitenteName] = useState<string | null>(null);
   const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
   const [responsableName, setResponsableName] = useState<string | null>(null);
-  const [remSiglas, setRemSiglas] = useState<string | null>(null); 
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
@@ -61,9 +60,8 @@ export default function UseOficioMODAL() {
     setShowResponsableModal(false);
   };
 
-  const handleRemitenteSave = (name: string, siglas: string) => {
+  const handleRemitenteSave = (name: string) => {
     setRemitenteName(name);
-    setRemSiglas(siglas); // Guardar las siglas del remitente
     setShowRemitenteModal(false);
   };
 
@@ -93,7 +91,6 @@ export default function UseOficioMODAL() {
     remitenteName,
     destinatarioName,
     responsableName,
-    remSiglas, // Exponer remSiglas
     showDestinatarioModal,
     handleDestinatarioSave,
     handleResponsableSave,
@@ -111,6 +108,5 @@ export default function UseOficioMODAL() {
     setRemitenteName,
     setResponsableName,
     handleSelectChange,
-    setRemSiglas, // Exponer setter de remSiglas
   };
 }

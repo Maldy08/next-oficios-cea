@@ -21,7 +21,6 @@ const validationSchema = Yup.object().shape({
   responsableName: Yup.string().required('Nombre del responsable es requerido'),
   destinatarioType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de destinatario inválido').required('Tipo de destinatario es requerido'),
   remitenteType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de remitente inválido').required('Tipo de remitente es requerido'),
-  remSiglas: Yup.string().required('Siglas del remitente son requeridas'), // Añadido remSiglas como requerido
 });
 
 interface Empleados {
@@ -35,7 +34,7 @@ interface remitentes {
   nombre: string;
   empresa: string;
   cargo: string;
-  remSiglas: string;
+  siglas: string;
 }
 
 interface ModalOficioProps {
@@ -83,8 +82,6 @@ export default function ModalOficio({
     setDestinatarioName,
     setRemitenteName,
     setResponsableName,
-    setRemSiglas,
-    remSiglas,
   } = UseModalOficioRecibido();
 
   if (!isOpen) return null;
@@ -96,7 +93,10 @@ export default function ModalOficio({
         selection: '',
         fechaCaptura: '',
         fechaLimite: '',
-        remSiglas: '', // Campo añadido
+        siglas: '', 
+        cargo: '',
+        destCargo: '',
+        destSiglas: '',
         numeroOficio: '',
         tema: '',
         observaciones: '',
@@ -127,7 +127,7 @@ export default function ModalOficio({
           const objetoOficio = {
             ejercicio: 2024,
             folio: parseInt(values.folio, 10) || 0,
-            eor: 0,
+            eor: 2,
             tipo: 0,
             noOficio: values.numeroOficio,
             pdfpath: null, // Enviar como null
@@ -136,9 +136,9 @@ export default function ModalOficio({
             fechaAcuse: new Date().toISOString(),
             fechaLimite: values.fechaLimite,
             remDepen: "string", // Asignar según tu lógica
-            remSiglas: values.remSiglas, // Campo remSiglas añadido
+            remSiglas: values.siglas, // Campo remSiglas añadido
             remNombre: values.remitenteName,
-            remCargo: "string", // Asignar según tu lógica
+            remCargo: values.cargo, // Asignar según tu lógica
             destDepen: "string", // Asignar según tu lógica
             destSiglas: "string", // Asignar según tu lógica
             destNombre: values.destinatarioName,

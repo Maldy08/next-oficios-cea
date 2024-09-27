@@ -9,7 +9,7 @@ interface Remitente {
   nombre: string;
   empresa: string;
   cargo: string;
-  remSiglas: string;
+  siglas: string;
 }
 
 interface ModalRemitenteProps {
@@ -19,7 +19,7 @@ interface ModalRemitenteProps {
   remitentes: Remitente[]; // Remitentes pasados por props
 }
 
-const columns = ['Nombre', 'Empresa', 'SIGLAS', 'Cargo'];
+const columns = ['Nombre', 'Empresa', 'Siglas', 'Cargo'];
 
 const accessor = (item: Remitente, column: string) => {
   switch (column) {
@@ -27,8 +27,8 @@ const accessor = (item: Remitente, column: string) => {
       return item.nombre;
     case 'Empresa':
       return item.empresa;
-    case 'SIGLAS': // Aquí asegúrate que el nombre de la columna sea "SIGLAS"
-      return item.remSiglas; // Aquí se accede a item.remSiglas
+    case 'Siglas': // Aquí asegúrate que el nombre de la columna sea "SIGLAS"
+      return item.siglas; // Aquí se accede a item.remSiglas
     case 'Cargo':
       return item.cargo;
     default:
