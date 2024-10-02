@@ -91,20 +91,33 @@ export default function ModalOficio({
       initialValues={{
         folio: '',
         selection: '',
-        fechaCaptura: '',
-        fechaLimite: '',
-        siglas: '', 
-        cargo: '',
-        destCargo: '',
-        destSiglas: '',
-        numeroOficio: '',
+        //AQUI EMPIEZA TIPO, NUM OFICIO, ETC.
+        	No_Oficio: '',
+          archivo: selectedFile,
+          fecha: '',
+          fechaCaptura: '',
+          fechaLimite: '',
+          //AQUI EMPIEZA REM
+          remDepen: '', 
+          remSiglas: '', 
+          remNombre: '',
+          remCargo: '',
+          //AQUI EMPIEZA DEST
+          destDepen: '',
+          destSiglas: '',
+          destNombre: '',
+          destCargo: '',
+
+        //AQUI EMPIEZ DATOS EXTRA
         tema: '',
+        estatus: '',
         observaciones: '',
-        archivo: selectedFile,
         remitenteName: remitenteName || '',
         destinatarioName: destinatarioName || '',
         responsableName: responsableName || '',
         destinatarioType: destinatarioType || '',
+        deptoComi: '',
+        deptoRespon: '',
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -125,32 +138,35 @@ export default function ModalOficio({
         } else {
           // Crear el objeto JSON
           const objetoOficio = {
+
             ejercicio: 2024,
             folio: parseInt(values.folio, 10) || 0,
             eor: 2,
             tipo: 0,
-            noOficio: values.numeroOficio,
+            noOficio: values.No_Oficio,
             pdfpath: null, // Enviar como null
             fecha: new Date().toISOString(),
             fechaCaptura: new Date().toISOString(),
             fechaAcuse: new Date().toISOString(),
             fechaLimite: values.fechaLimite,
-            remDepen: "string", // Asignar según tu lógica
-            remSiglas: values.siglas, // Campo remSiglas añadido
+            remDepen: values.remDepen, // Asignar según tu lógica
+            remSiglas: values.remSiglas, // Campo remSiglas añadido
             remNombre: values.remitenteName,
-            remCargo: values.cargo, // Asignar según tu lógica
-            destDepen: "string", // Asignar según tu lógica
-            destSiglas: "string", // Asignar según tu lógica
+            remCargo: values.remCargo, // Asignar según tu lógica
+            destDepen: values.destCargo, // Asignar según tu lógica
+            destSiglas: values.destSiglas, // Asignar según tu lógica
             destNombre: values.destinatarioName,
-            destCargo: "string", // Asignar según tu lógica
+            destCargo: values.destCargo, // Asignar según tu lógica
             tema: values.tema,
             estatus: 0,
             empqentrega: 0,
             relacionoficio: "string", // Asignar según tu lógica
             depto: 0,
-            deptoRespon: 0
+            deptoRespon: 0,
+            deptoComi: values.deptoComi,
+            observaciones: values.observaciones
           };
-
+          console.log(objetoOficio);
           // Enviar el objeto a la API
           try {
             const response = await fetch('http://200.56.97.5:7281/api/Oficios', {
