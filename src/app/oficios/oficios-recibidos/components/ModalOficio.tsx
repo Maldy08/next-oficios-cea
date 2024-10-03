@@ -32,9 +32,11 @@ interface remitentes {
 
 // Validación con Yup
 const validationSchema = Yup.object().shape({
-  tipo: Yup.string().required("Debes seleccionar una opción"),
+  tipo: Yup.string()
+    .oneOf(["", "1", "2"], "Debes seleccionar una opció")
+    .required("Debes seleccionar una opción"),
   fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
-  fechaLimite: Yup.date().required("Fecha Límite es requerida"),
+  // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
   noOficio: Yup.number().required("Número de Oficio es requerido"),
   tema: Yup.string().required("Tema es requerido"),
   observaciones: Yup.string(),
@@ -43,12 +45,12 @@ const validationSchema = Yup.object().shape({
   destNombre: Yup.string().required("Nombre del destinatario es requerido"),
   responsableName: Yup.string().required("Nombre del responsable es requerido"),
   destinatarioType: Yup.string()
-    .oneOf(["", "Interno", "Externo"], "Tipo de destinatario inválido")
+    .oneOf(["", "1", "2"], "Tipo de destinatario inválido")
     .required("Tipo de destinatario es requerido"),
-  // remitenteType: Yup.string()
-  //   .oneOf(["", "Interno", "Externo"], "Tipo de remitente inválido")
-  //   .required("Tipo de remitente es requerido"),
-  // remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
+  remitenteType: Yup.string()
+    .oneOf(["", "1", "2"], "Tipo de remitente inválido")
+    .required("Tipo de remitente es requerido"),
+  remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
 });
 
 export default function ModalOficio({
@@ -164,6 +166,32 @@ export default function ModalOficio({
           });
         } else {
           // Crear el objeto JSON
+
+          // Lógica para cambiar los valores según el remitenteType
+          let remSiglas = values.remSiglas;
+          let remDepen = values.remDepen;
+          let destDepen = values.destDepen;
+
+          if (values.remitenteType === "1" && values.tipo == 1) {
+            remSiglas = "CEA";
+            remDepen = "COMISION ESTATAL DEL AGUA";
+          }
+
+          if (values.destinatarioType === "1" && values.tipo == 1) {
+            destDepen = "COMISION ESTATAL DEL AGUA";
+          }
+
+          if (values.remitenteType === "1" && values.tipo == 2) {
+            remSiglas = "SEPROA";
+            remDepen =
+              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+
+          if (values.destinatarioType === "1" && values.tipo == 2) {
+            destDepen =
+              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+
           const objetoOficio = {
             ejercicio: 2024,
             folio: values.folio,
@@ -179,13 +207,12 @@ export default function ModalOficio({
             fechaCaptura: values.fechaCaptura,
             fechaAcuse: "2024-10-03T07:02:08.170Z",
             fechaLimite: values.fechaLimite,
-
-            remDepen: values.remDepen,
-            remSiglas: values.remSiglas,
+            remDepen: remDepen,
+            remSiglas: remSiglas,
             remNombre: values.remNombre,
             remCargo: values.remCargo,
 
-            destDepen: values.destDepen,
+            destDepen: destDepen,
             destSiglas: "string",
             destNombre: values.destNombre,
             destCargo: values.destCargo,
@@ -254,9 +281,10 @@ export default function ModalOficio({
                   <div className="flex items-center space-x-3">
                     <label className="flex items-center cursor-pointer">
                       <Field
+                        //checked={1}
                         type="radio"
                         name="tipo"
-                        value="0"
+                        value="1"
                         className="mr-1"
                       />
                       CEA
@@ -265,10 +293,10 @@ export default function ModalOficio({
                       <Field
                         type="radio"
                         name="tipo"
-                        value="1"
+                        value="2"
                         className="mr-1"
                       />
-                      SEPRA
+                      SEPROA
                     </label>
                   </div>
                   {touched.tipo && errors.tipo && (
@@ -331,11 +359,11 @@ export default function ModalOficio({
                       className="border border-gray-300 rounded p-2 w-full"
                       //   value={currentDate}
                     />
-                    <ErrorMessage
+                    {/* <ErrorMessage
                       name="fechaLimite"
                       component="div"
                       className="text-red-600"
-                    />
+                    /> */}
                   </div>
                 </div>
 
@@ -350,7 +378,7 @@ export default function ModalOficio({
                           type="radio"
                           id="remitenteInterno"
                           name="remitenteType"
-                          value="Interno"
+                          value="1"
                           className="mr-2"
                         />
                         <label
@@ -361,10 +389,11 @@ export default function ModalOficio({
                         </label>
 
                         <Field
+                          // checked={true}
                           type="radio"
                           id="remitenteExterno"
                           name="remitenteType"
-                          value="Externo"
+                          value="2"
                           className="mr-2"
                         />
                         <label
@@ -375,9 +404,9 @@ export default function ModalOficio({
                         </label>
                       </div>
                     </label>
-                    {/* {touched.remitenteType && errors.remitenteType && (
+                    {touched.remitenteType && errors.remitenteType && (
                       <div className="text-red-600">{errors.remitenteType}</div>
-                    )} */}
+                    )}
                     <div className="relative">
                       <Field
                         id="remNombre"
@@ -408,8 +437,9 @@ export default function ModalOficio({
                           type="radio"
                           id="destinatarioInterno"
                           name="destinatarioType"
-                          value="Interno"
+                          value="1"
                           className="mr-2"
+                          //  checked={true}
                         />
                         <label
                           htmlFor="destinatarioInterno"
@@ -422,7 +452,7 @@ export default function ModalOficio({
                           type="radio"
                           id="destinatarioExterno"
                           name="destinatarioType"
-                          value="Externo"
+                          value="2"
                           className="mr-2"
                         />
                         <label
@@ -559,11 +589,14 @@ export default function ModalOficio({
                 >
                   Guardar
                 </button>
+                <h1>Remitentes: {values.remitenteType}</h1>
+                <h1>Destinatario: {values.destinatarioType}</h1>
               </div>
 
               {showDestinatarioModal && (
                 <ModalDestinatario
                   // En este modal solo me falta por el Dest_Siglas, no estaban en la api
+
                   isOpen={showDestinatarioModal}
                   onClose={() => setShowDestinatarioModal(false)}
                   onSave={(datosEmpleados) => {
@@ -576,6 +609,7 @@ export default function ModalOficio({
                     };
 
                     // Asigna los datos completos en los campos de Formik
+
                     setFieldValue("destNombre", datosDestinatario.nombre);
                     setFieldValue("destDepen", datosDestinatario.departamento);
                     setFieldValue("destSiglas", datosDestinatario.siglas);

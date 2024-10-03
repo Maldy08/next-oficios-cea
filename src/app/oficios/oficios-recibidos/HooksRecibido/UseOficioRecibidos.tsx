@@ -30,7 +30,7 @@ export default function UseOficioMODAL() {
   const [remitenteSiglas, setremitenteSiglas] = useState<string | null>(null);
   const [remitentePuesto, setremitentePuesto] = useState<string | null>(null);
 
-  const [destinatarioType, setDestinatarioType] = useState("");
+  const [destinatarioType, setDestinatarioType] = useState<string | null>(null);
   const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
   const [destinatarioDepartamento, setdestinatarioDepartamento] = useState<
     string | null
