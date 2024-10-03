@@ -8,6 +8,7 @@ interface Remitente {
   nombre: string;
   empresa: string;
   cargo: string;
+  siglas: string;
 }
 
 interface ModalRemitenteProps {
@@ -31,7 +32,7 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
     handleRowClick,
   } = useModalOficioR1({
     data: props.remitentes,
-    columnsToFilter: ["nombre", "empresa", "cargo"],
+    columnsToFilter: ["nombre", "empresa", "siglas", "cargo"],
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
@@ -44,6 +45,10 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
     {
       header: "Departamento",
       accessor: (row: Remitente) => row.empresa,
+    },
+    {
+      header: "Siglas",
+      accessor: (row: Remitente) => row.siglas,
     },
     {
       header: "Puesto",

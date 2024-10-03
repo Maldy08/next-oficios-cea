@@ -8,6 +8,8 @@ interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
+  idExterno: number;
+  deptoComi: number;
 }
 
 interface ModalResponsableProps {
@@ -35,6 +37,8 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       "nombreCompleto",
       "descripcionDepto",
       "descripcionPuesto",
+      "idExterno",
+      "deptoComi",
     ],
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props

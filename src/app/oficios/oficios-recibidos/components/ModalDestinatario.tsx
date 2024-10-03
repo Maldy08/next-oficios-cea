@@ -8,6 +8,7 @@ interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
+  idExterno: number;
 }
 
 interface ModalDestinatarioProps {
@@ -35,6 +36,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       "nombreCompleto",
       "descripcionDepto",
       "descripcionPuesto",
+      "idExterno",
     ],
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props
@@ -49,6 +51,10 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       header: "Departamento",
       accessor: (row: Empleados) => row.descripcionDepto,
     },
+    // {
+    //   header: "Numero de Empleado",
+    //   accessor: (row: Empleados) => row.idExterno,
+    // },
     {
       header: "Puesto",
       accessor: (row: Empleados) => row.descripcionPuesto,

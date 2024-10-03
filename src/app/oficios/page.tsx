@@ -12,7 +12,7 @@ export default async function OficiosPage() {
   //Esto es la prueba el const departamentos y la importacion
   //no existen en esta parte del codigo y menos el return
   return (
-    <div>
+    <div className="dark:bg-gray-900 dark:text-white text-black">
       <h1>Pruebas</h1>
       {/* {/* <div>
         {departamentos.map((departamento) => (

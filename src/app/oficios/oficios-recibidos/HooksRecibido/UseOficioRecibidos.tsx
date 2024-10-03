@@ -18,14 +18,37 @@ export default function UseOficioMODAL() {
 
   // Guardar cambios y cerrar modal
   const handleSave = () => {
-    console.log("Datos guardados");
+    //console.log("Datos guardados");
     handleCloseModal();
   };
   const [remitenteType, setRemitenteType] = useState("");
-  const [destinatarioType, setDestinatarioType] = useState("");
   const [remitenteName, setRemitenteName] = useState<string | null>(null);
+  const [remitenteOcupacion, setRemitenteOcupacion] = useState<string | null>(
+    null
+  );
+
+  const [remitenteSiglas, setremitenteSiglas] = useState<string | null>(null);
+  const [remitentePuesto, setremitentePuesto] = useState<string | null>(null);
+
+  const [destinatarioType, setDestinatarioType] = useState("");
   const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
+  const [destinatarioDepartamento, setdestinatarioDepartamento] = useState<
+    string | null
+  >(null);
+  const [destinatarioPuesto, setDestinatarioPuesto] = useState<string | null>(
+    null
+  );
+
+  const [destinatarioSiglas, setDestinatarioSigla] = useState<string | null>(
+    null
+  );
+
   const [responsableName, setResponsableName] = useState<string | null>(null);
+  const [responsableDepto, setresponsableDepto] = useState<string | null>(null);
+  const [responsabledeptoRespon, setresponsabledeptoRespon] = useState<
+    string | null
+  >(null);
+
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
@@ -52,23 +75,25 @@ export default function UseOficioMODAL() {
 
   const handleDestinatarioSave = (name: string) => {
     setDestinatarioName(name);
+    console.log("Datos aguardados");
     setShowDestinatarioModal(false);
   };
 
   const handleResponsableSave = (name: string) => {
     setResponsableName(name);
+    console.log("Datos aguardados");
     setShowResponsableModal(false);
   };
 
   const handleRemitenteSave = (name: string) => {
     setRemitenteName(name);
+    console.log("Datos aguardados");
     setShowRemitenteModal(false);
   };
 
   return {
     personaEntregaName,
     setPersonaEntregaName,
-
     selectedArea,
     setSelectedArea,
     handleFileChange,
@@ -106,5 +131,21 @@ export default function UseOficioMODAL() {
     setDestinatarioName,
     setRemitenteName,
     setResponsableName,
+    remitenteOcupacion,
+    setRemitenteOcupacion,
+    remitenteSiglas,
+    setremitenteSiglas,
+    remitentePuesto,
+    setremitentePuesto,
+    destinatarioDepartamento,
+    setdestinatarioDepartamento,
+    destinatarioPuesto,
+    setDestinatarioPuesto,
+    destinatarioSiglas,
+    setDestinatarioSigla,
+    responsableDepto,
+    setresponsableDepto,
+    responsabledeptoRespon,
+    setresponsabledeptoRespon,
   };
 }
