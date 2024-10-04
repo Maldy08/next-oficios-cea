@@ -24,8 +24,14 @@ export default function UseOficioMODAL() {
 
   const [remitenteType, setRemitenteType] = useState("");
   const [destinatarioType, setDestinatarioType] = useState("");
-  const [remitenteName, setRemitenteName] = useState<string | null>(null);
-  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
+  const [remNombre, setremNombre] = useState<string | null>(null);
+  const [destNombre, setdestNombre] = useState<string | null>(null);
+  const [destDepen, setdestDepen] = useState<string | null>(null);
+  const [destCargo, setdestCargo] = useState<string | null>(null);
+  const [remDepen, setremDepen] = useState<string | null>(null);
+  const [remCargo, setremCargo] = useState<string | null>(null);
+  const [remsiglas, setremsiglas] = useState<string | null>(null);
+  const [destSiglas, setdestSiglas] = useState<number | null>(null);
   const [responsableName, setResponsableName] = useState<string | null>(null);
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
@@ -50,8 +56,8 @@ export default function UseOficioMODAL() {
     }
   };
 
-  const handleDestinatarioSave = (name: string) => {
-    setDestinatarioName(name);
+  const handleDestinatarioSave = (name: string, ) => {
+    setdestNombre(name);
     setShowDestinatarioModal(false);
   };
 
@@ -61,7 +67,7 @@ export default function UseOficioMODAL() {
   };
 
   const handleRemitenteSave = (name: string) => {
-    setRemitenteName(name);
+    setremNombre(name);
     setShowRemitenteModal(false);
   };
 
@@ -88,8 +94,8 @@ export default function UseOficioMODAL() {
     setRemitenteType,
     destinatarioType,
     setDestinatarioType,
-    remitenteName,
-    destinatarioName,
+    remNombre,
+    destNombre,
     responsableName,
     showDestinatarioModal,
     handleDestinatarioSave,
@@ -104,8 +110,20 @@ export default function UseOficioMODAL() {
     setShowDestinatarioModal,
     setShowResponsableModal,
     setShowRemitenteModal,
-    setDestinatarioName,
-    setRemitenteName,
+    setdestNombre,
+    setremNombre,
+    setdestDepen,
+    destDepen,
+    destCargo,
+    setdestCargo,
+    remDepen,
+    setremDepen,
+    remCargo,
+    setremCargo,
+    remsiglas,
+    setremsiglas,
+    destSiglas,
+    setdestSiglas,
     setResponsableName,
     handleSelectChange,
   };

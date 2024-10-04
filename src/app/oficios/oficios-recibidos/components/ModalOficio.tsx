@@ -16,18 +16,19 @@ const validationSchema = Yup.object().shape({
   tema: Yup.string().required('Tema es requerido'),
   observaciones: Yup.string(),
   archivo: Yup.mixed().required('Archivo es requerido'),
-  remitenteName: Yup.string().required('Nombre del remitente es requerido'),
-  destinatarioName: Yup.string().required('Nombre del destinatario es requerido'),
+  remNombre: Yup.string().required('Nombre del remitente es requerido'),
+  destNombre: Yup.string().required('Nombre del destinatario es requerido'),
   responsableName: Yup.string().required('Nombre del responsable es requerido'),
   destinatarioType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de destinatario inválido').required('Tipo de destinatario es requerido'),
   remitenteType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de remitente inválido').required('Tipo de remitente es requerido'),
 });
 
-interface Empleados {
+interface Empleado {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number;
+  idExterno: number; 
+  destSiglas: string;
 }
 
 interface remitentes {
@@ -57,8 +58,8 @@ export default function ModalOficio({
     setRemitenteType,
     destinatarioType,
     setDestinatarioType,
-    remitenteName,
-    destinatarioName,
+    remNombre,
+    destNombre,
     responsableName,
     showDestinatarioModal,
     handleDestinatarioSave,
@@ -79,54 +80,59 @@ export default function ModalOficio({
     setShowResponsableModal,
     setShowRemitenteModal,
     handleFileChange,
-    setDestinatarioName,
-    setRemitenteName,
+    setdestNombre,
+    setremNombre,  // Cambiado a setremNombre
+    destDepen,
+    setdestDepen,
+    destCargo,
+    setdestCargo,
+    remDepen,
+    setremDepen,
+    remCargo,
+    setremCargo,
+    remsiglas,
+    setremsiglas,
+    destSiglas,
+    setdestSiglas,
     setResponsableName,
   } = UseModalOficioRecibido();
 
+  
   if (!isOpen) return null;
 
   return (
     <Formik
-      initialValues={{
-        folio: '',
-        selection: '',
-        //AQUI EMPIEZA TIPO, NUM OFICIO, ETC.
-        	No_Oficio: '',
-          archivo: selectedFile,
-          fecha: '',
-          fechaCaptura: '',
-          fechaLimite: '',
-          //AQUI EMPIEZA REM
-          remDepen: '', 
-          remSiglas: '', 
-          remNombre: '',
-          remCargo: '',
-          //AQUI EMPIEZA DEST
-          destDepen: '',
-          destSiglas: '',
-          destNombre: '',
-          destCargo: '',
-
-        //AQUI EMPIEZ DATOS EXTRA
-        tema: '',
-        estatus: '',
-        observaciones: '',
-        remitenteName: remitenteName || '',
-        destinatarioName: destinatarioName || '',
-        responsableName: responsableName || '',
-        destinatarioType: destinatarioType || '',
-        deptoComi: '',
-        deptoRespon: '',
-      }}
+    initialValues={{
+      folio: '',
+      selection: '',
+      fechaCaptura: '',
+      fechaLimite: '',
+      siglas: '', 
+      cargo: '',
+      destDepen: destDepen || '',
+      remDepen: remDepen || '',
+      destCargo: destCargo || '',
+      remCargo: remCargo || '',
+      destSiglas: destSiglas || '',
+      remsiglas: remsiglas || '',
+      numeroOficio: '',
+      tema: '',
+      observaciones: '',
+      archivo: selectedFile,
+      remNombre: remNombre || '',  // Esta parte está bien
+      destNombre: destNombre || '',
+      responsableName: responsableName || '',
+      destinatarioType: destinatarioType || '',
+    }}
+    
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
       validateOnBlur={false} // Desactivar validación en cada desenfoque
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
       
-        if (!values.remitenteName) errors.remitenteName = 'Nombre del remitente es requerido';
-        if (!values.destinatarioName) errors.destinatarioName = 'Nombre del destinatario es requerido';
+        if (!values.remNombre) errors.remNombre = 'Nombre del remitente es requerido';
+        if (!values.destNombre) errors.destNombre = 'Nombre del destinatario es requerido';
         if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
       
         // Si hay errores, se actualizan y no se envía el formulario
@@ -138,54 +144,50 @@ export default function ModalOficio({
         } else {
           // Crear el objeto JSON
           const objetoOficio = {
-
             ejercicio: 2024,
             folio: parseInt(values.folio, 10) || 0,
             eor: 2,
             tipo: 0,
-            noOficio: values.No_Oficio,
+            noOficio: values.numeroOficio,
             pdfpath: null, // Enviar como null
             fecha: new Date().toISOString(),
             fechaCaptura: new Date().toISOString(),
             fechaAcuse: new Date().toISOString(),
             fechaLimite: values.fechaLimite,
             remDepen: values.remDepen, // Asignar según tu lógica
-            remSiglas: values.remSiglas, // Campo remSiglas añadido
-            remNombre: values.remitenteName,
+            remSiglas: values.remsiglas, // Campo remSiglas añadido
+            remNombre: values.remNombre,  // Cambiado a "string"
             remCargo: values.remCargo, // Asignar según tu lógica
-            destDepen: values.destCargo, // Asignar según tu lógica
-            destSiglas: values.destSiglas, // Asignar según tu lógica
-            destNombre: values.destinatarioName,
+            destDepen: values.destDepen, // Asignar según tu lógica
+            destSiglas: "string", // Asignar según tu lógica
+            destNombre: values.destNombre,
             destCargo: values.destCargo, // Asignar según tu lógica
             tema: values.tema,
             estatus: 0,
             empqentrega: 0,
             relacionoficio: "string", // Asignar según tu lógica
             depto: 0,
-            deptoRespon: 0,
-            deptoComi: values.deptoComi,
-            observaciones: values.observaciones
+            deptoRespon: 0
           };
-          console.log(objetoOficio);
+
           // Enviar el objeto a la API
           try {
             const response = await fetch('http://200.56.97.5:7281/api/Oficios', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(objetoOficio),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(objetoOficio),
             });
 
             if (!response.ok) {
-              throw new Error('Error en la solicitud');
+                throw new Error('Error en la solicitud');
             }
 
-            // Aquí puedes manejar la respuesta
             onSave(); // Llama a la función onSave si es necesario
-          } catch (error) {
+        } catch (error) {
             console.error('Error al guardar el oficio:', error);
-          }
+        }
         }
       }}
     >
@@ -319,13 +321,13 @@ export default function ModalOficio({
     {/* Barra de texto de remitente */}
     <div className="relative flex items-center">
       <Field
-        id="remitenteName"
-        name="remitenteName"
+        id="remNombre"
+        name="remNombre"
         type="text"
         placeholder="Nombre del remitente"
         className="border border-gray-300 rounded p-2 w-full"
         readOnly
-        value={values.remitenteName}
+        value={values.remNombre}
         onClick={() => setShowRemitenteModal(true)}
       />
       <FaUserPlus
@@ -334,8 +336,8 @@ export default function ModalOficio({
       />
     </div>
 
-    {touched.remitenteName && errors.remitenteName && (
-      <div className="text-red-600">{errors.remitenteName}</div>
+    {touched.remNombre && errors.remNombre && (
+      <div className="text-red-600">{errors.remNombre}</div>
     )}
   </div>
 
@@ -380,13 +382,13 @@ export default function ModalOficio({
     {/* Barra de texto de destinatario */}
     <div className="relative flex items-center">
       <Field
-        id="destinatarioName"
-        name="destinatarioName"
+        id="destNombre"
+        name="destNombre"
         type="text"
         placeholder="Nombre del destinatario"
         className="border border-gray-300 rounded p-2 w-full"
         readOnly
-        value={values.destinatarioName}
+        value={values.destNombre}
         onClick={() => setShowDestinatarioModal(true)}
       />
       <FaUserPlus
@@ -395,8 +397,8 @@ export default function ModalOficio({
       />
     </div>
 
-    {touched.destinatarioName && errors.destinatarioName && (
-      <div className="text-red-600">{errors.destinatarioName}</div>
+    {touched.destNombre && errors.destNombre && (
+      <div className="text-red-600">{errors.destNombre}</div>
     )}
   </div>
 </div>
@@ -492,30 +494,46 @@ export default function ModalOficio({
 
             {/* Modales */}
             {showDestinatarioModal && (
-              <ModalDestinatario
-                isOpen={showDestinatarioModal}
-                onClose={() => setShowDestinatarioModal(false)}
-                onSave={(name: string) => {
-                  setDestinatarioName(name);
-                  setShowDestinatarioModal(false);
-                  setFieldValue('destinatarioName', name);
-                }}
-                datosEmpleados={datosEmpleados}
-              />
-            )}
+  <ModalDestinatario
+    isOpen={showDestinatarioModal}
+    onClose={() => setShowDestinatarioModal(false)}
+    onSave={(values) => {
+      setdestNombre(values.nombre);
+      setdestDepen(values.destDepen);
+      setdestCargo(values.destCargo);
+      setdestSiglas(values.destSiglas);
+      
+      setShowDestinatarioModal(false);
+      setFieldValue('destNombre', values.nombre);
+      setFieldValue('destDepen', values.destDepen);
+      setFieldValue('destCargo', values.destCargo);
+      setFieldValue('destSiglas', values.destSiglas);
+    }}
+    datosEmpleados={datosEmpleados}
+  />
+)}
 
-            {showRemitenteModal && (
-              <ModalRemitente
-                isOpen={showRemitenteModal}
-                onClose={() => setShowRemitenteModal(false)}
-                onSave={(name: string) => {
-                  setRemitenteName(name);
-                  setShowRemitenteModal(false);
-                  setFieldValue('remitenteName', name);
-                }}
-                remitentes={remitentes}
-              />
-            )}
+
+
+
+{showRemitenteModal && (
+  <ModalRemitente
+    isOpen={showRemitenteModal}
+    onClose={() => setShowRemitenteModal(false)}
+    onSave={(values) => {
+      setremNombre(values.remNombre);
+      setremDepen(values.remDepen);
+      setremCargo(values.remCargo);
+      setremsiglas(values.remsiglas);
+      setShowDestinatarioModal(false);
+      setFieldValue('remNombre', values.remNombre);
+      setFieldValue('remDepen', values.remDepen);
+      setFieldValue('remCargo', values.remCargo);
+      setFieldValue('remsiglas', values.remsiglas);
+    }}
+    remitentes={remitentes}
+  />
+)}
 
             {showResponsableModal && (
               <ModalResponsable

@@ -15,7 +15,7 @@ interface Remitente {
 interface ModalRemitenteProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (values: { remNombre: string; remDepen: string; remCargo: string; remsiglas: string }) => void;
   remitentes: Remitente[]; // Remitentes pasados por props
 }
 
@@ -56,11 +56,26 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
 
   const handleSave = () => {
     if (!formik.values.selectedRemitente) {
-      setError('Debes seleccionar un remitente');
+      setError('Debes seleccionar un destinatario');
     } else {
-      props.onSave(formik.values.selectedRemitente);
-      props.onClose();
-      setError(null);
+      // Encuentra el remitente seleccionado a partir del nombre
+      const remitente = props.remitentes.find(
+        rem => rem.nombre === formik.values.selectedRemitente
+      );
+  
+      if (remitente) {
+        // Llama a onSave con los valores requeridos
+        props.onSave({
+          remNombre: remitente.nombre,
+          remDepen: remitente.empresa,
+          remCargo: remitente.cargo, // Asegúrate de que este campo esté presente en la interfaz de Empleado
+          remsiglas: remitente.siglas,
+        });
+        props.onClose();
+        setError(null); // Limpiar error si se guarda correctamente
+      } else {
+        setError('No se encontró el destinatario seleccionado');
+      }
     }
   };
 

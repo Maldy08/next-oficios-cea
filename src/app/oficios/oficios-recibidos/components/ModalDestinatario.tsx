@@ -10,16 +10,18 @@ interface Empleado {
   descripcionDepto: string;
   descripcionPuesto: string;
   idPue: number;
+  destSiglas: string;
 }
 
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: number }) => void; // Asegúrate de que esto esté correcto
   datosEmpleados: Empleado[];
 }
 
-const columns = ['Nombre Completo', 'Departamento', 'Puesto'];
+
+const columns = ['Nombre Completo', 'Departamento', 'Puesto', 'Siglas'];
 
 const accessor = (item: Empleado, column: string) => {
   switch (column) {
@@ -29,6 +31,8 @@ const accessor = (item: Empleado, column: string) => {
       return item.descripcionDepto;
     case 'Puesto':
       return item.descripcionPuesto;
+      case 'Siglas':
+      return item.idPue;
     default:
       return '';
   }
@@ -67,9 +71,24 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     if (!formik.values.selectedDestinatario) {
       setError('Debes seleccionar un destinatario');
     } else {
-      props.onSave(formik.values.selectedDestinatario);
-      props.onClose();
-      setError(null); // Limpiar error si se guarda correctamente
+      // Encuentra el empleado seleccionado a partir del nombre
+      const empleado = props.datosEmpleados.find(
+        emp => emp.nombreCompleto === formik.values.selectedDestinatario
+      );
+  
+      if (empleado) {
+        // Llama a onSave con los valores requeridos
+        props.onSave({
+          nombre: empleado.nombreCompleto,
+          destDepen: empleado.descripcionDepto,
+          destCargo: empleado.descripcionPuesto, // Asegúrate de que este campo esté presente en la interfaz de Empleado
+          destSiglas: empleado.idPue,
+        });
+        props.onClose();
+        setError(null); // Limpiar error si se guarda correctamente
+      } else {
+        setError('No se encontró el destinatario seleccionado');
+      }
     }
   };
 

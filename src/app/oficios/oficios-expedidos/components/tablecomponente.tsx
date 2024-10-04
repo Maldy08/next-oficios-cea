@@ -5,7 +5,7 @@ interface TableComponenteProps<T> {
   data: T[];
   columns: string[];
   accessor: (item: T, column: string) => string | number;
-  onRowClick: (value: string) => void;
+  onRowClick: (value: string, depto: string) => void; // Modificado aquí
   columnKeyForRowClick: string;
   searchTerm: string; // Recibe el término de búsqueda
 }
@@ -38,7 +38,8 @@ function TableComponente<T>({
 
   const handleRowClick = (rowIndex: number) => {
     const value = accessor(paginatedData[rowIndex], columnKeyForRowClick) as string;
-    onRowClick(value);
+    const depto = accessor(paginatedData[rowIndex], 'Departamento') as string; // Obtener el departamento
+    onRowClick(value, depto); // Pasar el nombre y el departamento
     setSelectedRowValue(value); 
   };
 
