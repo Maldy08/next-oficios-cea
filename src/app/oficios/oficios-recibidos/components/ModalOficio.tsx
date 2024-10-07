@@ -27,7 +27,7 @@ interface Empleado {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idExterno: number; 
+  idExterno: number;
   destSiglas: string;
 }
 
@@ -43,8 +43,9 @@ interface ModalOficioProps {
   onClose: () => void;
   onSave: () => void;
   datosEmpleados: any[];
+  usuariosExternos: any[];
   remitentes: any[];
-  
+
 }
 
 const fetchEmpleadosData = async (apiUrl: string) => {
@@ -65,6 +66,7 @@ export default function ModalOficio({
   onSave,
   datosEmpleados,
   remitentes,
+  usuariosExternos,
 }: ModalOficioProps) {
   const {
     remitenteType,
@@ -111,45 +113,45 @@ export default function ModalOficio({
   } = UseModalOficioRecibido();
 
 
-  
-  
+
+
   if (!isOpen) return null;
 
   return (
     <Formik
-    initialValues={{
-      folio: '',
-      selection: '',
-      fechaCaptura: '',
-      fechaLimite: '',
-      siglas: '', 
-      cargo: '',
-      destDepen: destDepen || '',
-      remDepen: remDepen || '',
-      destCargo: destCargo || '',
-      remCargo: remCargo || '',
-      destSiglas: destSiglas || '',
-      remsiglas: remsiglas || '',
-      numeroOficio: '',
-      tema: '',
-      observaciones: '',
-      archivo: selectedFile,
-      remNombre: remNombre || '',  // Esta parte está bien
-      destNombre: destNombre || '',
-      responsableName: responsableName || '',
-      destinatarioType: destinatarioType || '',
-    }}
-    
+      initialValues={{
+        folio: '',
+        selection: '',
+        fechaCaptura: '',
+        fechaLimite: '',
+        siglas: '',
+        cargo: '',
+        destDepen: destDepen || '',
+        remDepen: remDepen || '',
+        destCargo: destCargo || '',
+        remCargo: remCargo || '',
+        destSiglas: destSiglas || '',
+        remsiglas: remsiglas || '',
+        numeroOficio: '',
+        tema: '',
+        observaciones: '',
+        archivo: selectedFile,
+        remNombre: remNombre || '',  // Esta parte está bien
+        destNombre: destNombre || '',
+        responsableName: responsableName || '',
+        destinatarioType: destinatarioType || '',
+      }}
+
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
       validateOnBlur={false} // Desactivar validación en cada desenfoque
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-      
+
         if (!values.remNombre) errors.remNombre = 'Nombre del remitente es requerido';
         if (!values.destNombre) errors.destNombre = 'Nombre del destinatario es requerido';
         if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
-      
+
         // Si hay errores, se actualizan y no se envía el formulario
         if (Object.keys(errors).length) {
           setErrors(errors);
@@ -188,21 +190,21 @@ export default function ModalOficio({
           // Enviar el objeto a la API
           try {
             const response = await fetch('http://200.56.97.5:7281/api/Oficios', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(objetoOficio),
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(objetoOficio),
             });
 
             if (!response.ok) {
-                throw new Error('Error en la solicitud');
+              throw new Error('Error en la solicitud');
             }
 
             onSave(); // Llama a la función onSave si es necesario
-        } catch (error) {
+          } catch (error) {
             console.error('Error al guardar el oficio:', error);
-        }
+          }
         }
       }}
     >
@@ -226,26 +228,26 @@ export default function ModalOficio({
 
                 {/* Selección */}
                 <div className="flex flex-col">
-                    <div className="relative">
-                      <div className="flex items-center space-x-3">
-                        <label className="flex items-center cursor-pointer">
-                          <Field type="radio" name="selection" value="CEA" className="mr-1" />
-                          CEA
-                        </label>
+                  <div className="relative">
+                    <div className="flex items-center space-x-3">
+                      <label className="flex items-center cursor-pointer">
+                        <Field type="radio" name="selection" value="CEA" className="mr-1" />
+                        CEA
+                      </label>
 
-                        <label className="flex items-center cursor-pointer">
-                          <Field type="radio" name="selection" value="SEPRA" className="mr-1" />
-                          SEPRA
-                        </label>
-                      </div>
-                      {touched.selection && errors.selection && (
-                        <div className="absolute left-0 top-full mt-1 text-red-600 text-sm">
-                          {errors.selection}
-                        </div>
-                      )}
+                      <label className="flex items-center cursor-pointer">
+                        <Field type="radio" name="selection" value="SEPRA" className="mr-1" />
+                        SEPRA
+                      </label>
                     </div>
+                    {touched.selection && errors.selection && (
+                      <div className="absolute left-0 top-full mt-1 text-red-600 text-sm">
+                        {errors.selection}
+                      </div>
+                    )}
                   </div>
-                    
+                </div>
+
 
                 <div className="flex items-center">
                   <span className="w-24 sm:w-12">Fecha:</span>
@@ -264,15 +266,15 @@ export default function ModalOficio({
                 <div className="flex-1 mb-4 sm:mb-0">
                   <label className="block mb-2">Número de Oficio</label>
                   <Field
-        id="numeroOficio"
-        name="numeroOficio"
-        type="text"  
-        placeholder="Número de oficio"
-        className="border border-gray-300 rounded p-2 w-full"
-        onInput={(e: { target: { value: string; }; }) => {
-          e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Solo permite números
-        }}
-      />
+                    id="numeroOficio"
+                    name="numeroOficio"
+                    type="text"
+                    placeholder="Número de oficio"
+                    className="border border-gray-300 rounded p-2 w-full"
+                    onInput={(e: { target: { value: string; }; }) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Solo permite números
+                    }}
+                  />
                   <ErrorMessage name="numeroOficio" component="div" className="text-red-600" />
                 </div>
                 <div className="flex-1 mb-4 sm:mb-0">
@@ -295,176 +297,176 @@ export default function ModalOficio({
                 </div>
               </div>
 
-                      
+
               {/* Contenedor principal con grid de dos columnas */}
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-  {/* Remitente */}
-  <div className="flex flex-col">
-    {/* Título y botones a la derecha */}
-    <div className="flex justify-between items-center mb-2">
-      <label htmlFor="remitenteName" className="block">
-        Nombre del Remitente
-      </label>
-      <div className="ml-4 flex items-center">
-  {/* Radio Button Interno */}
-  <Field
-    type="radio"
-    id="remitenteInterno"
-    name="remitenteType"
-    value="Interno"
-    className="mr-2"
-  />
-  <label htmlFor="remitenteInterno" className="cursor-pointer mr-4">
-    Interno
-  </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                {/* Remitente */}
+                <div className="flex flex-col">
+                  {/* Título y botones a la derecha */}
+                  <div className="flex justify-between items-center mb-2">
+                    <label htmlFor="remitenteName" className="block">
+                      Nombre del Remitente
+                    </label>
+                    <div className="ml-4 flex items-center">
+                      {/* Radio Button Interno */}
+                      <Field
+                        type="radio"
+                        id="remitenteInterno"
+                        name="remitenteType"
+                        value="Interno"
+                        className="mr-2"
+                      />
+                      <label htmlFor="remitenteInterno" className="cursor-pointer mr-4">
+                        Interno
+                      </label>
 
-  {/* Radio Button Externo */}
-  <Field
-    type="radio"
-    id="remitenteExterno"
-    name="remitenteType"
-    value="Externo"
-    className="mr-2"
-  />
-  <label htmlFor="remitenteExterno" className="cursor-pointer">
-    Externo
-  </label>
-</div>
+                      {/* Radio Button Externo */}
+                      <Field
+                        type="radio"
+                        id="remitenteExterno"
+                        name="remitenteType"
+                        value="Externo"
+                        className="mr-2"
+                      />
+                      <label htmlFor="remitenteExterno" className="cursor-pointer">
+                        Externo
+                      </label>
+                    </div>
 
-    </div>
+                  </div>
 
-    {/* Barra de texto de remitente */}
-    <div className="relative flex items-center">
-      <Field
-        id="remNombre"
-        name="remNombre"
-        type="text"
-        placeholder="Nombre del remitente"
-        className="border border-gray-300 rounded p-2 w-full"
-        readOnly
-        value={values.remNombre}
-        onClick={() => setShowRemitenteModal(true)}
-      />
-      <FaUserPlus
-        onClick={() => setShowRemitenteModal(true)}
-        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-      />
-    </div>
+                  {/* Barra de texto de remitente */}
+                  <div className="relative flex items-center">
+                    <Field
+                      id="remNombre"
+                      name="remNombre"
+                      type="text"
+                      placeholder="Nombre del remitente"
+                      className="border border-gray-300 rounded p-2 w-full"
+                      readOnly
+                      value={values.remNombre}
+                      onClick={() => setShowRemitenteModal(true)}
+                    />
+                    <FaUserPlus
+                      onClick={() => setShowRemitenteModal(true)}
+                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                    />
+                  </div>
 
-    {touched.remNombre && errors.remNombre && (
-      <div className="text-red-600">{errors.remNombre}</div>
-    )}
-  </div>
+                  {touched.remNombre && errors.remNombre && (
+                    <div className="text-red-600">{errors.remNombre}</div>
+                  )}
+                </div>
 
-  {/* Destinatario */}
-  <div className="flex flex-col">
-    {/* Título y botones a la derecha */}
-    <div className="flex justify-between items-center mb-2">
-      <label htmlFor="destinatarioName" className="block">
-        Nombre del Destinatario
-      </label>
-      <div className="flex items-center">
-        {/* Radio Button Interno */}
-        <Field
-          type="radio"
-          id="destinatarioInterno"
-          name="destinatarioType"
-          value="Interno"
-          className="mr-2"
-        />
-        <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">
-          Interno
-        </label>
+                {/* Destinatario */}
+                <div className="flex flex-col">
+                  {/* Título y botones a la derecha */}
+                  <div className="flex justify-between items-center mb-2">
+                    <label htmlFor="destinatarioName" className="block">
+                      Nombre del Destinatario
+                    </label>
+                    <div className="flex items-center">
+                      {/* Radio Button Interno */}
+                      <Field
+                        type="radio"
+                        id="destinatarioInterno"
+                        name="destinatarioType"
+                        value="Interno"
+                        className="mr-2"
+                      />
+                      <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">
+                        Interno
+                      </label>
 
-        {/* Radio Button Externo */}
-        <Field
-          type="radio"
-          id="destinatarioExterno"
-          name="destinatarioType"
-          value="Externo"
-          className="mr-2"
-        />
-        <label htmlFor="destinatarioExterno" className="cursor-pointer">
-          Externo
-        </label>
-      </div>
-    </div>
+                      {/* Radio Button Externo */}
+                      <Field
+                        type="radio"
+                        id="destinatarioExterno"
+                        name="destinatarioType"
+                        value="Externo"
+                        className="mr-2"
+                      />
+                      <label htmlFor="destinatarioExterno" className="cursor-pointer">
+                        Externo
+                      </label>
+                    </div>
+                  </div>
 
-    {touched.destinatarioType && errors.destinatarioType && (
-      <div className="text-red-600">{errors.destinatarioType}</div>
-    )}
+                  {touched.destinatarioType && errors.destinatarioType && (
+                    <div className="text-red-600">{errors.destinatarioType}</div>
+                  )}
 
-    {/* Barra de texto de destinatario */}
-    <div className="relative flex items-center">
-  <Field
-  id="destNombre"
-  name="destNombre"
-  type="text"
-  placeholder="Nombre del destinatario"
-  className="border border-gray-300 rounded p-2 w-full"
-  readOnly
-  value={values.destNombre}
-  onMouseDown={(e: { preventDefault: () => void; }) => {
-    // Evitar que el campo reciba el foco si no hay tipo de destinatario
-    if (!values.destinatarioType) {
-      e.preventDefault(); // Previene el foco en el campo
-      alert('Por favor, selecciona primero un tipo de destinatario.');
-    }
-  }}
-  onClick={() => {
-    if (values.destinatarioType) {
-      setShowDestinatarioModal(true);
-    }
-  }}
-/>
-  <FaUserPlus
-    onClick={() => {
-      // Solo abrir el modal si se ha seleccionado un tipo de destinatario
-      if (values.destinatarioType) {
-        setShowDestinatarioModal(true);
-      } else {
-        // Aquí puedes agregar un mensaje si deseas avisar al usuario
-        alert('Por favor, selecciona primero un tipo de destinatario.');
-      }
-    }}
-    className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-  />
-</div>
+                  {/* Barra de texto de destinatario */}
+                  <div className="relative flex items-center">
+                    <Field
+                      id="destNombre"
+                      name="destNombre"
+                      type="text"
+                      placeholder="Nombre del destinatario"
+                      className="border border-gray-300 rounded p-2 w-full"
+                      readOnly
+                      value={values.destNombre}
+                      onMouseDown={(e: { preventDefault: () => void; }) => {
+                        // Evitar que el campo reciba el foco si no hay tipo de destinatario
+                        if (!values.destinatarioType) {
+                          e.preventDefault(); // Previene el foco en el campo
+                          alert('Por favor, selecciona primero un tipo de destinatario.');
+                        }
+                      }}
+                      onClick={() => {
+                        if (values.destinatarioType) {
+                          setShowDestinatarioModal(true);
+                        }
+                      }}
+                    />
+                    <FaUserPlus
+                      onClick={() => {
+                        // Solo abrir el modal si se ha seleccionado un tipo de destinatario
+                        if (values.destinatarioType) {
+                          setShowDestinatarioModal(true);
+                        } else {
+                          // Aquí puedes agregar un mensaje si deseas avisar al usuario
+                          alert('Por favor, selecciona primero un tipo de destinatario.');
+                        }
+                      }}
+                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                    />
+                  </div>
 
-    {touched.destNombre && errors.destNombre && (
-      <div className="text-red-600">{errors.destNombre}</div>
-    )}
-  </div>
-</div>
+                  {touched.destNombre && errors.destNombre && (
+                    <div className="text-red-600">{errors.destNombre}</div>
+                  )}
+                </div>
+              </div>
 
 
               {/* Responsable */}
-<div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
-  <div className="flex flex-col sm:w-1/2">
-    <label htmlFor="responsableName" className="block mb-2">
-      Nombre del Responsable
-    </label>
-    <div className="relative">
-      <Field
-        id="responsableName"
-        name="responsableName"
-        type="text"
-        placeholder="Nombre del responsable"
-        className="border border-gray-300 rounded p-2 w-full"
-        readOnly
-        value={values.responsableName}
-        onClick={() => setShowResponsableModal(true)}
-      />
-      <FaUserPlus
-        onClick={() => setShowResponsableModal(true)}
-        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-      />
-    </div>
-    {values.responsableName === '' && (
-      <ErrorMessage name="responsableName" component="div" className="text-red-600" />
-    )}
-  </div>
-</div>
+              <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
+                <div className="flex flex-col sm:w-1/2">
+                  <label htmlFor="responsableName" className="block mb-2">
+                    Nombre del Responsable
+                  </label>
+                  <div className="relative">
+                    <Field
+                      id="responsableName"
+                      name="responsableName"
+                      type="text"
+                      placeholder="Nombre del responsable"
+                      className="border border-gray-300 rounded p-2 w-full"
+                      readOnly
+                      value={values.responsableName}
+                      onClick={() => setShowResponsableModal(true)}
+                    />
+                    <FaUserPlus
+                      onClick={() => setShowResponsableModal(true)}
+                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                    />
+                  </div>
+                  {values.responsableName === '' && (
+                    <ErrorMessage name="responsableName" component="div" className="text-red-600" />
+                  )}
+                </div>
+              </div>
 
               {/* Tema y Observaciones */}
               <div className="flex flex-col mb-4">
@@ -493,80 +495,83 @@ export default function ModalOficio({
               </div>
 
               {/* Archivo */}
-  <div className="mb-4">
-    <input
-      id="archivo"
-      name="archivo"
-      type="file"
-      onChange={(event) => {
-        if (event.currentTarget.files) {
-          setFieldValue('archivo', event.currentTarget.files[0]);
-        }
-      }}
-      className="border border-gray-300 rounded p-2 w-full"
-    />
-    <ErrorMessage name="archivo" component="div" className="text-red-600" />
-  </div>
+              <div className="mb-4">
+                <input
+                  id="archivo"
+                  name="archivo"
+                  type="file"
+                  onChange={(event) => {
+                    if (event.currentTarget.files) {
+                      setFieldValue('archivo', event.currentTarget.files[0]);
+                    }
+                  }}
+                  className="border border-gray-300 rounded p-2 w-full"
+                />
+                <ErrorMessage name="archivo" component="div" className="text-red-600" />
+              </div>
 
               {/* Botones */}
               <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-      type="submit"
-      className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-    >
-      Guardar
-    </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+                >
+                  Guardar
+                </button>
               </div>
+            </div>
 
             {/* Modales */}
             {showDestinatarioModal && (
-  <ModalDestinatario
-    isOpen={showDestinatarioModal}
-    onClose={() => setShowDestinatarioModal(false)}
-    onSave={(values) => {
-      setdestNombre(values.nombre);
-      setdestDepen(values.destDepen);
-      setdestCargo(values.destCargo);
-      setdestSiglas(values.destSiglas);
-      
-      setShowDestinatarioModal(false);
-      setFieldValue('destNombre', values.nombre);
-      setFieldValue('destDepen', values.destDepen);
-      setFieldValue('destCargo', values.destCargo);
-      setFieldValue('destSiglas', values.destSiglas);
-    }}
-  />
-)}
+              <ModalDestinatario
+                isOpen={showDestinatarioModal}
+                onClose={() => setShowDestinatarioModal(false)}
+                datosEmpleados={datosEmpleados}
+                datosUsuariosExt={usuariosExternos}
+                destinatarioType={values.destinatarioType}
+                onSave={(values) => {
+                  setdestNombre(values.nombre);
+                  setdestDepen(values.destDepen);
+                  setdestCargo(values.destCargo);
+                  setdestSiglas(values.destSiglas);
+
+                  setShowDestinatarioModal(false);
+                  setFieldValue('destNombre', values.nombre);
+                  setFieldValue('destDepen', values.destDepen);
+                  setFieldValue('destCargo', values.destCargo);
+                  setFieldValue('destSiglas', values.destSiglas);
+                }}
+              />
+            )}
 
 
 
 
-{showRemitenteModal && (
-  <ModalRemitente
-    isOpen={showRemitenteModal}
-    onClose={() => setShowRemitenteModal(false)}
-    onSave={(values) => {
-      setremNombre(values.remNombre);
-      setremDepen(values.remDepen);
-      setremCargo(values.remCargo);
-      setremsiglas(values.remsiglas);
-      setShowDestinatarioModal(false);
-      setFieldValue('remNombre', values.remNombre);
-      setFieldValue('remDepen', values.remDepen);
-      setFieldValue('remCargo', values.remCargo);
-      setFieldValue('remsiglas', values.remsiglas);
-    }}
-    remitentes={remitentes}
-  />
-)}
+            {showRemitenteModal && (
+              <ModalRemitente
+                isOpen={showRemitenteModal}
+                onClose={() => setShowRemitenteModal(false)}
+                onSave={(values) => {
+                  setremNombre(values.remNombre);
+                  setremDepen(values.remDepen);
+                  setremCargo(values.remCargo);
+                  setremsiglas(values.remsiglas);
+                  setShowDestinatarioModal(false);
+                  setFieldValue('remNombre', values.remNombre);
+                  setFieldValue('remDepen', values.remDepen);
+                  setFieldValue('remCargo', values.remCargo);
+                  setFieldValue('remsiglas', values.remsiglas);
+                }}
+                remitentes={remitentes}
+              />
+            )}
 
             {showResponsableModal && (
               <ModalResponsable
@@ -580,7 +585,7 @@ export default function ModalOficio({
                 datosEmpleados={datosEmpleados}
               />
             )}
-            </div>
+          </div>
         </Form>
       )}
     </Formik>

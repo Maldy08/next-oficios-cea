@@ -7,14 +7,17 @@ import ModalResponsable from "./ModalResponsable";
 interface OficiosPageProps {
     remitentes: any[]; // Esto ya existe
     datosEmpleados: any[]; // Asegúrate de agregar esta línea
+    usuariosExternos: any[]; // Asegúrate de agregar esta línea
   }
 
 export default function OficiosPage({
   remitentes,
   datosEmpleados,
+  usuariosExternos
 }: OficiosPageProps) {
   const { modalType, handleOpenModal, handleCloseModal, handleSave } =
     UseOficioR();
+    
 
   return (
     <div className="flex justify-between items-center mb-4">
@@ -32,6 +35,7 @@ export default function OficiosPage({
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
+          usuariosExternos={usuariosExternos}
         />
       )}
     </div>

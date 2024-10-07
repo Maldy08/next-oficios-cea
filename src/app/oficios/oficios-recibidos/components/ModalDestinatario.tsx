@@ -5,6 +5,7 @@ import { useModal } from '../../oficios-expedidos/Hooks/useModal';
 import * as Yup from 'yup';
 import axios from 'axios';  // Para hacer llamadas a las APIs
 import { useFormik } from 'formik';
+import { OficioUsuExterno } from '@/app/domain/entities';
 
 interface Empleado {
   nombreCompleto: string;
@@ -25,6 +26,9 @@ interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: number }) => void;
+  datosEmpleados  : Empleado[];
+  datosUsuariosExt : OficioUsuExterno[];
+  destinatarioType : string;
 }
 
 // Asegúrate de que las columnas coincidan con las propiedades del objeto
@@ -63,6 +67,9 @@ const validationSchema = Yup.object().shape({
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const [datosEmpleados, setDatosEmpleados] = useState<Empleado[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  console.log(props.destinatarioType)
+  console.log(props.datosUsuariosExt)
   
   // Inicialización de formik
   const formik = useFormik({
@@ -77,42 +84,13 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
   });
 
   // Definir las columnas dinámicamente dentro del componente
-  const columns = formik.values.tipoDestinatario === 'interno' ? columnsInterno : columnsExterno;
+  const columns = props.destinatarioType === 'interno' ? columnsInterno : columnsExterno;
 
   const { searchTerm, setSearchTerm } = useModal({
     data: datosEmpleados,
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
   });
 
-  // Efecto para cargar los datos de la API dependiendo del tipo de destinatario
-  useEffect(() => {
-    const fetchDatos = async () => {
-      let url = '';
-      if (formik.values.tipoDestinatario === 'interno') {
-        url = 'http://localhost:3000/api/empleados';
-      } else if (formik.values.tipoDestinatario === 'externo') {
-        url = 'http://localhost:3000/api/oficiousuext';
-      }
-  
-      if (url) {
-        try {
-          const response = await axios.get(url);
-          // Verifica que response.data.data es un array
-          if (Array.isArray(response.data.data)) {
-            setDatosEmpleados(response.data.data);  // Accede al array dentro de "data"
-          } else {
-            console.error('La respuesta de la API no es un array:', response.data);
-            setDatosEmpleados([]); // Poner un array vacío si no es la estructura correcta
-          }
-        } catch (error) {
-          console.error('Error al cargar los datos:', error);
-          setError('No se pudieron cargar los datos');
-        }
-      }
-    };
-  
-    fetchDatos();
-  }, [formik.values.tipoDestinatario]);
 
   const handleSave = () => {
     const { selectedDestinatario } = formik.values;
@@ -147,16 +125,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Destinatario</h2>
 
-          {/* Selector de tipo de destinatario */}
-          <select
-            value={formik.values.tipoDestinatario}
-            onChange={e => formik.setFieldValue('tipoDestinatario', e.target.value)}
-            className="mb-4 border border-gray-300 py-2 px-3 text-sm rounded-md focus:border-blue-500"
-          >
-            <option value="">Selecciona el tipo de destinatario</option>
-            <option value="interno">Interno</option>
-            <option value="externo">Externo</option>
-          </select>
+
 
           <div className="relative w-full max-w-[300px]">
             <input
@@ -171,8 +140,8 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-        <TableComponente<Empleado>
-            data={datosEmpleados}
+        <TableComponente<Empleado | OficioUsuExterno>
+            data={ props.destinatarioType === 'Interno' ? props.datosEmpleados : props.datosUsuariosExt }
             columns={columns}
             accessor={accessor}
             onRowClick={(nombreCompleto) => {

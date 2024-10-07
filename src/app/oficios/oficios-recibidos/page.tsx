@@ -20,7 +20,7 @@ export default async function OficiosRecibidosPage() {
     <div className="p-6">
       <h1 className="text-lg font-bold mb-4">Oficio Recibidos</h1>
 
-      <OficiosPage remitentes={oficiosExternos} datosEmpleados={empleados} />
+      <OficiosPage remitentes={oficiosExternos} datosEmpleados={empleados}  usuariosExternos={ oficiosExternos } />
     </div>
   );
 }
