@@ -1,96 +1,144 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import TableComponente from '../../oficios-expedidos/components/tablecomponente'; 
 import { useModal } from '../../oficios-expedidos/Hooks/useModal'; 
-import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';  // Para hacer llamadas a las APIs
+import { useFormik } from 'formik';
 
 interface Empleado {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number;
-  destSiglas: string;
+  idPue: number; // Suponiendo que este es un identificador
+  destSiglas: string; // Suponiendo que este es el campo correcto para siglas
+}
+
+interface Remitente {
+  nombre: string;
+  empresa: string;
+  cargo: string;
+  siglas: string;
 }
 
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: number }) => void; // Asegúrate de que esto esté correcto
-  datosEmpleados: Empleado[];
+  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: number }) => void;
 }
 
+// Asegúrate de que las columnas coincidan con las propiedades del objeto
+const columnsInterno = ['Nombre Completo', 'Departamento', 'Puesto'];
+const columnsExterno = ['Nombre', 'Empresa', 'Cargo', 'Siglas'];
 
-const columns = ['Nombre Completo', 'Departamento', 'Puesto', 'Siglas'];
-
-const accessor = (item: Empleado, column: string) => {
+const accessor = (item: Empleado | Remitente, column: string) => {
   switch (column) {
-    case 'Nombre Completo':
-      return item.nombreCompleto;
+    case 'Nombre':
+      return 'nombre' in item ? item.nombre : item.nombreCompleto; // Usar nombre o nombreCompleto según el tipo
+      case 'Nombre Completo':
+      return 'nombreCompleto' in item ? item.nombreCompleto : '';
     case 'Departamento':
-      return item.descripcionDepto;
+      return 'descripcionDepto' in item ? item.descripcionDepto : ''; // Solo para internos
     case 'Puesto':
-      return item.descripcionPuesto;
-      case 'Siglas':
-      return item.idPue;
+      return 'descripcionPuesto' in item ? item.descripcionPuesto : ''; // Solo para internos
+    case 'Empresa':
+      return 'empresa' in item ? item.empresa : ''; // Solo para externos
+    case 'Cargo':
+      return 'cargo' in item ? item.cargo : item.descripcionPuesto; // Usar cargo o puesto según el tipo
+    case 'Siglas':
+      return 'siglas' in item ? item.siglas : item.destSiglas; // Usar siglas o destSiglas según el tipo
     default:
       return '';
   }
 };
 
-// Definimos el esquema de validación con Yup
+
+
+// Esquema de validación con Yup
 const validationSchema = Yup.object().shape({
   selectedDestinatario: Yup.string().required('Debes seleccionar un destinatario'),
+  tipoDestinatario: Yup.string().required('Debes seleccionar el tipo de destinatario'),
 });
 
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
-  const {
-    searchTerm,
-    setSearchTerm,
-  } = useModal({
-    data: props.datosEmpleados,
-    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
-  });
-
+  const [datosEmpleados, setDatosEmpleados] = useState<Empleado[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  // Configuramos Formik
+  
+  // Inicialización de formik
   const formik = useFormik({
     initialValues: {
       selectedDestinatario: '',
+      tipoDestinatario: '',
     },
     validationSchema,
     onSubmit: () => {
-      // No se usa este método ya que el botón es de tipo button
+      // Implementación de la función de submit
     },
   });
 
-  if (!props.isOpen) return null;
+  // Definir las columnas dinámicamente dentro del componente
+  const columns = formik.values.tipoDestinatario === 'interno' ? columnsInterno : columnsExterno;
+
+  const { searchTerm, setSearchTerm } = useModal({
+    data: datosEmpleados,
+    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
+  });
+
+  // Efecto para cargar los datos de la API dependiendo del tipo de destinatario
+  useEffect(() => {
+    const fetchDatos = async () => {
+      let url = '';
+      if (formik.values.tipoDestinatario === 'interno') {
+        url = 'http://localhost:3000/api/empleados';
+      } else if (formik.values.tipoDestinatario === 'externo') {
+        url = 'http://localhost:3000/api/oficiousuext';
+      }
+  
+      if (url) {
+        try {
+          const response = await axios.get(url);
+          // Verifica que response.data.data es un array
+          if (Array.isArray(response.data.data)) {
+            setDatosEmpleados(response.data.data);  // Accede al array dentro de "data"
+          } else {
+            console.error('La respuesta de la API no es un array:', response.data);
+            setDatosEmpleados([]); // Poner un array vacío si no es la estructura correcta
+          }
+        } catch (error) {
+          console.error('Error al cargar los datos:', error);
+          setError('No se pudieron cargar los datos');
+        }
+      }
+    };
+  
+    fetchDatos();
+  }, [formik.values.tipoDestinatario]);
 
   const handleSave = () => {
-    if (!formik.values.selectedDestinatario) {
+    const { selectedDestinatario } = formik.values;
+
+    if (!selectedDestinatario) {
       setError('Debes seleccionar un destinatario');
+      return;
+    }
+
+    const empleado = datosEmpleados.find(emp => emp.nombreCompleto === selectedDestinatario);
+
+    if (empleado) {
+      props.onSave({
+        nombre: empleado.nombreCompleto,
+        destDepen: empleado.descripcionDepto,
+        destCargo: empleado.descripcionPuesto,
+        destSiglas: empleado.idPue,
+      });
+      props.onClose();
+      setError(null);
     } else {
-      // Encuentra el empleado seleccionado a partir del nombre
-      const empleado = props.datosEmpleados.find(
-        emp => emp.nombreCompleto === formik.values.selectedDestinatario
-      );
-  
-      if (empleado) {
-        // Llama a onSave con los valores requeridos
-        props.onSave({
-          nombre: empleado.nombreCompleto,
-          destDepen: empleado.descripcionDepto,
-          destCargo: empleado.descripcionPuesto, // Asegúrate de que este campo esté presente en la interfaz de Empleado
-          destSiglas: empleado.idPue,
-        });
-        props.onClose();
-        setError(null); // Limpiar error si se guarda correctamente
-      } else {
-        setError('No se encontró el destinatario seleccionado');
-      }
+      setError('No se encontró el destinatario seleccionado');
     }
   };
+
+  if (!props.isOpen) return null;
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
@@ -98,6 +146,18 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Destinatario</h2>
+
+          {/* Selector de tipo de destinatario */}
+          <select
+            value={formik.values.tipoDestinatario}
+            onChange={e => formik.setFieldValue('tipoDestinatario', e.target.value)}
+            className="mb-4 border border-gray-300 py-2 px-3 text-sm rounded-md focus:border-blue-500"
+          >
+            <option value="">Selecciona el tipo de destinatario</option>
+            <option value="interno">Interno</option>
+            <option value="externo">Externo</option>
+          </select>
+
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -111,13 +171,13 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-          <TableComponente<Empleado>
-            data={props.datosEmpleados}
+        <TableComponente<Empleado>
+            data={datosEmpleados}
             columns={columns}
             accessor={accessor}
             onRowClick={(nombreCompleto) => {
               formik.setFieldValue('selectedDestinatario', nombreCompleto);
-              setError(null); // Limpiar error al seleccionar un destinatario
+              setError(null);
             }}
             columnKeyForRowClick="Nombre Completo"
             searchTerm={searchTerm}

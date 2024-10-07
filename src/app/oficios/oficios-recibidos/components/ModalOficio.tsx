@@ -44,7 +44,20 @@ interface ModalOficioProps {
   onSave: () => void;
   datosEmpleados: any[];
   remitentes: any[];
+  
 }
+
+const fetchEmpleadosData = async (apiUrl: string) => {
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error("Error en la petición");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener los datos:", error);
+    return [];
+  }
+};
 
 export default function ModalOficio({
   isOpen,
@@ -97,6 +110,8 @@ export default function ModalOficio({
     setResponsableName,
   } = UseModalOficioRecibido();
 
+
+  
   
   if (!isOpen) return null;
 
@@ -381,21 +396,40 @@ export default function ModalOficio({
 
     {/* Barra de texto de destinatario */}
     <div className="relative flex items-center">
-      <Field
-        id="destNombre"
-        name="destNombre"
-        type="text"
-        placeholder="Nombre del destinatario"
-        className="border border-gray-300 rounded p-2 w-full"
-        readOnly
-        value={values.destNombre}
-        onClick={() => setShowDestinatarioModal(true)}
-      />
-      <FaUserPlus
-        onClick={() => setShowDestinatarioModal(true)}
-        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-      />
-    </div>
+  <Field
+  id="destNombre"
+  name="destNombre"
+  type="text"
+  placeholder="Nombre del destinatario"
+  className="border border-gray-300 rounded p-2 w-full"
+  readOnly
+  value={values.destNombre}
+  onMouseDown={(e: { preventDefault: () => void; }) => {
+    // Evitar que el campo reciba el foco si no hay tipo de destinatario
+    if (!values.destinatarioType) {
+      e.preventDefault(); // Previene el foco en el campo
+      alert('Por favor, selecciona primero un tipo de destinatario.');
+    }
+  }}
+  onClick={() => {
+    if (values.destinatarioType) {
+      setShowDestinatarioModal(true);
+    }
+  }}
+/>
+  <FaUserPlus
+    onClick={() => {
+      // Solo abrir el modal si se ha seleccionado un tipo de destinatario
+      if (values.destinatarioType) {
+        setShowDestinatarioModal(true);
+      } else {
+        // Aquí puedes agregar un mensaje si deseas avisar al usuario
+        alert('Por favor, selecciona primero un tipo de destinatario.');
+      }
+    }}
+    className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+  />
+</div>
 
     {touched.destNombre && errors.destNombre && (
       <div className="text-red-600">{errors.destNombre}</div>
@@ -509,7 +543,6 @@ export default function ModalOficio({
       setFieldValue('destCargo', values.destCargo);
       setFieldValue('destSiglas', values.destSiglas);
     }}
-    datosEmpleados={datosEmpleados}
   />
 )}
 
@@ -553,3 +586,4 @@ export default function ModalOficio({
     </Formik>
   );
 }
+
