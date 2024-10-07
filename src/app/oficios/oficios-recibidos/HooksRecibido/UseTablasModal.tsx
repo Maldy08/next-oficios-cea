@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 
 interface UseModalOficio1Props<T> {
   data: T[];
-  columnsToFilter: (keyof T)[];
+  columnsToFilter: string[]; // Cambiado a string[] para definirlo como un array de strings
   onClose: () => void;
-  onSave: (item: T) => void; // Cambiado de (name: string) => void a (item: T) => void
+  onSave: (item: T) => void;
 }
 
-export default function useModalOficioR1<T extends Record<string, any>>({
+export default function useModalOficioR1<T>({
   data,
   columnsToFilter,
   onClose,
@@ -21,7 +21,9 @@ export default function useModalOficioR1<T extends Record<string, any>>({
   // Filtrado de datos
   const filteredData = (data || []).filter((item) =>
     columnsToFilter.some((column) =>
-      String(item[column]).toLowerCase().includes(searchTerm.toLowerCase())
+      String(item[column as keyof T])
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     )
   );
 
@@ -41,20 +43,14 @@ export default function useModalOficioR1<T extends Record<string, any>>({
     setSelectedItem(item);
   };
 
-  const handleSave = (onSave: (item: T) => void, onClose: () => void) => {
+  const handleSave = () => {
     if (selectedItem) {
       onSave(selectedItem);
       onClose();
     }
   };
 
-  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(
-    null
-  );
-
   return {
-    setSelectedRemitente,
-    selectedRemitente,
     searchTerm,
     setSearchTerm,
     paginatedData,

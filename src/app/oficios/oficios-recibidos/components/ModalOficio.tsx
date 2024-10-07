@@ -50,7 +50,7 @@ const validationSchema = Yup.object().shape({
   remitenteType: Yup.string()
     .oneOf(["", "1", "2"], "Tipo de remitente inválido")
     .required("Tipo de remitente es requerido"),
-  remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
+  // remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
 });
 
 export default function ModalOficio({
@@ -171,6 +171,7 @@ export default function ModalOficio({
           let remSiglas = values.remSiglas;
           let remDepen = values.remDepen;
           let destDepen = values.destDepen;
+          let destSiglas = values.destSiglas;
 
           if (values.remitenteType === "1" && values.tipo == 1) {
             remSiglas = "CEA";
@@ -602,24 +603,33 @@ export default function ModalOficio({
                   onSave={(datosEmpleados) => {
                     // Aquí estamos guardando solo el nombre del destinatario
                     const datosDestinatario = {
-                      nombre: datosEmpleados.nombreCompleto, // Nombre del destinatario
-                      departamento: datosEmpleados.descripcionDepto, // Empresa o departamento
-                      siglas: datosEmpleados.idExterno, // Siglas del destinatario
-                      puesto: datosEmpleados.descripcionPuesto, // Cargo del destinatario
+                      nombre:
+                        "nombreCompleto" in datosEmpleados
+                          ? datosEmpleados.nombreCompleto
+                          : datosEmpleados.nombre,
+                      departamento:
+                        "descripcionDepto" in datosEmpleados
+                          ? datosEmpleados.descripcionDepto
+                          : datosEmpleados.empresa,
+                      siglas:
+                        "siglas" in datosEmpleados ? datosEmpleados.siglas : "",
+                      puesto:
+                        "descripcionPuesto" in datosEmpleados
+                          ? datosEmpleados.descripcionPuesto
+                          : datosEmpleados.cargo,
                     };
 
                     // Asigna los datos completos en los campos de Formik
-
                     setFieldValue("destNombre", datosDestinatario.nombre);
                     setFieldValue("destDepen", datosDestinatario.departamento);
                     setFieldValue("destSiglas", datosDestinatario.siglas);
                     setFieldValue("destCargo", datosDestinatario.puesto);
 
-                    const nombreDestinatario = datosEmpleados.nombreCompleto; // O la propiedad que almacene el nombre
-                    setDestinatarioName(nombreDestinatario);
-                    setFieldValue("destNombre", nombreDestinatario);
                     setShowDestinatarioModal(false);
                   }}
+                  tipo={values.tipo.toString()}
+                  tipoDestinatario={values.destinatarioType || "1"}
+                  remitentes={remitentes}
                   datosEmpleados={datosEmpleados}
                 />
               )}
@@ -630,22 +640,32 @@ export default function ModalOficio({
                   onClose={() => setShowRemitenteModal(false)}
                   onSave={(remitente) => {
                     const datosRemitente = {
-                      nombre: remitente.nombre, // Nombre del remitente
-                      departamento: remitente.empresa, // Empresa o departamento
-                      siglas: remitente.siglas, // Siglas del remitente
-                      puesto: remitente.cargo, // Cargo del remitente
+                      nombre:
+                        "nombreCompleto" in remitente
+                          ? remitente.nombreCompleto
+                          : remitente.nombre,
+                      departamento:
+                        "descripcionDepto" in remitente
+                          ? remitente.descripcionDepto
+                          : remitente.empresa,
+                      siglas: "siglas" in remitente ? remitente.siglas : "",
+                      puesto:
+                        "descripcionPuesto" in remitente
+                          ? remitente.descripcionPuesto
+                          : remitente.cargo,
                     };
-                    const nombreRemitente = remitente.nombre; // O la propiedad que almacene el nombre
-                    setRemitenteName(remitente.nombre); // Asegúrate de asignar solo el nombre del objeto Remitente
-                    setFieldValue("remNombre", remitente.nombre); // Asigna el nombre, no el objeto completo
-                    setShowRemitenteModal(false);
 
                     setFieldValue("remNombre", datosRemitente.nombre);
                     setFieldValue("remDepen", datosRemitente.departamento);
                     setFieldValue("remSiglas", datosRemitente.siglas);
                     setFieldValue("remCargo", datosRemitente.puesto);
+
+                    setShowRemitenteModal(false);
                   }}
+                  tipo={values.tipo.toString()} // Añadimos la propiedad `tipo` aquí
+                  tipoRemitente={values.remitenteType || "1"} // Asegúrate de que este valor esté definido correctamente
                   remitentes={remitentes}
+                  empleados={datosEmpleados}
                 />
               )}
 

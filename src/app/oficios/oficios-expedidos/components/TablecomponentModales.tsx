@@ -27,12 +27,12 @@ function TableComponentModales<T>({
   setCurrentPage,
   setRowsPerPage,
 }: TableComponentModalesProps<T>) {
-  const [selectedRow, setSelectedRow] = useState<number | null>(null); // Estado para almacenar la fila seleccionada
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
 
   const handleRowClick = (index: number, item: T) => {
-    setSelectedRow(index); // Guardar el índice de la fila seleccionada
+    setSelectedRow(index);
     if (onRowClick) {
-      onRowClick(item); // Llamar la función onRowClick si está definida
+      onRowClick(item);
     }
   };
 
@@ -58,12 +58,12 @@ function TableComponentModales<T>({
               onClick={() => handleRowClick(rowIndex, item)}
               className={`cursor-pointer hover:bg-blue-100 ${
                 selectedRow === rowIndex ? "bg-blue-200" : ""
-              }`} // Aplicar color de fondo si la fila está seleccionada
+              }`}
             >
               {columns.map((column, colIndex) => (
                 <td
                   key={colIndex}
-                  className="px-6 py-4 text-sm text-gray-900 break-words whitespace-normal" // Aquí se asegura el ajuste de texto
+                  className="px-6 py-4 text-sm text-gray-900 break-words whitespace-normal"
                 >
                   {column.accessor(item)}
                 </td>
@@ -73,7 +73,6 @@ function TableComponentModales<T>({
         </tbody>
       </table>
 
-      {/* Paginación */}
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center space-x-2">
           <button

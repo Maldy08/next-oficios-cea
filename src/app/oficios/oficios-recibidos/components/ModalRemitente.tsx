@@ -1,6 +1,5 @@
-import { FC, useState, useEffect } from "react";
-import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { FaSearch } from "react-icons/fa";
 import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
 import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
 
@@ -11,14 +10,33 @@ interface Remitente {
   siglas: string;
 }
 
-interface ModalRemitenteProps {
-  remitentes: Remitente[];
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (remitente: Remitente) => void;
+interface Empleado {
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
 }
 
-const ModalRemitente = (props: ModalRemitenteProps) => {
+interface ModalRemitenteProps {
+  remitentes: Remitente[];
+  empleados: Empleado[];
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (remitente: Remitente | Empleado) => void;
+  tipoRemitente: string; // "1" para interno, "2" para externo
+  tipo: string; // "1" para CEA, "2" para SEPROA
+}
+
+export default function ModalRemitente({
+  remitentes,
+  empleados,
+  isOpen,
+  onClose,
+  onSave,
+  tipoRemitente,
+  tipo,
+}: ModalRemitenteProps) {
+  const data = tipoRemitente === "1" ? empleados : remitentes;
+
   const {
     searchTerm,
     setSearchTerm,
@@ -28,46 +46,70 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
     rowsPerPage,
     setRowsPerPage,
     totalPages,
-    selectedItem,
     handleRowClick,
+    selectedItem,
   } = useModalOficioR1({
-    data: props.remitentes,
-    columnsToFilter: ["nombre", "empresa", "siglas", "cargo"],
-    onClose: props.onClose,
-    onSave: props.onSave, // Dejamos que onSave venga desde los props
+    data,
+    columnsToFilter:
+      tipoRemitente === "1"
+        ? ["nombreCompleto", "descripcionDepto", "descripcionPuesto"]
+        : ["nombre", "empresa", "siglas", "cargo"],
+    onClose,
+    onSave,
   });
 
   const columns = [
     {
       header: "Nombre Completo",
-      accessor: (row: Remitente) => row.nombre,
+      accessor: (row: Remitente | Empleado) =>
+        "nombreCompleto" in row ? row.nombreCompleto : row.nombre,
     },
     {
-      header: "Departamento",
-      accessor: (row: Remitente) => row.empresa,
+      header: "Departamento / Empresa",
+      accessor: (row: Remitente | Empleado) => {
+        if (tipoRemitente === "1") {
+          // Interno
+          if (tipo === "1") {
+            return "COMISION ESTATAL DEL AGUA";
+          } else if (tipo === "2") {
+            return "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+        }
+        // Externo
+        return "empresa" in row ? row.empresa : row.descripcionDepto;
+      },
     },
     {
       header: "Siglas",
-      accessor: (row: Remitente) => row.siglas,
+      accessor: (row: Remitente | Empleado) => {
+        if (tipoRemitente === "1") {
+          // Interno
+          return tipo === "1" ? "CEA" : "SEPROA";
+        }
+        // Externo
+        return "siglas" in row ? row.siglas : "";
+      },
     },
     {
       header: "Puesto",
-      accessor: (row: Remitente) => row.cargo,
+      accessor: (row: Remitente | Empleado) =>
+        "descripcionPuesto" in row ? row.descripcionPuesto : row.cargo,
     },
   ];
 
-  if (!props.isOpen) return null;
+  if (!isOpen) return null;
 
-  function onSave() {
+  function handleSave() {
     if (selectedItem) {
-      props.onSave(selectedItem); // Guardamos el remitente seleccionado
-      props.onClose(); // Cerramos el modal
+      onSave(selectedItem);
+      onClose();
     }
   }
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
-        props.isOpen ? "block" : "hidden"
+        isOpen ? "block" : "hidden"
       }`}
     >
       <div
@@ -91,7 +133,7 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
           </div>
         </div>
 
-        <TableComponentModales<Remitente>
+        <TableComponentModales<Remitente | Empleado>
           data={paginatedData}
           columns={columns}
           onRowClick={handleRowClick}
@@ -100,19 +142,19 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
           setRowsPerPage={setRowsPerPage}
-        ></TableComponentModales>
+        />
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
-            onClick={props.onClose}
+            onClick={onClose}
             className="bg-[#641c34] text-white py-2 px-4 rounded"
           >
             Cancelar
           </button>
           <button
             type="button"
-            onClick={onSave} // Guardar el remitente seleccionado
+            onClick={handleSave}
             className="bg-[#993233] text-white py-2 px-4 rounded"
           >
             Guardar
@@ -121,6 +163,4 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
       </div>
     </div>
   );
-};
-
-export default ModalRemitente;
+}

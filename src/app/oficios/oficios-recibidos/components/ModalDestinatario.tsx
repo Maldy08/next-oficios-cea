@@ -11,14 +11,27 @@ interface Empleados {
   idExterno: number;
 }
 
+interface Remitente {
+  nombre: string;
+  empresa: string;
+  cargo: string;
+  siglas: string;
+}
+
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (datosEmpleados: Empleados) => void; // Cambiamos a tipo 'Remitente'
+  onSave: (remitente: Remitente | Empleados) => void;
   datosEmpleados: Empleados[];
+  remitentes: Remitente[];
+  tipoDestinatario: string;
+  tipo: string;
 }
 
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
+  const data =
+    props.tipoDestinatario === "1" ? props.datosEmpleados : props.remitentes;
+
   const {
     searchTerm,
     setSearchTerm,
@@ -31,13 +44,11 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     selectedItem,
     handleRowClick,
   } = useModalOficioR1({
-    data: props.datosEmpleados,
-    columnsToFilter: [
-      "nombreCompleto",
-      "descripcionDepto",
-      "descripcionPuesto",
-      "idExterno",
-    ],
+    data,
+    columnsToFilter:
+      props.tipoDestinatario === "1"
+        ? ["nombreCompleto", "descripcionDepto", "descripcionPuesto"]
+        : ["nombre", "empresa", "siglas", "cargo"],
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
@@ -45,19 +56,39 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const columns = [
     {
       header: "Nombre Completo",
-      accessor: (row: Empleados) => row.nombreCompleto,
+      accessor: (row: Remitente | Empleados) =>
+        "nombreCompleto" in row ? row.nombreCompleto : row.nombre,
     },
     {
-      header: "Departamento",
-      accessor: (row: Empleados) => row.descripcionDepto,
+      header: "Departamento / Empresa",
+      accessor: (row: Remitente | Empleados) => {
+        if (props.tipoDestinatario === "1") {
+          // Interno
+          if (props.tipo === "1") {
+            return "COMISION ESTATAL DEL AGUA";
+          } else if (props.tipo === "2") {
+            return "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+        }
+        // Externo
+        return "empresa" in row ? row.empresa : row.descripcionDepto;
+      },
     },
-    // {
-    //   header: "Numero de Empleado",
-    //   accessor: (row: Empleados) => row.idExterno,
-    // },
+    {
+      header: "Siglas",
+      accessor: (row: Remitente | Empleados) => {
+        if (props.tipoDestinatario === "1") {
+          // Interno
+          return props.tipo === "1" ? "CEA" : "SEPROA";
+        }
+        // Externo
+        return "siglas" in row ? row.siglas : "";
+      },
+    },
     {
       header: "Puesto",
-      accessor: (row: Empleados) => row.descripcionPuesto,
+      accessor: (row: Remitente | Empleados) =>
+        "descripcionPuesto" in row ? row.descripcionPuesto : row.cargo,
     },
   ];
 
@@ -97,7 +128,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
           </div>
         </div>
 
-        <TableComponentModales<Empleados>
+        <TableComponentModales<Empleados | Remitente>
           data={paginatedData}
           columns={columns}
           onRowClick={handleRowClick}
