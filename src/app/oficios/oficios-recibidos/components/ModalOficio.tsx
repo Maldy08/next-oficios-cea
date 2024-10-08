@@ -143,6 +143,29 @@ export default function ModalOficio({
         remitenteType: remitenteType || ''
       }}
 
+      initialValues={{
+        folio: '',
+        selection: '',
+        fechaCaptura: '',
+        fechaLimite: '',
+        siglas: '',
+        cargo: '',
+        destDepen: destDepen || '',
+        remDepen: remDepen || '',
+        destCargo: destCargo || '',
+        remCargo: remCargo || '',
+        destSiglas: destSiglas || '',
+        remsiglas: remsiglas || '',
+        numeroOficio: '',
+        tema: '',
+        observaciones: '',
+        archivo: selectedFile,
+        remNombre: remNombre || '',  // Esta parte está bien
+        destNombre: destNombre || '',
+        responsableName: responsableName || '',
+        destinatarioType: destinatarioType || '',
+      }}
+
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
       validateOnBlur={false} // Desactivar validación en cada desenfoque
@@ -574,6 +597,24 @@ export default function ModalOficio({
                   setFieldValue('remsiglas', values.remSiglas);         
                 }}
                   />
+            )}
+            {showRemitenteModal && (
+              <ModalRemitente
+                isOpen={showRemitenteModal}
+                onClose={() => setShowRemitenteModal(false)}
+                onSave={(values) => {
+                  setremNombre(values.remNombre);
+                  setremDepen(values.remDepen);
+                  setremCargo(values.remCargo);
+                  setremsiglas(values.remsiglas);
+                  setShowDestinatarioModal(false);
+                  setFieldValue('remNombre', values.remNombre);
+                  setFieldValue('remDepen', values.remDepen);
+                  setFieldValue('remCargo', values.remCargo);
+                  setFieldValue('remsiglas', values.remsiglas);
+                }}
+                remitentes={remitentes}
+              />
             )}
 
             {showResponsableModal && (
