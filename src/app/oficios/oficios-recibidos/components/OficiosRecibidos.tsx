@@ -5,6 +5,7 @@ import UseOficioR from "../HooksRecibido/UseOficioRecibidos";
 import ModalOficio from "./ModalOficio";
 import ModalResponsable from "./ModalResponsable";
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
+import { FiSearch } from "react-icons/fi";
 
 interface OficiosPageProps {
   remitentes: any[];
@@ -38,13 +39,33 @@ export default function OficiosPage({
   });
 
   return (
-    <div className="flex justify-between ">
-      <button
-        onClick={() => handleOpenModal("oficioRecibido")}
-        className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-      >
-        INGRESAR OFICIO RECIBIDOS
-      </button>
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={() => handleOpenModal("oficioRecibido")}
+          className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+        >
+          INGRESAR OFICIO RECIBIDOS
+        </button>
+        <div className="w-1/2 relative">
+          <input
+            type="text"
+            placeholder="Buscar"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-full p-2 border border-gray-300 rounded pl-10"
+          />
+          <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+        </div>
+      </div>
+
+      <TableComponent
+        rows={paginatedRows}
+        handleOpenModal={handleOpenModal}
+        handleCloseModal={handleCloseModal}
+        modalType={modalType}
+        datosEmpleados={datosEmpleados}
+      />
 
       {modalType === "oficioRecibido" && (
         <ModalOficio
@@ -55,14 +76,6 @@ export default function OficiosPage({
           remitentes={remitentes}
         />
       )}
-
-      <TableComponent
-        rows={paginatedRows}
-        handleOpenModal={handleOpenModal}
-        handleCloseModal={handleCloseModal}
-        modalType={modalType}
-        datosEmpleados={datosEmpleados}
-      />
-    </div>
+    </>
   );
 }
