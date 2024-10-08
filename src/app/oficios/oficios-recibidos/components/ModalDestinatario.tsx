@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import TableComponente from '../../oficios-expedidos/components/tablecomponente'; 
-import { useModal } from '../../oficios-expedidos/Hooks/useModal'; 
+import TableComponente from '../../oficios-expedidos/components/tablecomponente';
+import { useModal } from '../../oficios-expedidos/Hooks/useModal';
 import * as Yup from 'yup';
-import axios from 'axios';  // Para hacer llamadas a las APIs
 import { useFormik } from 'formik';
+import { OficioUsuExterno } from '@/app/domain/entities';
 
 interface Empleado {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number; // Suponiendo que este es un identificador
-  destSiglas: string; // Suponiendo que este es el campo correcto para siglas
+  idPue: number;
+  destSiglas: string;
 }
 
 interface Remitente {
@@ -24,35 +24,38 @@ interface Remitente {
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: number }) => void;
+  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: string}) => void;
+  datosEmpleados: Empleado[];
+  datosUsuariosExt: OficioUsuExterno[];
+  destinatarioType: string;
 }
 
-// Asegúrate de que las columnas coincidan con las propiedades del objeto
 const columnsInterno = ['Nombre Completo', 'Departamento', 'Puesto'];
 const columnsExterno = ['Nombre', 'Empresa', 'Cargo', 'Siglas'];
 
 const accessor = (item: Empleado | Remitente, column: string) => {
+  const isEmpleado = 'nombreCompleto' in item;
+
   switch (column) {
     case 'Nombre':
-      return 'nombre' in item ? item.nombre : item.nombreCompleto; // Usar nombre o nombreCompleto según el tipo
-      case 'Nombre Completo':
-      return 'nombreCompleto' in item ? item.nombreCompleto : '';
-    case 'Departamento':
-      return 'descripcionDepto' in item ? item.descripcionDepto : ''; // Solo para internos
-    case 'Puesto':
-      return 'descripcionPuesto' in item ? item.descripcionPuesto : ''; // Solo para internos
+      return isEmpleado ? item.nombreCompleto : item.nombre;
+    
+    case 'Nombre Completo':
+      return isEmpleado ? item.nombreCompleto : '';
+    
     case 'Empresa':
-      return 'empresa' in item ? item.empresa : ''; // Solo para externos
+      return !isEmpleado ? item.empresa : item.descripcionDepto;
+    
     case 'Cargo':
-      return 'cargo' in item ? item.cargo : item.descripcionPuesto; // Usar cargo o puesto según el tipo
+      return !isEmpleado ? item.cargo : item.descripcionPuesto;
+    
     case 'Siglas':
-      return 'siglas' in item ? item.siglas : item.destSiglas; // Usar siglas o destSiglas según el tipo
+      return !isEmpleado ? item.siglas : '';
+    
     default:
       return '';
   }
 };
-
-
 
 // Esquema de validación con Yup
 const validationSchema = Yup.object().shape({
@@ -61,9 +64,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
-  const [datosEmpleados, setDatosEmpleados] = useState<Empleado[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Inicialización de formik
   const formik = useFormik({
     initialValues: {
@@ -77,43 +79,21 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
   });
 
   // Definir las columnas dinámicamente dentro del componente
-  const columns = formik.values.tipoDestinatario === 'interno' ? columnsInterno : columnsExterno;
+  const columns = props.destinatarioType === 'interno' ? columnsInterno : columnsExterno;
 
   const { searchTerm, setSearchTerm } = useModal({
-    data: datosEmpleados,
+    data: props.datosEmpleados,
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
   });
 
-  // Efecto para cargar los datos de la API dependiendo del tipo de destinatario
-  useEffect(() => {
-    const fetchDatos = async () => {
-      let url = '';
-      if (formik.values.tipoDestinatario === 'interno') {
-        url = 'http://localhost:3000/api/empleados';
-      } else if (formik.values.tipoDestinatario === 'externo') {
-        url = 'http://localhost:3000/api/oficiousuext';
-      }
-  
-      if (url) {
-        try {
-          const response = await axios.get(url);
-          // Verifica que response.data.data es un array
-          if (Array.isArray(response.data.data)) {
-            setDatosEmpleados(response.data.data);  // Accede al array dentro de "data"
-          } else {
-            console.error('La respuesta de la API no es un array:', response.data);
-            setDatosEmpleados([]); // Poner un array vacío si no es la estructura correcta
-          }
-        } catch (error) {
-          console.error('Error al cargar los datos:', error);
-          setError('No se pudieron cargar los datos');
-        }
-      }
-    };
-  
-    fetchDatos();
-  }, [formik.values.tipoDestinatario]);
+  // Función para manejar la selección de destinatario
+  const handleRowClick = (rowData: Empleado | OficioUsuExterno) => {
+    const nombreCompleto = 'nombreCompleto' in rowData ? rowData.nombreCompleto : rowData.nombre; // Obtener nombre del destinatario
+    formik.setFieldValue('selectedDestinatario', nombreCompleto);
+    setError(null);
+  };
 
+  // Función para guardar el destinatario
   const handleSave = () => {
     const { selectedDestinatario } = formik.values;
 
@@ -122,17 +102,30 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       return;
     }
 
-    const empleado = datosEmpleados.find(emp => emp.nombreCompleto === selectedDestinatario);
+    // Busca en empleados internos
+    const empleado = props.datosEmpleados.find(emp => emp.nombreCompleto === selectedDestinatario);
+
+    // Busca en usuarios externos si no es un empleado
+    const usuarioExterno = props.datosUsuariosExt.find(user => user.nombre === selectedDestinatario);
 
     if (empleado) {
+      // Guardar destinatario empleado
+      console.log('Guardando empleado:', empleado);
       props.onSave({
         nombre: empleado.nombreCompleto,
         destDepen: empleado.descripcionDepto,
         destCargo: empleado.descripcionPuesto,
-        destSiglas: empleado.idPue,
+        destSiglas: empleado.destSiglas,
       });
-      props.onClose();
-      setError(null);
+    } else if (usuarioExterno) {
+      // Guardar destinatario usuario externo
+      console.log('Guardando usuario externo:', usuarioExterno);
+      props.onSave({
+        nombre: usuarioExterno.nombre,
+        destDepen: usuarioExterno.empresa,
+        destCargo: usuarioExterno.cargo,
+        destSiglas: usuarioExterno.siglas,
+      });
     } else {
       setError('No se encontró el destinatario seleccionado');
     }
@@ -147,17 +140,6 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Destinatario</h2>
 
-          {/* Selector de tipo de destinatario */}
-          <select
-            value={formik.values.tipoDestinatario}
-            onChange={e => formik.setFieldValue('tipoDestinatario', e.target.value)}
-            className="mb-4 border border-gray-300 py-2 px-3 text-sm rounded-md focus:border-blue-500"
-          >
-            <option value="">Selecciona el tipo de destinatario</option>
-            <option value="interno">Interno</option>
-            <option value="externo">Externo</option>
-          </select>
-
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -171,17 +153,19 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-        <TableComponente<Empleado>
-            data={datosEmpleados}
-            columns={columns}
-            accessor={accessor}
-            onRowClick={(nombreCompleto) => {
-              formik.setFieldValue('selectedDestinatario', nombreCompleto);
-              setError(null);
-            }}
-            columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}
-          />
+        <TableComponente<Empleado | OficioUsuExterno>
+  data={props.destinatarioType.toLowerCase() === 'interno' ? props.datosEmpleados : props.datosUsuariosExt}
+  columns={columns}
+  accessor={accessor}
+  onRowClick={(nombre: string, depto: string) => {
+    formik.setFieldValue('selectedDestinatario', nombre);
+    setError(null);
+  }}
+  columnKeyForRowClick={props.destinatarioType === 'interno' ? 'Nombre Completo' : 'Nombre'} // Cambia esto según el tipo de destinatario
+  searchTerm={searchTerm}
+/>
+
+
         </div>
 
         {error && <div className="text-red-500">{error}</div>}
@@ -208,3 +192,4 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
 };
 
 export default ModalDestinatario;
+

@@ -1,9 +1,18 @@
-import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
 import TableComponente from '../../oficios-expedidos/components/tablecomponente';
 import { useModal } from '../../oficios-expedidos/Hooks/useModal';
+import * as Yup from 'yup';
+import { OficioUsuExterno } from '@/app/domain/entities';
+import { useFormik } from 'formik';
+
+interface Empleados {
+  nombreCompleto: string;
+  descripcionDepto: string;
+  descripcionPuesto: string;
+  idPue: number;
+  destSiglas: string;
+}
 
 interface Remitente {
   nombre: string;
@@ -15,78 +24,124 @@ interface Remitente {
 interface ModalRemitenteProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: { remNombre: string; remDepen: string; remCargo: string; remsiglas: string }) => void;
-  remitentes: Remitente[]; // Remitentes pasados por props
+  onSave: (values: { nombre: string; remDepen: string; remCargo: string; remSiglas: string }) => void;
+  datosEmpleados: Empleados[]; // Cambiado de datosEmpleados a datosExternos
+  datosUsuariosExt: OficioUsuExterno[];
+  remitenteType: string;
 }
 
-const columns = ['Nombre', 'Empresa', 'Siglas', 'Cargo'];
+const columnsExterno = ['Nombre Completo', 'Departamento', 'Puesto']; // Cambiado de columnsInterno a columnsExterno
+const columnsUsuariosExt = ['Nombre', 'Empresa', 'Cargo', 'Siglas'];
 
-const accessor = (item: Remitente, column: string) => {
+const accessor = (item: Empleados | Remitente, column: string) => {
+  const isExterno = 'nombreCompleto' in item;
+
   switch (column) {
     case 'Nombre':
-      return item.nombre;
+      return isExterno ? item.nombreCompleto : item.nombre;
+    
+    case 'Nombre Completo':
+      return isExterno ? item.nombreCompleto : '';
+    
     case 'Empresa':
-      return item.empresa;
-    case 'Siglas': // Aquí asegúrate que el nombre de la columna sea "SIGLAS"
-      return item.siglas; // Aquí se accede a item.remSiglas
+      return !isExterno ? item.empresa : item.descripcionDepto;
+    
     case 'Cargo':
-      return item.cargo;
+      return !isExterno ? item.cargo : item.descripcionPuesto;
+    
+    case 'Siglas':
+      return !isExterno ? item.siglas : '';
+    
     default:
       return '';
   }
 };
 
-
+// Esquema de validación con Yup
 const validationSchema = Yup.object().shape({
   selectedRemitente: Yup.string().required('Debes seleccionar un remitente'),
+  tipoRemitente: Yup.string().required('Debes seleccionar el tipo de remitente'),
 });
 
 const ModalRemitente = (props: ModalRemitenteProps) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
+  // Inicialización de formik
   const formik = useFormik({
     initialValues: {
       selectedRemitente: '',
+      tipoRemitente: '',
     },
     validationSchema,
     onSubmit: () => {
+      // Implementación de la función de submit
     },
   });
 
+  // Definir las columnas dinámicamente dentro del componente
+  const columns = props.remitenteType === 'externo' ? columnsExterno : columnsUsuariosExt;
+
+  const { searchTerm, setSearchTerm } = useModal({
+    data: props.datosEmpleados,
+    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
+  });
+
+  // Función para manejar la selección de remitente
+  const handleRowClick = (rowData: Empleados | OficioUsuExterno) => {
+    const nombreCompleto = 'nombreCompleto' in rowData ? rowData.nombreCompleto : rowData.nombre; // Obtener nombre del destinatario
+    formik.setFieldValue('selectedRemitente', nombreCompleto);
+    setError(null);
+  };
+
+  // Función para guardar el remitente
   const handleSave = () => {
-    if (!formik.values.selectedRemitente) {
-      setError('Debes seleccionar un destinatario');
-    } else {
-      // Encuentra el remitente seleccionado a partir del nombre
-      const remitente = props.remitentes.find(
-        rem => rem.nombre === formik.values.selectedRemitente
-      );
+    const { selectedRemitente } = formik.values;
   
-      if (remitente) {
-        // Llama a onSave con los valores requeridos
-        props.onSave({
-          remNombre: remitente.nombre,
-          remDepen: remitente.empresa,
-          remCargo: remitente.cargo, // Asegúrate de que este campo esté presente en la interfaz de Empleado
-          remsiglas: remitente.siglas,
-        });
-        props.onClose();
-        setError(null); // Limpiar error si se guarda correctamente
-      } else {
-        setError('No se encontró el destinatario seleccionado');
-      }
+    if (!selectedRemitente) {
+      setError('Debes seleccionar un remitente');
+      return;
+    }
+  
+    // Busca en datos externos
+    const externo = props.datosEmpleados.find(ext => ext.nombreCompleto === selectedRemitente);
+  
+    // Busca en usuarios externos si no es un externo
+    const usuarioExterno = props.datosUsuariosExt.find(user => user.nombre === selectedRemitente);
+  
+    if (externo) {
+      // Guardar destinatario externo
+      console.log('Guardando externo:', externo);
+      props.onSave({
+        nombre: externo.nombreCompleto,
+        remDepen: externo.descripcionDepto,
+        remCargo: externo.descripcionPuesto,
+        remSiglas: externo.destSiglas,
+      });
+      props.onClose(); // Cierra el modal
+    } else if (usuarioExterno) {
+      // Guardar destinatario usuario externo
+      console.log('Guardando usuario externo:', usuarioExterno);
+      props.onSave({
+        nombre: usuarioExterno.nombre,
+        remDepen: usuarioExterno.empresa,
+        remCargo: usuarioExterno.cargo,
+        remSiglas: usuarioExterno.siglas,
+      });
+      props.onClose(); // Cierra el modal
+    } else {
+      setError('No se encontró el remitente seleccionado');
     }
   };
 
   if (!props.isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
       <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Remitente</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar remitente</h2>
+
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -100,15 +155,15 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
         </div>
 
         <div className="flex-grow overflow-auto">
-          <TableComponente<Remitente>
-            data={props.remitentes}
+          <TableComponente<Empleados | OficioUsuExterno>
+            data={props.remitenteType.toLowerCase() === 'externo' ? props.datosEmpleados : props.datosUsuariosExt}
             columns={columns}
             accessor={accessor}
-            onRowClick={(nombre) => {
+            onRowClick={(nombre: string, depto: string) => {
               formik.setFieldValue('selectedRemitente', nombre);
               setError(null);
             }}
-            columnKeyForRowClick="Nombre"
+            columnKeyForRowClick={props.remitenteType === 'externo' ? 'Nombre Completo' : 'Nombre'} // Cambia esto según el tipo de destinatario
             searchTerm={searchTerm}
           />
         </div>

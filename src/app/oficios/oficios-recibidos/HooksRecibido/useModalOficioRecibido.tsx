@@ -31,7 +31,7 @@ export default function UseOficioMODAL() {
   const [remDepen, setremDepen] = useState<string | null>(null);
   const [remCargo, setremCargo] = useState<string | null>(null);
   const [remsiglas, setremsiglas] = useState<string | null>(null);
-  const [destSiglas, setdestSiglas] = useState<number | null>(null);
+  const [destSiglas, setdestSiglas] = useState<string | null>(null);
   const [responsableName, setResponsableName] = useState<string | null>(null);
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
