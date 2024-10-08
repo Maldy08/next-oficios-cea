@@ -65,7 +65,7 @@ export default function ModalRemitente({
         "nombreCompleto" in row ? row.nombreCompleto : row.nombre,
     },
     {
-      header: "Departamento / Empresa",
+      header: "Departamento",
       accessor: (row: Remitente | Empleado) => {
         if (tipoRemitente === "1") {
           // Interno

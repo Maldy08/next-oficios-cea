@@ -8,15 +8,15 @@ interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idExterno: number;
   deptoComi: number;
 }
 
 interface ModalResponsableProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (datosEmpleados: Empleados) => void; // Cambiamos a tipo 'Remitente'
+  onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
+  tipo: string;
 }
 
 const ModalResponsable = (props: ModalResponsableProps) => {
@@ -37,12 +37,18 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       "nombreCompleto",
       "descripcionDepto",
       "descripcionPuesto",
-      "idExterno",
+
       "deptoComi",
     ],
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
+
+  const departamento =
+    props.tipo === "1"
+      ? "COMISION ESTATAL DEL AGUA"
+      : "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+  const siglas = props.tipo === "1" ? "CEA" : "SEPROA";
 
   const columns = [
     {
@@ -51,7 +57,11 @@ const ModalResponsable = (props: ModalResponsableProps) => {
     },
     {
       header: "Departamento",
-      accessor: (row: Empleados) => row.descripcionDepto,
+      accessor: () => departamento, // Muestra siempre el departamento seleccionado
+    },
+    {
+      header: "Siglas",
+      accessor: () => siglas, // Muestra siempre las siglas seleccionadas
     },
     {
       header: "Puesto",

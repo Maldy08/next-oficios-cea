@@ -60,7 +60,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         "nombreCompleto" in row ? row.nombreCompleto : row.nombre,
     },
     {
-      header: "Departamento / Empresa",
+      header: "Departamento",
       accessor: (row: Remitente | Empleados) => {
         if (props.tipoDestinatario === "1") {
           // Interno

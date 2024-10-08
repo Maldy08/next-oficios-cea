@@ -76,6 +76,7 @@ export default function ModalOficio({
     textareaRows,
     showResponsableModal,
     currentDate,
+    setCurrentDate,
     selectedFile,
     setTextareaRows,
     searchTerm,
@@ -108,15 +109,16 @@ export default function ModalOficio({
     setresponsableDepto,
     responsabledeptoRespon,
     setresponsabledeptoRespon,
+    getCurrentDate,
   } = UseOficioMODAL();
 
   return (
     <Formik
       initialValues={{
         folio: "",
-        tipo: 0,
-        fechaCaptura: "",
-        fechaLimite: "",
+        tipo: "1",
+        fechaCaptura: getCurrentDate(),
+        fechaLimite: getCurrentDate(),
         noOficio: "",
         observaciones: "",
         pdfpath: null,
@@ -142,8 +144,8 @@ export default function ModalOficio({
         deptoRespon: responsabledeptoRespon || "",
         responsableName: responsableName || "",
 
-        destinatarioType: destinatarioType || "",
-        remitenteType: remitenteType || "",
+        destinatarioType: destinatarioType || "2",
+        remitenteType: remitenteType || "1",
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -173,22 +175,24 @@ export default function ModalOficio({
           let destDepen = values.destDepen;
           let destSiglas = values.destSiglas;
 
-          if (values.remitenteType === "1" && values.tipo == 1) {
+          if (values.remitenteType === "1" && values.tipo == "1") {
             remSiglas = "CEA";
             remDepen = "COMISION ESTATAL DEL AGUA";
           }
 
-          if (values.destinatarioType === "1" && values.tipo == 1) {
+          if (values.destinatarioType === "1" && values.tipo == "1") {
             destDepen = "COMISION ESTATAL DEL AGUA";
+            destSiglas = "CEA";
           }
 
-          if (values.remitenteType === "1" && values.tipo == 2) {
+          if (values.remitenteType === "1" && values.tipo == "2") {
             remSiglas = "SEPROA";
+            destSiglas = "CEA";
             remDepen =
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
 
-          if (values.destinatarioType === "1" && values.tipo == 2) {
+          if (values.destinatarioType === "1" && values.tipo == "2") {
             destDepen =
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
@@ -213,8 +217,9 @@ export default function ModalOficio({
             remNombre: values.remNombre,
             remCargo: values.remCargo,
 
+            // Me funciono todo pero en destSiglas
             destDepen: destDepen,
-            destSiglas: "string",
+            destSiglas: destSiglas,
             destNombre: values.destNombre,
             destCargo: values.destCargo,
 
@@ -590,8 +595,8 @@ export default function ModalOficio({
                 >
                   Guardar
                 </button>
-                <h1>Remitentes: {values.remitenteType}</h1>
-                <h1>Destinatario: {values.destinatarioType}</h1>
+                {/* <h1>Remitentes: {values.remitenteType}</h1>
+                <h1>Destinatario: {values.destinatarioType}</h1> */}
               </div>
 
               {showDestinatarioModal && (
@@ -624,6 +629,17 @@ export default function ModalOficio({
                     setFieldValue("destDepen", datosDestinatario.departamento);
                     setFieldValue("destSiglas", datosDestinatario.siglas);
                     setFieldValue("destCargo", datosDestinatario.puesto);
+
+                    // if (values.destinatarioType === "1") {
+                    //   setFieldValue(
+                    //     "responsableName",
+                    //     datosDestinatario.nombre
+                    //   );
+                    //   setFieldValue(
+                    //     "deptoRespon",
+                    //     datosDestinatario.departamento
+                    //   );
+                    // }
 
                     setShowDestinatarioModal(false);
                   }}
@@ -688,6 +704,7 @@ export default function ModalOficio({
 
                     setFieldValue("deptoRespon", datosEmpleados.deptoComi);
                   }}
+                  tipo={values.tipo.toString()} // Asegúrate de pasar el tipo adecuado ("1" o "2")
                   datosEmpleados={datosEmpleados}
                 />
               )}
