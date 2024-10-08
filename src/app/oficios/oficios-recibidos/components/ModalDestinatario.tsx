@@ -24,10 +24,10 @@ interface Remitente {
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: number }) => void;
-  datosEmpleados  : Empleado[];
-  datosUsuariosExt : OficioUsuExterno[];
-  destinatarioType : string;
+  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: string}) => void;
+  datosEmpleados: Empleado[];
+  datosUsuariosExt: OficioUsuExterno[];
+  destinatarioType: string;
 }
 
 const columnsInterno = ['Nombre Completo', 'Departamento', 'Puesto'];
@@ -66,9 +66,6 @@ const validationSchema = Yup.object().shape({
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
   const [error, setError] = useState<string | null>(null);
 
-  console.log(props.destinatarioType)
-  console.log(props.datosUsuariosExt)
-  
   // Inicialización de formik
   const formik = useFormik({
     initialValues: {
@@ -89,7 +86,14 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
   });
 
+  // Función para manejar la selección de destinatario
+  const handleRowClick = (rowData: Empleado | OficioUsuExterno) => {
+    const nombreCompleto = 'nombreCompleto' in rowData ? rowData.nombreCompleto : rowData.nombre; // Obtener nombre del destinatario
+    formik.setFieldValue('selectedDestinatario', nombreCompleto);
+    setError(null);
+  };
 
+  // Función para guardar el destinatario
   const handleSave = () => {
     const { selectedDestinatario } = formik.values;
 
@@ -136,8 +140,6 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Destinatario</h2>
 
-
-
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -152,16 +154,18 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
 
         <div className="flex-grow overflow-auto">
         <TableComponente<Empleado | OficioUsuExterno>
-            data={ props.destinatarioType === 'Interno' ? props.datosEmpleados : props.datosUsuariosExt }
-            columns={columns}
-            accessor={accessor}
-            onRowClick={(nombreCompleto) => {
-              formik.setFieldValue('selectedDestinatario', nombreCompleto);
-              setError(null);
-            }}
-            columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}
-          />
+  data={props.destinatarioType.toLowerCase() === 'interno' ? props.datosEmpleados : props.datosUsuariosExt}
+  columns={columns}
+  accessor={accessor}
+  onRowClick={(nombre: string, depto: string) => {
+    formik.setFieldValue('selectedDestinatario', nombre);
+    setError(null);
+  }}
+  columnKeyForRowClick={props.destinatarioType === 'interno' ? 'Nombre Completo' : 'Nombre'} // Cambia esto según el tipo de destinatario
+  searchTerm={searchTerm}
+/>
+
+
         </div>
 
         {error && <div className="text-red-500">{error}</div>}
@@ -188,4 +192,3 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
 };
 
 export default ModalDestinatario;
-
