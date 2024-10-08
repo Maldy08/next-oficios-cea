@@ -124,7 +124,6 @@ export default function ModalOficio({
         selection: '',
         fechaCaptura: '',
         fechaLimite: '',
-        siglas: '',
         cargo: '',
         destDepen: destDepen || '',
         remDepen: remDepen || '',
@@ -148,11 +147,12 @@ export default function ModalOficio({
       validateOnBlur={false} // Desactivar validación en cada desenfoque
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-
+      
+        // Validación de campos requeridos
         if (!values.remNombre) errors.remNombre = 'Nombre del remitente es requerido';
         if (!values.destNombre) errors.destNombre = 'Nombre del destinatario es requerido';
         if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
-
+      
         // Si hay errores, se actualizan y no se envía el formulario
         if (Object.keys(errors).length) {
           setErrors(errors);
@@ -165,29 +165,29 @@ export default function ModalOficio({
             ejercicio: 2024,
             folio: parseInt(values.folio, 10) || 0,
             eor: 2,
-            tipo: 0,
+            tipo: parseInt(values.selection, 10), // Asignar tipo según la selección (1 o 2)
             noOficio: values.numeroOficio,
             pdfpath: null, // Enviar como null
             fecha: new Date().toISOString(),
             fechaCaptura: new Date().toISOString(),
             fechaAcuse: new Date().toISOString(),
             fechaLimite: values.fechaLimite,
-            remDepen: values.remDepen, // Asignar según tu lógica
-            remSiglas: values.remsiglas, // Campo remSiglas añadido
-            remNombre: values.remNombre,  // Cambiado a "string"
-            remCargo: values.remCargo, // Asignar según tu lógica
-            destDepen: values.destDepen, // Asignar según tu lógica
-            destSiglas: "string", // Asignar según tu lógica
+            remDepen: values.remDepen,
+            remSiglas: values.remsiglas,
+            remNombre: values.remNombre,
+            remCargo: values.remCargo,
+            destDepen: values.destDepen,
+            destSiglas: "string",
             destNombre: values.destNombre,
-            destCargo: values.destCargo, // Asignar según tu lógica
+            destCargo: values.destCargo,
             tema: values.tema,
             estatus: 0,
             empqentrega: 0,
-            relacionoficio: "string", // Asignar según tu lógica
+            relacionoficio: "string",
             depto: 0,
             deptoRespon: 0
           };
-
+      
           // Enviar el objeto a la API
           try {
             const response = await fetch('http://200.56.97.5:7281/api/Oficios', {
@@ -197,17 +197,18 @@ export default function ModalOficio({
               },
               body: JSON.stringify(objetoOficio),
             });
-
+      
             if (!response.ok) {
               throw new Error('Error en la solicitud');
             }
-
+      
             onSave(); // Llama a la función onSave si es necesario
           } catch (error) {
             console.error('Error al guardar el oficio:', error);
           }
         }
       }}
+      
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
@@ -229,25 +230,35 @@ export default function ModalOficio({
 
                 {/* Selección */}
                 <div className="flex flex-col">
-                  <div className="relative">
-                    <div className="flex items-center space-x-3">
-                      <label className="flex items-center cursor-pointer">
-                        <Field type="radio" name="selection" value="CEA" className="mr-1" />
-                        CEA
-                      </label>
+            <div className="flex items-center space-x-3">
+              <label className="flex items-center cursor-pointer">
+                <Field
+                  type="radio"
+                  name="selection"
+                  value="1" // Valor de "CEA"
+                  className="mr-1"
+                />
+                CEA
+              </label>
 
-                      <label className="flex items-center cursor-pointer">
-                        <Field type="radio" name="selection" value="SEPRA" className="mr-1" />
-                        SEPRA
-                      </label>
-                    </div>
-                    {touched.selection && errors.selection && (
-                      <div className="absolute left-0 top-full mt-1 text-red-600 text-sm">
-                        {errors.selection}
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <label className="flex items-center cursor-pointer">
+                <Field
+                  type="radio"
+                  name="selection"
+                  value="2" // Valor de "SEPRA"
+                  className="mr-1"
+                />
+                SEPRA
+              </label>
+            </div>
+            {touched.selection && errors.selection && (
+              <div className="mt-1 text-red-600 text-sm">
+                {errors.selection}
+              </div>
+            )}
+          </div>
+
+
 
 
                 <div className="flex items-center">

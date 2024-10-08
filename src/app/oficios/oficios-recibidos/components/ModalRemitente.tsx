@@ -28,6 +28,7 @@ interface ModalRemitenteProps {
   datosEmpleados: Empleados[]; // Cambiado de datosEmpleados a datosExternos
   datosUsuariosExt: OficioUsuExterno[];
   remitenteType: string;
+
 }
 
 const columnsExterno = ['Nombre Completo', 'Departamento', 'Puesto']; // Cambiado de columnsInterno a columnsExterno
@@ -50,7 +51,7 @@ const accessor = (item: Empleados | Remitente, column: string) => {
       return !isExterno ? item.cargo : item.descripcionPuesto;
     
     case 'Siglas':
-      return !isExterno ? item.siglas : '';
+      return !isExterno ? item.siglas : 'CEA';
     
     default:
       return '';
@@ -115,7 +116,7 @@ const ModalRemitente = (props: ModalRemitenteProps) => {
         nombre: externo.nombreCompleto,
         remDepen: externo.descripcionDepto,
         remCargo: externo.descripcionPuesto,
-        remSiglas: externo.destSiglas,
+        remSiglas: "CEA",
       });
       props.onClose(); // Cierra el modal
     } else if (usuarioExterno) {
