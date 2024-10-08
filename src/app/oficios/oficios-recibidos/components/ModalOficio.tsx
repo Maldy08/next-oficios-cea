@@ -28,30 +28,8 @@ interface remitentes {
   empresa: string;
   cargo: string;
   siglas: string;
+  deptoComi: number;
 }
-
-// Validación con Yup
-const validationSchema = Yup.object().shape({
-  tipo: Yup.string()
-    .oneOf(["", "1", "2"], "Debes seleccionar una opció")
-    .required("Debes seleccionar una opción"),
-  fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
-  // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
-  noOficio: Yup.number().required("Número de Oficio es requerido"),
-  tema: Yup.string().required("Tema es requerido"),
-  observaciones: Yup.string(),
-  // pdfpath: Yup.mixed().required("Archivo es requerido"),
-  remNombre: Yup.string().required("Nombre del remitente es requerido"),
-  destNombre: Yup.string().required("Nombre del destinatario es requerido"),
-  responsableName: Yup.string().required("Nombre del responsable es requerido"),
-  destinatarioType: Yup.string()
-    .oneOf(["", "1", "2"], "Tipo de destinatario inválido")
-    .required("Tipo de destinatario es requerido"),
-  remitenteType: Yup.string()
-    .oneOf(["", "1", "2"], "Tipo de remitente inválido")
-    .required("Tipo de remitente es requerido"),
-  // remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
-});
 
 export default function ModalOficio({
   isOpen,
@@ -61,6 +39,7 @@ export default function ModalOficio({
   remitentes,
 }: ModalOficioProps) {
   const {
+    validationSchema,
     remitenteType,
     setRemitenteType,
     destinatarioType,
@@ -168,7 +147,6 @@ export default function ModalOficio({
           });
         } else {
           // Crear el objeto JSON
-
           // Lógica para cambiar los valores según el remitenteType
           let remSiglas = values.remSiglas;
           let remDepen = values.remDepen;
@@ -228,8 +206,7 @@ export default function ModalOficio({
             empqentrega: 0,
             relacionoficio: "string",
 
-            // Deptop no tiene valor asignado,
-            depto: 8,
+            depto: values.depto,
             deptoRespon: values.deptoRespon,
           };
           console.log("AQUI JSON");
@@ -601,12 +578,9 @@ export default function ModalOficio({
 
               {showDestinatarioModal && (
                 <ModalDestinatario
-                  // En este modal solo me falta por el Dest_Siglas, no estaban en la api
-
                   isOpen={showDestinatarioModal}
                   onClose={() => setShowDestinatarioModal(false)}
                   onSave={(datosEmpleados) => {
-                    // Aquí estamos guardando solo el nombre del destinatario
                     const datosDestinatario = {
                       nombre:
                         "nombreCompleto" in datosEmpleados
@@ -622,6 +596,7 @@ export default function ModalOficio({
                         "descripcionPuesto" in datosEmpleados
                           ? datosEmpleados.descripcionPuesto
                           : datosEmpleados.cargo,
+                      deptoComi: datosEmpleados.deptoComi || "", // Aseguramos que deptoComi esté asignado
                     };
 
                     // Asigna los datos completos en los campos de Formik
@@ -629,17 +604,16 @@ export default function ModalOficio({
                     setFieldValue("destDepen", datosDestinatario.departamento);
                     setFieldValue("destSiglas", datosDestinatario.siglas);
                     setFieldValue("destCargo", datosDestinatario.puesto);
+                    setFieldValue("depto", datosDestinatario.deptoComi); // Asigna deptoComi a depto
 
-                    // if (values.destinatarioType === "1") {
-                    //   setFieldValue(
-                    //     "responsableName",
-                    //     datosDestinatario.nombre
-                    //   );
-                    //   setFieldValue(
-                    //     "deptoRespon",
-                    //     datosDestinatario.departamento
-                    //   );
-                    // }
+                    // Si el destinatario es interno, asigna deptoComi también al responsable
+                    if (values.destinatarioType === "1") {
+                      setFieldValue(
+                        "responsableName",
+                        datosDestinatario.nombre
+                      );
+                      setFieldValue("deptoRespon", datosDestinatario.deptoComi); // Asigna deptoComi a deptoRespon
+                    }
 
                     setShowDestinatarioModal(false);
                   }}
@@ -649,7 +623,6 @@ export default function ModalOficio({
                   datosEmpleados={datosEmpleados}
                 />
               )}
-
               {showRemitenteModal && (
                 <ModalRemitente
                   isOpen={showRemitenteModal}
@@ -690,21 +663,31 @@ export default function ModalOficio({
                   isOpen={showResponsableModal}
                   onClose={() => setShowResponsableModal(false)}
                   onSave={(datosEmpleados) => {
-                    const datosRemitente = {
-                      deptoComi: datosEmpleados.deptoComi,
+                    const datosResponsable = {
+                      nombreCompleto: datosEmpleados.nombreCompleto,
+                      deptoComi: datosEmpleados.deptoComi || "", // Aseguramos que deptoComi esté asignado
                     };
 
-                    const nombreResposableEnvio = datosEmpleados.nombreCompleto; // O la propiedad que almacene el nombre
-                    setResponsableName(datosEmpleados.nombreCompleto);
+                    // Asigna los datos del responsable al campo correspondiente
+                    setResponsableName(datosResponsable.nombreCompleto);
                     setFieldValue(
                       "responsableName",
-                      datosEmpleados.nombreCompleto
+                      datosResponsable.nombreCompleto
                     );
-                    setShowResponsableModal(false);
+                    setFieldValue("deptoRespon", datosResponsable.deptoComi); // Asigna deptoComi a deptoRespon
 
-                    setFieldValue("deptoRespon", datosEmpleados.deptoComi);
+                    // Si el destinatario es externo, asigna deptoComi también al destinatario
+                    if (values.destinatarioType === "2") {
+                      setFieldValue(
+                        "destNombre",
+                        datosResponsable.nombreCompleto
+                      );
+                      setFieldValue("depto", datosResponsable.deptoComi); // Asigna deptoComi a depto
+                    }
+
+                    setShowResponsableModal(false);
                   }}
-                  tipo={values.tipo.toString()} // Asegúrate de pasar el tipo adecuado ("1" o "2")
+                  tipo={values.tipo.toString()}
                   datosEmpleados={datosEmpleados}
                 />
               )}

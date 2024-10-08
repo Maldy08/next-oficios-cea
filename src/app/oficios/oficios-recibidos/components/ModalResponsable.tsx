@@ -37,7 +37,6 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       "nombreCompleto",
       "descripcionDepto",
       "descripcionPuesto",
-
       "deptoComi",
     ],
     onClose: props.onClose,

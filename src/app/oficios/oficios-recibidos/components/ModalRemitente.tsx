@@ -14,6 +14,7 @@ interface Empleado {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
+  deptoComi: number;
 }
 
 interface ModalRemitenteProps {

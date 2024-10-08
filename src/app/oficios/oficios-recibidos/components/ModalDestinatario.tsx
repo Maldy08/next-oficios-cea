@@ -9,6 +9,7 @@ interface Empleados {
   descripcionDepto: string;
   descripcionPuesto: string;
   idExterno: number;
+  deptoComi: number;
 }
 
 interface Remitente {
@@ -16,6 +17,7 @@ interface Remitente {
   empresa: string;
   cargo: string;
   siglas: string;
+  deptoComi: number;
 }
 
 interface ModalDestinatarioProps {

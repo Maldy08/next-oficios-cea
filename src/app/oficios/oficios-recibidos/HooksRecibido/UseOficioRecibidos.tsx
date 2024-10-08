@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as Yup from "yup";
 
 export default function UseOficioMODAL() {
   const [modalType, setModalType] = useState<string | null>(null);
@@ -15,6 +16,30 @@ export default function UseOficioMODAL() {
   const handleCloseModal = () => {
     setModalType(null);
   };
+
+  const validationSchema = Yup.object().shape({
+    tipo: Yup.string()
+      .oneOf(["", "1", "2"], "Debes seleccionar una opció")
+      .required("Debes seleccionar una opción"),
+    fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
+    // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
+    noOficio: Yup.number().required("Número de Oficio es requerido"),
+    tema: Yup.string().required("Tema es requerido"),
+    observaciones: Yup.string(),
+    // pdfpath: Yup.mixed().required("Archivo es requerido"),
+    remNombre: Yup.string().required("Nombre del remitente es requerido"),
+    destNombre: Yup.string().required("Nombre del destinatario es requerido"),
+    responsableName: Yup.string().required(
+      "Nombre del responsable es requerido"
+    ),
+    destinatarioType: Yup.string()
+      .oneOf(["", "1", "2"], "Tipo de destinatario inválido")
+      .required("Tipo de destinatario es requerido"),
+    remitenteType: Yup.string()
+      .oneOf(["", "1", "2"], "Tipo de remitente inválido")
+      .required("Tipo de remitente es requerido"),
+    // remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
+  });
 
   // Guardar cambios y cerrar modal
   const handleSave = () => {
@@ -157,5 +182,6 @@ export default function UseOficioMODAL() {
     responsabledeptoRespon,
     setresponsabledeptoRespon,
     setCurrentDate,
+    validationSchema,
   };
 }
