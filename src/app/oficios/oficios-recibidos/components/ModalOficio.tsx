@@ -101,6 +101,7 @@ export default function ModalOficio({
         noOficio: "",
         observaciones: "",
         pdfpath: null,
+        archivo: null,
 
         tema: "",
         estatus: 0,
@@ -208,29 +209,35 @@ export default function ModalOficio({
 
             depto: values.depto,
             deptoRespon: values.deptoRespon,
+            archivo: values.archivo,
           };
           console.log("AQUI JSON");
           console.log(objetoOficio);
 
           // Enviar el objeto a la API
           try {
+            const formData = new FormData();  // <-- Crear un objeto FormData
+(Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]).forEach((key) => {
+  formData.append(key, objetoOficio[key] as string);  // <-- Asegurar el tipo de valor
+});
+    
+            if (values.archivo) {
+              formData.append("archivo", values.archivo);  // <-- Adjuntar archivo
+            }
+    
             const response = await fetch(
               "http://200.56.97.5:7281/api/Oficios",
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(objetoOficio),
+                body: formData,  // <-- Enviar FormData
               }
             );
-
+    
             if (!response.ok) {
               throw new Error("Error en la solicitud");
             }
-
-            // Aquí puedes manejar la respuesta
-            onSave(); // Llama a la función onSave si es necesario
+    
+            onSave();
           } catch (error) {
             console.error("Error al guardar el oficio:", error);
           }
@@ -539,24 +546,33 @@ export default function ModalOficio({
                 </div>
 
                 {/* Adjuntar Archivo */}
-                <div className="flex items-center mb-4">
-                  <input
-                    id="pdfpath"
-                    name="pdfpath"
-                    type="file"
-                    onChange={(event) => {
-                      if (event.currentTarget.files) {
-                        setFieldValue("pdfpath", event.currentTarget.files[0]);
-                      }
-                    }}
-                    className="border border-gray-300 rounded p-2 w-full"
-                  />
-                  <ErrorMessage
-                    name="pdfpath"
-                    component="div"
-                    className="text-red-600"
-                  />
-                </div>
+<div className="flex items-center mb-4">
+  <input
+    id="pdfpath"
+    name="archivo"  // Cambiar a archivo para que sea capturado correctamente
+    type="file"
+    accept=".pdf"
+    onChange={(event) => {
+      if (event.currentTarget.files) {
+        const file = event.currentTarget.files[0];
+        
+        // Validación de tipo de archivo
+        if (file && file.type !== 'application/pdf') {
+          alert("Por favor, sube un archivo PDF."); // Mensaje de alerta para el usuario
+          return;
+        }
+
+        setFieldValue("archivo", file);  // Almacenar archivo en values.archivo
+      }
+    }}
+    className="border border-gray-300 rounded p-2 w-full"
+  />
+  <ErrorMessage
+    name="archivo"
+    component="div"
+    className="text-red-600"
+  />
+</div>
               </div>
 
               <div className="flex justify-end space-x-4 mt-4">
