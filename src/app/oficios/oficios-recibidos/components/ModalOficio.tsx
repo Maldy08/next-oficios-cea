@@ -102,6 +102,7 @@ export default function ModalOficio({
         noOficio: "",
         observaciones: "",
         pdfpath: null,
+        archivo: "",
 
         tema: "",
         estatus: 0,
@@ -185,8 +186,9 @@ export default function ModalOficio({
             tipo: values.tipo,
             // Revisar el tipo
 
+            archivo: values.archivo,
             noOficio: values.noOficio,
-            pdfpath: values.pdfpath,
+            pdfpath: null,
             fecha: currentDate,
             fechaCaptura: values.fechaCaptura,
             fechaAcuse: "2024-10-03T07:02:08.170Z",
@@ -542,19 +544,19 @@ export default function ModalOficio({
                 {/* Adjuntar Archivo */}
                 <div className="flex items-center mb-4">
                   <input
-                    id="pdfpath"
-                    name="pdfpath"
+                    id="archivo"
+                    name="archivo"
                     type="file"
                     accept=".pdf"
                     onChange={(event) => {
                       if (event.currentTarget.files) {
-                        setFieldValue("pdfpath", event.currentTarget.files[0]);
+                        setFieldValue("archivo", event.currentTarget.files[0]);
                       }
                     }}
                     className="border border-gray-300 rounded p-2 w-full"
                   />
                   <ErrorMessage
-                    name="pdfpath"
+                    name="archivo"
                     component="div"
                     className="text-red-600"
                   />
