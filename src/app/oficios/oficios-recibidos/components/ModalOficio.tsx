@@ -177,6 +177,7 @@ export default function ModalOficio({
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
 
+          oo;
           const objetoOficio = {
             ejercicio: 2024,
             folio: values.folio,
@@ -212,6 +213,16 @@ export default function ModalOficio({
             depto: values.depto,
             deptoRespon: values.deptoRespon,
           };
+
+          // Crear un objeto FormData para enviar el archivo y el JSON
+          const formData = new FormData();
+          formData.append("datos", JSON.stringify(objetoOficio)); // Agregar el JSON convertido a string
+
+          // Agregar el archivo PDF si está presente
+          if (values.archivo) {
+            formData.append("archivo", values.archivo); // Agregar el archivo PDF
+          }
+
           console.log("AQUI JSON");
           console.log(objetoOficio);
 
