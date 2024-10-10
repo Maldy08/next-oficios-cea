@@ -39,6 +39,7 @@ export default function ModalOficio({
   remitentes,
 }: ModalOficioProps) {
   const {
+    // Son todos los yup el Validation Schema
     validationSchema,
     remitenteType,
     setRemitenteType,
@@ -185,7 +186,7 @@ export default function ModalOficio({
             // Revisar el tipo
 
             noOficio: values.noOficio,
-            pdfpath: null,
+            pdfpath: values.pdfpath,
             fecha: currentDate,
             fechaCaptura: values.fechaCaptura,
             fechaAcuse: "2024-10-03T07:02:08.170Z",
@@ -544,6 +545,7 @@ export default function ModalOficio({
                     id="pdfpath"
                     name="pdfpath"
                     type="file"
+                    accept=".pdf"
                     onChange={(event) => {
                       if (event.currentTarget.files) {
                         setFieldValue("pdfpath", event.currentTarget.files[0]);
