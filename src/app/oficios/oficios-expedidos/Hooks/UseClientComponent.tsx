@@ -1,25 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { FiSearch } from "react-icons/fi";
-import ModalEdit from "../components/components table/ModalEdit";
-import TableComponent from "../components/table";
-import ModalOficioExpedido from "../components/ModalOficioExpedido";
-import ModalList from "../components/components table/ModalList";
 
 interface ClientComponentProps {
   rows: any[];
-  departamentos: any[];
-  datosEmpleados: any[];
-  remitentes: any[];
 }
 
-export default function UseClienteComponent({
-  rows,
-  departamentos,
-  datosEmpleados,
-  remitentes,
-}: ClientComponentProps) {
+export default function UseClienteComponent({ rows }: ClientComponentProps) {
   const [modalType, setModalType] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
@@ -60,16 +47,14 @@ export default function UseClienteComponent({
   };
 
   // Filtrar filas basado en el término de búsqueda
-  const filteredRows = rows.filter(
-    (row) =>
-      (row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (typeof row.remDepen === 'string' ? row.remDepen.toLowerCase() : '').includes(searchTerm.toLowerCase()) ||
-    (typeof row.tipo === 'string' ? row.tipo.toLowerCase() : '').includes(searchTerm.toLowerCase()) ||
-    (typeof row.noOficio === 'string' ? row.noOficio.toLowerCase() : '').includes(searchTerm.toLowerCase()) ||
-    (typeof row.remNombre === 'string' ? row.remNombre.toLowerCase() : '').includes(searchTerm.toLowerCase()) ||
-    (typeof row.destNombre === 'string' ? row.destNombre.toLowerCase() : '').includes(searchTerm.toLowerCase()) ||
-    (typeof row.estatus === 'string' ? row.estatus.toLowerCase() : '').includes(searchTerm.toLowerCase())
-    
+  const filteredRows = rows.filter((row) => 
+    row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (row.remDepen && typeof row.remDepen === 'string' && row.remDepen.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.tipo && typeof row.tipo === 'string' && row.tipo.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.noOficio && typeof row.noOficio === 'string' && row.noOficio.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.remNombre && typeof row.remNombre === 'string' && row.remNombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.destNombre && typeof row.destNombre === 'string' && row.destNombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.estatus && typeof row.estatus === 'string' && row.estatus.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Paginación de las filas filtradas

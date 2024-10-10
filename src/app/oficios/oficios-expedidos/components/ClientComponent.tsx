@@ -39,9 +39,6 @@ export default function ClientComponent({
     handleSearchChange,
   } = UseClienteComponent({
     rows,
-    departamentos,
-    datosEmpleados,
-    remitentes,
   });
 
   return (
@@ -75,7 +72,6 @@ export default function ClientComponent({
         modalType={modalType}
         datosEmpleados={datosEmpleados}
       />
-
 
       {/* Modales */}
       {modalType === "oficioExpedido" && (

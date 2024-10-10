@@ -1,34 +1,26 @@
 import { useState, useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { FaSearch, FaUserPlus } from 'react-icons/fa';
-import ModalDestinatario from '../components/ModalDestinatario';
-import ModalRemitente from '../components/ModalRemitente';
-import ModalResponsable from '../components/ModalResponsable';
-import UseModalOficioRecibido from "../HooksRecibido/useModalOficioRecibido";
+import { FaSearch, FaUserPlus } from "react-icons/fa";
+import ModalDestinatario from "../components/ModalDestinatario";
+import ModalRemitente from "../components/ModalRemitente";
+import ModalResponsable from "../components/ModalResponsable";
+import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
-// Validación con Yup
-const validationSchema = Yup.object().shape({
-  selection: Yup.string().required("Debes seleccionar una opción"),
-  fechaCaptura: Yup.date().required('Fecha Captura es requerida'),
-  fechaLimite: Yup.date().required('Fecha Límite es requerida'),
-  numeroOficio: Yup.number().required('Número de Oficio es requerido'),
-  tema: Yup.string().required('Tema es requerido'),
-  observaciones: Yup.string(),
-  archivo: Yup.mixed().required('Archivo es requerido'),
-  remNombre: Yup.string().required('Nombre del remitente es requerido'),
-  destNombre: Yup.string().required('Nombre del destinatario es requerido'),
-  responsableName: Yup.string().required('Nombre del responsable es requerido'),
-  destinatarioType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de destinatario inválido').required('Tipo de destinatario es requerido'),
-  remitenteType: Yup.string().oneOf(['', 'Interno', 'Externo'], 'Tipo de remitente inválido').required('Tipo de remitente es requerido'),
-});
-
-interface Empleado {
+interface ModalOficioProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  datosEmpleados: Empleados[];
+  remitentes: remitentes[];
+}
+interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
   idExterno: number;
-  destSiglas: string;
+  deptoComi: number;
 }
 
 interface remitentes {
@@ -36,29 +28,8 @@ interface remitentes {
   empresa: string;
   cargo: string;
   siglas: string;
+  deptoComi: number;
 }
-
-interface ModalOficioProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  datosEmpleados: any[];
-  usuariosExternos: any[];
-  remitentes: any[];
-
-}
-
-const fetchEmpleadosData = async (apiUrl: string) => {
-  try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error("Error en la petición");
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error al obtener los datos:", error);
-    return [];
-  }
-};
 
 export default function ModalOficio({
   isOpen,
@@ -66,15 +37,15 @@ export default function ModalOficio({
   onSave,
   datosEmpleados,
   remitentes,
-  usuariosExternos,
 }: ModalOficioProps) {
   const {
+    validationSchema,
     remitenteType,
     setRemitenteType,
     destinatarioType,
     setDestinatarioType,
-    remNombre,
-    destNombre,
+    remitenteName,
+    destinatarioName,
     responsableName,
     showDestinatarioModal,
     handleDestinatarioSave,
@@ -84,6 +55,7 @@ export default function ModalOficio({
     textareaRows,
     showResponsableModal,
     currentDate,
+    setCurrentDate,
     selectedFile,
     setTextareaRows,
     searchTerm,
@@ -95,64 +67,79 @@ export default function ModalOficio({
     setShowResponsableModal,
     setShowRemitenteModal,
     handleFileChange,
-    setdestNombre,
-    setremNombre,  // Cambiado a setremNombre
-    destDepen,
-    setdestDepen,
-    destCargo,
-    setdestCargo,
-    remDepen,
-    setremDepen,
-    remCargo,
-    setremCargo,
-    remsiglas,
-    setremsiglas,
-    destSiglas,
-    setdestSiglas,
+    setDestinatarioName,
+    setRemitenteName,
     setResponsableName,
-  } = UseModalOficioRecibido();
-
-
-
-
-  if (!isOpen) return null;
+    selectedArea,
+    setSelectedArea,
+    remitenteOcupacion,
+    setRemitenteOcupacion,
+    remitenteSiglas,
+    setremitenteSiglas,
+    remitentePuesto,
+    setremitentePuesto,
+    destinatarioDepartamento,
+    setdestinatarioDepartamento,
+    destinatarioPuesto,
+    setDestinatarioPuesto,
+    destinatarioSiglas,
+    setDestinatarioSigla,
+    responsableDepto,
+    setresponsableDepto,
+    responsabledeptoRespon,
+    setresponsabledeptoRespon,
+    getCurrentDate,
+  } = UseOficioMODAL();
 
   return (
     <Formik
       initialValues={{
-        folio: '',
-        selection: '',
-        fechaCaptura: '',
-        fechaLimite: '',
-        cargo: '',
-        destDepen: destDepen || '',
-        remDepen: remDepen || '',
-        destCargo: destCargo || '',
-        remCargo: remCargo || '',
-        destSiglas: destSiglas || '',
-        remsiglas: remsiglas || '',
-        numeroOficio: '',
-        tema: '',
-        observaciones: '',
-        archivo: selectedFile,
-        remNombre: remNombre || '',  // Esta parte está bien
-        destNombre: destNombre || '',
-        responsableName: responsableName || '',
-        destinatarioType: destinatarioType || '',
-        remitenteType: remitenteType || ''
-      }}
+        folio: "",
+        tipo: "1",
+        fechaCaptura: getCurrentDate(),
+        fechaLimite: getCurrentDate(),
+        noOficio: "",
+        observaciones: "",
+        pdfpath: null,
+        archivo: null,
 
+        tema: "",
+        estatus: 0,
+        empqentrega: 0,
+        relacionoficio: "",
+
+        selectedArea: selectedArea || "",
+
+        remNombre: remitenteName || "",
+        remDepen: remitenteOcupacion || "",
+        remSiglas: remitenteSiglas || "",
+        remCargo: remitentePuesto || "",
+
+        destNombre: destinatarioName || "",
+        destDepen: destinatarioDepartamento || "",
+        destCargo: destinatarioPuesto || "",
+        destSiglas: destinatarioSiglas || "",
+
+        depto: responsableDepto || "",
+        deptoRespon: responsabledeptoRespon || "",
+        responsableName: responsableName || "",
+
+        destinatarioType: destinatarioType || "2",
+        remitenteType: remitenteType || "1",
+      }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
       validateOnBlur={false} // Desactivar validación en cada desenfoque
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-      
-        // Validación de campos requeridos
-        if (!values.remNombre) errors.remNombre = 'Nombre del remitente es requerido';
-        if (!values.destNombre) errors.destNombre = 'Nombre del destinatario es requerido';
-        if (!values.responsableName) errors.responsableName = 'Nombre del responsable es requerido';
-      
+
+        if (!values.remNombre)
+          errors.remNombre = "Nombre del remitente es requerido";
+        if (!values.destNombre)
+          errors.destNombre = "Nombre del destinatario es requerido";
+        if (!values.responsableName)
+          errors.responsableName = "Nombre del responsable es requerido";
+
         // Si hay errores, se actualizan y no se envía el formulario
         if (Object.keys(errors).length) {
           setErrors(errors);
@@ -161,371 +148,435 @@ export default function ModalOficio({
           });
         } else {
           // Crear el objeto JSON
+          // Lógica para cambiar los valores según el remitenteType
+          let remSiglas = values.remSiglas;
+          let remDepen = values.remDepen;
+          let destDepen = values.destDepen;
+          let destSiglas = values.destSiglas;
+
+          if (values.remitenteType === "1" && values.tipo == "1") {
+            remSiglas = "CEA";
+            remDepen = "COMISION ESTATAL DEL AGUA";
+          }
+
+          if (values.destinatarioType === "1" && values.tipo == "1") {
+            destDepen = "COMISION ESTATAL DEL AGUA";
+            destSiglas = "CEA";
+          }
+
+          if (values.remitenteType === "1" && values.tipo == "2") {
+            remSiglas = "SEPROA";
+            destSiglas = "CEA";
+            remDepen =
+              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+
+          if (values.destinatarioType === "1" && values.tipo == "2") {
+            destDepen =
+              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+
           const objetoOficio = {
             ejercicio: 2024,
-            folio: parseInt(values.folio, 10) || 0,
+            folio: values.folio,
             eor: 2,
-            tipo: parseInt(values.selection, 10), // Asignar tipo según la selección (1 o 2)
-            noOficio: values.numeroOficio,
-            pdfpath: null, // Enviar como null
-            fecha: new Date().toISOString(),
-            fechaCaptura: new Date().toISOString(),
-            fechaAcuse: new Date().toISOString(),
+
+            // El tipo me fallo en el croops del error de la api
+            tipo: values.tipo,
+            // Revisar el tipo
+
+            noOficio: values.noOficio,
+            pdfpath: null,
+            fecha: currentDate,
+            fechaCaptura: values.fechaCaptura,
+            fechaAcuse: "2024-10-03T07:02:08.170Z",
             fechaLimite: values.fechaLimite,
-            remDepen: values.remDepen,
-            remSiglas: values.remsiglas,
+            remDepen: remDepen,
+            remSiglas: remSiglas,
             remNombre: values.remNombre,
             remCargo: values.remCargo,
-            destDepen: values.destDepen,
-            destSiglas: "string",
+
+            // Me funciono todo pero en destSiglas
+            destDepen: destDepen,
+            destSiglas: destSiglas,
             destNombre: values.destNombre,
             destCargo: values.destCargo,
+
             tema: values.tema,
-            estatus: 0,
+            estatus: 1,
             empqentrega: 0,
             relacionoficio: "string",
-            depto: 0,
-            deptoRespon: 0
+
+            depto: values.depto,
+            deptoRespon: values.deptoRespon,
+            archivo: values.archivo,
           };
-      
+          console.log("AQUI JSON");
+          console.log(objetoOficio);
+
           // Enviar el objeto a la API
           try {
-            const response = await fetch('http://200.56.97.5:7281/api/Oficios', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(objetoOficio),
-            });
-      
-            if (!response.ok) {
-              throw new Error('Error en la solicitud');
+            const formData = new FormData();  // <-- Crear un objeto FormData
+(Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]).forEach((key) => {
+  formData.append(key, objetoOficio[key] as string);  // <-- Asegurar el tipo de valor
+});
+    
+            if (values.archivo) {
+              formData.append("archivo", values.archivo);  // <-- Adjuntar archivo
             }
-      
-            onSave(); // Llama a la función onSave si es necesario
+    
+            const response = await fetch(
+              "http://200.56.97.5:7281/api/Oficios",
+              {
+                method: "POST",
+                body: formData,  // <-- Enviar FormData
+              }
+            );
+    
+            if (!response.ok) {
+              throw new Error("Error en la solicitud");
+            }
+    
+            onSave();
           } catch (error) {
-            console.error('Error al guardar el oficio:', error);
+            console.error("Error al guardar el oficio:", error);
           }
         }
       }}
-      
     >
       {({ setFieldValue, values, errors, touched }) => (
-        <Form className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
-          <div className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto" style={{ maxHeight: '80vh' }}>
-            <h2 className="text-lg font-semibold mb-4">Ingresar Oficio Recibido</h2>
+        <Form>
+          <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+            <div
+              className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto"
+              style={{ maxHeight: "80vh" }}
+            >
+              <h2 className="text-lg font-semibold mb-4">
+                Ingresar Oficio Recibido
+              </h2>
 
-            <div className="flex flex-col space-y-4">
-              {/* Folio y Selección */}
-              <div className="flex flex-col sm:flex-row sm:items-center mb-4 space-y-24 sm:space-y-0 sm:space-x-24">
-                <div className="flex items-center">
-                  <span className="w-24 sm:w-12">Folio:</span>
-                  <Field
-                    name="folio"
-                    type="text"
-                    placeholder="Folio"
-                    className="border border-gray-300 rounded p-2 w-24 sm:w-32 text-sm"
-                  />
+              <div className="flex flex-col space-y-4">
+                {/* Folio y Selección */}
+                <div className="flex flex-col sm:flex-row sm:items-center mb-4 space-y-24 sm:space-y-0 sm:space-x-24">
+                  <div className="flex items-center">
+                    <span className="w-24 sm:w-12">Folio:</span>
+                    <Field
+                      name="folio"
+                      type="text"
+                      placeholder="Folio"
+                      className="border border-gray-300 rounded p-2 w-24 sm:w-32 text-sm"
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <label className="flex items-center cursor-pointer">
+                      <Field
+                        //checked={1}
+                        type="radio"
+                        name="tipo"
+                        value="1"
+                        className="mr-1"
+                      />
+                      CEA
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <Field
+                        type="radio"
+                        name="tipo"
+                        value="2"
+                        className="mr-1"
+                      />
+                      SEPROA
+                    </label>
+                  </div>
+                  {touched.tipo && errors.tipo && (
+                    <div className="left-0 top-full mt-1 text-red-600 text-sm">
+                      {errors.tipo}
+                    </div>
+                  )}
+
+                  <div className="flex items-center">
+                    <span className="w-24 sm:w-12">Fecha:</span>
+                    <Field
+                      name="fecha"
+                      type="text"
+                      value={currentDate}
+                      readOnly
+                      className="border border-gray-300 rounded p-2 w-24 sm:w-28 text-sm"
+                    />
+                  </div>
                 </div>
 
-                {/* Selección */}
-                <div className="flex flex-col">
-            <div className="flex items-center space-x-3">
-              <label className="flex items-center cursor-pointer">
-                <Field
-                  type="radio"
-                  name="selection"
-                  value="1" // Valor de "CEA"
-                  className="mr-1"
-                />
-                CEA
-              </label>
-
-              <label className="flex items-center cursor-pointer">
-                <Field
-                  type="radio"
-                  name="selection"
-                  value="2" // Valor de "SEPRA"
-                  className="mr-1"
-                />
-                SEPRA
-              </label>
-            </div>
-            {touched.selection && errors.selection && (
-              <div className="mt-1 text-red-600 text-sm">
-                {errors.selection}
-              </div>
-            )}
-          </div>
-
-
-
-
-                <div className="flex items-center">
-                  <span className="w-24 sm:w-12">Fecha:</span>
-                  <Field
-                    name="fechaCaptura"
-                    type="text"
-                    value={currentDate}
-                    readOnly
-                    className="border border-gray-300 rounded p-2 w-24 sm:w-28 text-sm"
-                  />
+                {/* Número de Oficio y Fechas */}
+                <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
+                  <div className="flex-1 mb-4 sm:mb-0">
+                    <label className="block mb-2">Número de Oficio</label>
+                    <Field
+                      id="noOficio"
+                      name="noOficio"
+                      type="text"
+                      placeholder="Número de oficio"
+                      className="border border-gray-300 rounded p-2 w-full"
+                      onInput={(e: { target: { value: string } }) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, ""); // Solo permite números
+                      }}
+                    />
+                    <ErrorMessage
+                      name="noOficio"
+                      component="div"
+                      className="text-red-600"
+                    />
+                  </div>
+                  <div className="flex-1 mb-4 sm:mb-0">
+                    <label className="block mb-2">Fecha Captura</label>
+                    <Field
+                      name="fechaCaptura"
+                      type="date"
+                      className="border border-gray-300 rounded p-2 w-full"
+                      // value={currentDate}
+                    />
+                    <ErrorMessage
+                      name="fechaCaptura"
+                      component="div"
+                      className="text-red-600"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block mb-2">Fecha Límite</label>
+                    <Field
+                      name="fechaLimite"
+                      type="date"
+                      className="border border-gray-300 rounded p-2 w-full"
+                      //   value={currentDate}
+                    />
+                    {/* <ErrorMessage
+                      name="fechaLimite"
+                      component="div"
+                      className="text-red-600"
+                    /> */}
+                  </div>
                 </div>
-              </div>
 
-              {/* Número de Oficio y Fechas */}
-              <div className="flex flex-col sm:flex-row sm:space-x-4 mb-4">
-                <div className="flex-1 mb-4 sm:mb-0">
-                  <label className="block mb-2">Número de Oficio</label>
-                  <Field
-                    id="numeroOficio"
-                    name="numeroOficio"
-                    type="text"
-                    placeholder="Número de oficio"
-                    className="border border-gray-300 rounded p-2 w-full"
-                    onInput={(e: { target: { value: string; }; }) => {
-                      e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Solo permite números
-                    }}
-                  />
-                  <ErrorMessage name="numeroOficio" component="div" className="text-red-600" />
-                </div>
-                <div className="flex-1 mb-4 sm:mb-0">
-                  <label className="block mb-2">Fecha Captura</label>
-                  <Field
-                    name="fechaCaptura"
-                    type="date"
-                    className="border border-gray-300 rounded p-2 w-full"
-                  />
-                  <ErrorMessage name="fechaCaptura" component="div" className="text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block mb-2">Fecha Límite</label>
-                  <Field
-                    name="fechaLimite"
-                    type="date"
-                    className="border border-gray-300 rounded p-2 w-full"
-                  />
-                  <ErrorMessage name="fechaLimite" component="div" className="text-red-600" />
-                </div>
-              </div>
-
-
-              {/* Contenedor principal con grid de dos columnas */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                {/* Remitente */}
-                <div className="flex flex-col">
-                  {/* Título y botones a la derecha */}
-                  <div className="flex justify-between items-center mb-2">
-                    <label htmlFor="remitenteName" className="block">
+                {/* Externo e Interno */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div className="flex flex-col">
+                    {/* Nombre del Remitente */}
+                    <label className="block mb-2 flex items-center">
                       Nombre del Remitente
+                      <div className="ml-4 flex items-center">
+                        <Field
+                          type="radio"
+                          id="remitenteInterno"
+                          name="remitenteType"
+                          value="1"
+                          className="mr-2"
+                        />
+                        <label
+                          htmlFor="remitenteInterno"
+                          className="cursor-pointer mr-4"
+                        >
+                          Interno
+                        </label>
+
+                        <Field
+                          // checked={true}
+                          type="radio"
+                          id="remitenteExterno"
+                          name="remitenteType"
+                          value="2"
+                          className="mr-2"
+                        />
+                        <label
+                          htmlFor="remitenteExterno"
+                          className="cursor-pointer"
+                        >
+                          Externo
+                        </label>
+                      </div>
                     </label>
-                    <div className="ml-4 flex items-center">
-                      {/* Radio Button Interno */}
+                    {touched.remitenteType && errors.remitenteType && (
+                      <div className="text-red-600">{errors.remitenteType}</div>
+                    )}
+                    <div className="relative">
                       <Field
-                        type="radio"
-                        id="remitenteInterno"
-                        name="remitenteType"
-                        value="Interno"
-                        className="mr-2"
+                        id="remNombre"
+                        name="remNombre"
+                        type="text"
+                        placeholder="Nombre del remitente"
+                        className="border border-gray-300 rounded p-2 w-full"
+                        readOnly
+                        value={values.remNombre}
+                        onClick={() => setShowRemitenteModal(true)}
                       />
-                      <label htmlFor="remitenteInterno" className="cursor-pointer mr-4">
-                        Interno
-                      </label>
-
-                      {/* Radio Button Externo */}
-                      <Field
-                        type="radio"
-                        id="remitenteExterno"
-                        name="remitenteType"
-                        value="Externo"
-                        className="mr-2"
+                      <FaUserPlus
+                        onClick={() => setShowRemitenteModal(true)}
+                        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
                       />
-                      <label htmlFor="remitenteExterno" className="cursor-pointer">
-                        Externo
-                      </label>
                     </div>
-
+                    {touched.remNombre && errors.remNombre && (
+                      <div className="text-red-600">{errors.remNombre}</div>
+                    )}
                   </div>
 
-                  {/* Barra de texto de remitente */}
-                  <div className="relative flex items-center">
-                    <Field
-                      id="remNombre"
-                      name="remNombre"
-                      type="text"
-                      placeholder="Nombre del remitente"
-                      className="border border-gray-300 rounded p-2 w-full"
-                      readOnly
-                      value={values.remNombre}
-                      onClick={() => setShowRemitenteModal(true)}
-                    />
-                    <FaUserPlus
-                      onClick={() => setShowRemitenteModal(true)}
-                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                    />
-                  </div>
+                  <div className="flex flex-col">
+                    {/* Nombre del Destinatario */}
+                    <label className="block mb-2 flex items-center">
+                      Nombre del destinatario
+                      <div className="ml-4 flex items-center">
+                        <Field
+                          type="radio"
+                          id="destinatarioInterno"
+                          name="destinatarioType"
+                          value="1"
+                          className="mr-2"
+                          //  checked={true}
+                        />
+                        <label
+                          htmlFor="destinatarioInterno"
+                          className="cursor-pointer mr-4"
+                        >
+                          Interno
+                        </label>
 
-                  {touched.remNombre && errors.remNombre && (
-                    <div className="text-red-600">{errors.remNombre}</div>
-                  )}
-                </div>
-
-                {/* Destinatario */}
-                <div className="flex flex-col">
-                  {/* Título y botones a la derecha */}
-                  <div className="flex justify-between items-center mb-2">
-                    <label htmlFor="destinatarioName" className="block">
-                      Nombre del Destinatario
+                        <Field
+                          type="radio"
+                          id="destinatarioExterno"
+                          name="destinatarioType"
+                          value="2"
+                          className="mr-2"
+                        />
+                        <label
+                          htmlFor="destinatarioExterno"
+                          className="cursor-pointer"
+                        >
+                          Externo
+                        </label>
+                      </div>
                     </label>
-                    <div className="flex items-center">
-                      {/* Radio Button Interno */}
-                      <Field
-                        type="radio"
-                        id="destinatarioInterno"
-                        name="destinatarioType"
-                        value="Interno"
-                        className="mr-2"
-                      />
-                      <label htmlFor="destinatarioInterno" className="cursor-pointer mr-4">
-                        Interno
-                      </label>
+                    {touched.destinatarioType && errors.destinatarioType && (
+                      <div className="text-red-600">
+                        {errors.destinatarioType}
+                      </div>
+                    )}
 
-                      {/* Radio Button Externo */}
+                    <div className="relative">
                       <Field
-                        type="radio"
-                        id="destinatarioExterno"
-                        name="destinatarioType"
-                        value="Externo"
-                        className="mr-2"
+                        id="destNombre"
+                        name="destNombre"
+                        type="text"
+                        placeholder="Nombre del destinatario"
+                        className="border border-gray-300 rounded p-2 w-full"
+                        readOnly
+                        value={values.destNombre}
+                        onClick={() => setShowDestinatarioModal(true)}
                       />
-                      <label htmlFor="destinatarioExterno" className="cursor-pointer">
-                        Externo
-                      </label>
+                      <FaUserPlus
+                        onClick={() => setShowDestinatarioModal(true)}
+                        className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                      />
+                      {touched.destNombre && errors.destNombre && (
+                        <div className="text-red-600">{errors.destNombre}</div>
+                      )}
                     </div>
                   </div>
 
-                  {touched.destinatarioType && errors.destinatarioType && (
-                    <div className="text-red-600">{errors.destinatarioType}</div>
-                  )}
-
-                  {/* Barra de texto de destinatario */}
-                  <div className="relative flex items-center">
-                    <Field
-                      id="destNombre"
-                      name="destNombre"
-                      type="text"
-                      placeholder="Nombre del destinatario"
-                      className="border border-gray-300 rounded p-2 w-full"
-                      readOnly
-                      value={values.destNombre}
-                      onMouseDown={(e: { preventDefault: () => void; }) => {
-                        // Evitar que el campo reciba el foco si no hay tipo de destinatario
-                        if (!values.destinatarioType) {
-                          e.preventDefault(); // Previene el foco en el campo
-                          alert('Por favor, selecciona primero un tipo de destinatario.');
-                        }
-                      }}
-                      onClick={() => {
-                        if (values.destinatarioType) {
-                          setShowDestinatarioModal(true);
-                        }
-                      }}
-                    />
-                    <FaUserPlus
-                      onClick={() => {
-                        // Solo abrir el modal si se ha seleccionado un tipo de destinatario
-                        if (values.destinatarioType) {
-                          setShowDestinatarioModal(true);
-                        } else {
-                          // Aquí puedes agregar un mensaje si deseas avisar al usuario
-                          alert('Por favor, selecciona primero un tipo de destinatario.');
-                        }
-                      }}
-                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                    />
+                  {/* Nombre del Responsable */}
+                  <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
+                    <div className="flex flex-col sm:w-1/2">
+                      <label className="block mb-2">
+                        Nombre del Responsable
+                      </label>
+                      <div className="relative">
+                        <Field
+                          id="responsableName"
+                          name="responsableName"
+                          type="text"
+                          placeholder="Nombre del responsable"
+                          className="border border-gray-300 rounded p-2 w-full"
+                          readOnly
+                          value={values.responsableName}
+                          onClick={() => setShowResponsableModal(true)}
+                        />
+                        <FaUserPlus
+                          onClick={() => setShowResponsableModal(true)}
+                          className="absolute right-2 top-2 text-gray-400 cursor-pointer"
+                        />
+                      </div>
+                      {values.responsableName === "" && (
+                        <ErrorMessage
+                          name="responsableName"
+                          component="div"
+                          className="text-red-600"
+                        />
+                      )}
+                    </div>
                   </div>
-
-                  {touched.destNombre && errors.destNombre && (
-                    <div className="text-red-600">{errors.destNombre}</div>
-                  )}
                 </div>
-              </div>
 
-
-              {/* Responsable */}
-              <div className="flex flex-col sm:col-span-2 sm:flex-row justify-end">
-                <div className="flex flex-col sm:w-1/2">
-                  <label htmlFor="responsableName" className="block mb-2">
-                    Nombre del Responsable
-                  </label>
-                  <div className="relative">
-                    <Field
-                      id="responsableName"
-                      name="responsableName"
-                      type="text"
-                      placeholder="Nombre del responsable"
-                      className="border border-gray-300 rounded p-2 w-full"
-                      readOnly
-                      value={values.responsableName}
-                      onClick={() => setShowResponsableModal(true)}
-                    />
-                    <FaUserPlus
-                      onClick={() => setShowResponsableModal(true)}
-                      className="absolute right-2 top-2 text-gray-400 cursor-pointer"
-                    />
-                  </div>
-                  {values.responsableName === '' && (
-                    <ErrorMessage name="responsableName" component="div" className="text-red-600" />
-                  )}
+                {/* Tema */}
+                <div className="flex mb-4">
+                  <Field
+                    name="tema"
+                    type="text"
+                    placeholder="Tema"
+                    className="border border-gray-300 rounded p-2 w-full text-sm"
+                  />
+                  <ErrorMessage
+                    name="tema"
+                    component="div"
+                    className="text-red-600"
+                  />
                 </div>
+
+                {/* Observaciones */}
+                <div className="mb-4">
+                  <label className="block mb-2">Observaciones</label>
+                  <Field
+                    as="textarea"
+                    id="observaciones"
+                    name="observaciones"
+                    placeholder="Observaciones"
+                    className="border border-gray-300 rounded p-2 w-full h-24"
+                  />
+                  <ErrorMessage
+                    name="observaciones"
+                    component="div"
+                    className="text-red-600"
+                  />
+                </div>
+
+                {/* Adjuntar Archivo */}
+<div className="flex items-center mb-4">
+  <input
+    id="pdfpath"
+    name="archivo"  // Cambiar a archivo para que sea capturado correctamente
+    type="file"
+    accept=".pdf"
+    onChange={(event) => {
+      if (event.currentTarget.files) {
+        const file = event.currentTarget.files[0];
+        
+        // Validación de tipo de archivo
+        if (file && file.type !== 'application/pdf') {
+          alert("Por favor, sube un archivo PDF."); // Mensaje de alerta para el usuario
+          return;
+        }
+
+        setFieldValue("archivo", file);  // Almacenar archivo en values.archivo
+      }
+    }}
+    className="border border-gray-300 rounded p-2 w-full"
+  />
+  <ErrorMessage
+    name="archivo"
+    component="div"
+    className="text-red-600"
+  />
+</div>
               </div>
 
-              {/* Tema y Observaciones */}
-              <div className="flex flex-col mb-4">
-                <label className="block mb-2">Tema</label>
-                <Field
-                  name="tema"
-                  type="text"
-                  placeholder="Tema"
-                  className="border border-gray-300 rounded p-2 w-full text-sm"
-                />
-                <ErrorMessage name="tema" component="div" className="text-red-600" />
-              </div>
-
-              <div className="flex flex-col mb-4">
-                <label className="block mb-2">Observaciones</label>
-                <Field
-                  as="textarea"
-                  name="observaciones"
-                  placeholder="Observaciones"
-                  rows={textareaRows}
-                  onFocus={() => setTextareaRows(5)}
-                  onBlur={() => setTextareaRows(3)}
-                  className="border border-gray-300 rounded p-2 w-full"
-                />
-                <ErrorMessage name="observaciones" component="div" className="text-red-600" />
-              </div>
-
-              {/* Archivo */}
-              <div className="mb-4">
-                <input
-                  id="archivo"
-                  name="archivo"
-                  type="file"
-                  onChange={(event) => {
-                    if (event.currentTarget.files) {
-                      setFieldValue('archivo', event.currentTarget.files[0]);
-                    }
-                  }}
-                  className="border border-gray-300 rounded p-2 w-full"
-                />
-                <ErrorMessage name="archivo" component="div" className="text-red-600" />
-              </div>
-
-              {/* Botones */}
-              <div className="flex justify-end space-x-4">
+              <div className="flex justify-end space-x-4 mt-4">
                 <button
-                  type="button"
                   onClick={onClose}
                   className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
                 >
@@ -537,68 +588,126 @@ export default function ModalOficio({
                 >
                   Guardar
                 </button>
+                {/* <h1>Remitentes: {values.remitenteType}</h1>
+                <h1>Destinatario: {values.destinatarioType}</h1> */}
               </div>
+
+              {showDestinatarioModal && (
+                <ModalDestinatario
+                  isOpen={showDestinatarioModal}
+                  onClose={() => setShowDestinatarioModal(false)}
+                  onSave={(datosEmpleados) => {
+                    const datosDestinatario = {
+                      nombre:
+                        "nombreCompleto" in datosEmpleados
+                          ? datosEmpleados.nombreCompleto
+                          : datosEmpleados.nombre,
+                      departamento:
+                        "descripcionDepto" in datosEmpleados
+                          ? datosEmpleados.descripcionDepto
+                          : datosEmpleados.empresa,
+                      siglas:
+                        "siglas" in datosEmpleados ? datosEmpleados.siglas : "",
+                      puesto:
+                        "descripcionPuesto" in datosEmpleados
+                          ? datosEmpleados.descripcionPuesto
+                          : datosEmpleados.cargo,
+                      deptoComi: datosEmpleados.deptoComi || "", // Aseguramos que deptoComi esté asignado
+                    };
+
+                    // Asigna los datos completos en los campos de Formik
+                    setFieldValue("destNombre", datosDestinatario.nombre);
+                    setFieldValue("destDepen", datosDestinatario.departamento);
+                    setFieldValue("destSiglas", datosDestinatario.siglas);
+                    setFieldValue("destCargo", datosDestinatario.puesto);
+                    setFieldValue("depto", datosDestinatario.deptoComi); // Asigna deptoComi a depto
+
+                    // Si el destinatario es interno, asigna deptoComi también al responsable
+                    if (values.destinatarioType === "1") {
+                      setFieldValue(
+                        "responsableName",
+                        datosDestinatario.nombre
+                      );
+                      setFieldValue("deptoRespon", datosDestinatario.deptoComi); // Asigna deptoComi a deptoRespon
+                    }
+
+                    setShowDestinatarioModal(false);
+                  }}
+                  tipo={values.tipo.toString()}
+                  tipoDestinatario={values.destinatarioType || "1"}
+                  remitentes={remitentes}
+                  datosEmpleados={datosEmpleados}
+                />
+              )}
+              {showRemitenteModal && (
+                <ModalRemitente
+                  isOpen={showRemitenteModal}
+                  onClose={() => setShowRemitenteModal(false)}
+                  onSave={(remitente) => {
+                    const datosRemitente = {
+                      nombre:
+                        "nombreCompleto" in remitente
+                          ? remitente.nombreCompleto
+                          : remitente.nombre,
+                      departamento:
+                        "descripcionDepto" in remitente
+                          ? remitente.descripcionDepto
+                          : remitente.empresa,
+                      siglas: "siglas" in remitente ? remitente.siglas : "",
+                      puesto:
+                        "descripcionPuesto" in remitente
+                          ? remitente.descripcionPuesto
+                          : remitente.cargo,
+                    };
+
+                    setFieldValue("remNombre", datosRemitente.nombre);
+                    setFieldValue("remDepen", datosRemitente.departamento);
+                    setFieldValue("remSiglas", datosRemitente.siglas);
+                    setFieldValue("remCargo", datosRemitente.puesto);
+
+                    setShowRemitenteModal(false);
+                  }}
+                  tipo={values.tipo.toString()} // Añadimos la propiedad `tipo` aquí
+                  tipoRemitente={values.remitenteType || "1"} // Asegúrate de que este valor esté definido correctamente
+                  remitentes={remitentes}
+                  empleados={datosEmpleados}
+                />
+              )}
+
+              {showResponsableModal && (
+                <ModalResponsable
+                  isOpen={showResponsableModal}
+                  onClose={() => setShowResponsableModal(false)}
+                  onSave={(datosEmpleados) => {
+                    const datosResponsable = {
+                      nombreCompleto: datosEmpleados.nombreCompleto,
+                      deptoComi: datosEmpleados.deptoComi || "", // Aseguramos que deptoComi esté asignado
+                    };
+
+                    // Asigna los datos del responsable al campo correspondiente
+                    setResponsableName(datosResponsable.nombreCompleto);
+                    setFieldValue(
+                      "responsableName",
+                      datosResponsable.nombreCompleto
+                    );
+                    setFieldValue("deptoRespon", datosResponsable.deptoComi); // Asigna deptoComi a deptoRespon
+
+                    // Si el destinatario es externo, asigna deptoComi también al destinatario
+                    if (values.destinatarioType === "2") {
+                      setFieldValue(
+                        "destNombre",
+                        datosResponsable.nombreCompleto
+                      );
+                      setFieldValue("depto", datosResponsable.deptoComi); // Asigna deptoComi a depto
+                    }
+
+                    setShowResponsableModal(false);
+                  }}
+                  tipo={values.tipo.toString()}
+                  datosEmpleados={datosEmpleados}
+                />
+              )}
             </div>
-
-            {/* Modales */}
-            {showDestinatarioModal && (
-              <ModalDestinatario
-                isOpen={showDestinatarioModal}
-                onClose={() => setShowDestinatarioModal(false)}
-                datosEmpleados={datosEmpleados}
-                datosUsuariosExt={usuariosExternos}
-                destinatarioType={values.destinatarioType}
-                onSave={(values) => {
-                  setdestNombre(values.nombre);
-                  setdestDepen(values.destDepen);
-                  setdestCargo(values.destCargo);
-                  setdestSiglas(values.destSiglas);
-
-                  setShowDestinatarioModal(false);
-                  setFieldValue('destNombre', values.nombre);
-                  setFieldValue('destDepen', values.destDepen);
-                  setFieldValue('destCargo', values.destCargo);
-                  setFieldValue('destSiglas', values.destSiglas);
-                }}
-              />
-            )}
-
-
-
-
-            {showRemitenteModal && (
-              <ModalRemitente
-                isOpen={showRemitenteModal}
-                onClose={() => setShowRemitenteModal(false)}
-                datosEmpleados={datosEmpleados}
-                datosUsuariosExt={usuariosExternos}
-                remitenteType={values.remitenteType}
-                onSave={(values) => {
-                  setremNombre(values.nombre);
-                  setremDepen(values.remDepen);
-                  setremCargo(values.remCargo);
-                  setremsiglas(values.remSiglas);
-                  setShowDestinatarioModal(false);
-                  setFieldValue('remNombre', values.nombre);
-                  setFieldValue('remDepen', values.remDepen);
-                  setFieldValue('remCargo', values.remCargo);
-                  setFieldValue('remsiglas', values.remSiglas);         
-                }}
-                  />
-            )}
-
-            {showResponsableModal && (
-              <ModalResponsable
-                isOpen={showResponsableModal}
-                onClose={() => setShowResponsableModal(false)}
-                onSave={(name: string) => {
-                  setResponsableName(name);
-                  setShowResponsableModal(false);
-                  setFieldValue('responsableName', name);
-                }}
-                datosEmpleados={datosEmpleados}
-              />
-            )}
           </div>
         </Form>
       )}

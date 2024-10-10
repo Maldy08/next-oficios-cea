@@ -1,17 +1,15 @@
-import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import TableComponente from '../../oficios-expedidos/components/tablecomponente';
-import { useModal } from '../../oficios-expedidos/Hooks/useModal';
-import * as Yup from 'yup';
-import { useFormik } from 'formik';
-import { OficioUsuExterno } from '@/app/domain/entities';
+import { FC, useState, useEffect } from "react";
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import axios from "axios";
+import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
+import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
 
-interface Empleado {
+interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number;
-  destSiglas: string;
+  idExterno: number;
+  deptoComi: number;
 }
 
 interface Remitente {
@@ -19,127 +17,107 @@ interface Remitente {
   empresa: string;
   cargo: string;
   siglas: string;
+  deptoComi: number;
 }
 
 interface ModalDestinatarioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (values: { nombre: string; destDepen: string; destCargo: string; destSiglas: string}) => void;
-  datosEmpleados: Empleado[];
-  datosUsuariosExt: OficioUsuExterno[];
-  destinatarioType: string;
+  onSave: (remitente: Remitente | Empleados) => void;
+  datosEmpleados: Empleados[];
+  remitentes: Remitente[];
+  tipoDestinatario: string;
+  tipo: string;
 }
 
-const columnsInterno = ['Nombre Completo', 'Departamento', 'Puesto'];
-const columnsExterno = ['Nombre', 'Empresa', 'Cargo', 'Siglas'];
-
-const accessor = (item: Empleado | Remitente, column: string) => {
-  const isEmpleado = 'nombreCompleto' in item;
-
-  switch (column) {
-    case 'Nombre':
-      return isEmpleado ? item.nombreCompleto : item.nombre;
-    
-    case 'Nombre Completo':
-      return isEmpleado ? item.nombreCompleto : '';
-    
-    case 'Empresa':
-      return !isEmpleado ? item.empresa : item.descripcionDepto;
-    
-    case 'Cargo':
-      return !isEmpleado ? item.cargo : item.descripcionPuesto;
-    
-    case 'Siglas':
-      return !isEmpleado ? item.siglas : '';
-    
-    default:
-      return '';
-  }
-};
-
-// Esquema de validación con Yup
-const validationSchema = Yup.object().shape({
-  selectedDestinatario: Yup.string().required('Debes seleccionar un destinatario'),
-  tipoDestinatario: Yup.string().required('Debes seleccionar el tipo de destinatario'),
-});
-
 const ModalDestinatario = (props: ModalDestinatarioProps) => {
-  const [error, setError] = useState<string | null>(null);
+  const data =
+    props.tipoDestinatario === "1" ? props.datosEmpleados : props.remitentes;
 
-  // Inicialización de formik
-  const formik = useFormik({
-    initialValues: {
-      selectedDestinatario: '',
-      tipoDestinatario: '',
-    },
-    validationSchema,
-    onSubmit: () => {
-      // Implementación de la función de submit
-    },
+  const {
+    searchTerm,
+    setSearchTerm,
+    paginatedData,
+    currentPage,
+    setCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    totalPages,
+    selectedItem,
+    handleRowClick,
+  } = useModalOficioR1({
+    data,
+    columnsToFilter:
+      props.tipoDestinatario === "1"
+        ? ["nombreCompleto", "descripcionDepto", "descripcionPuesto"]
+        : ["nombre", "empresa", "siglas", "cargo"],
+    onClose: props.onClose,
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
 
-  // Definir las columnas dinámicamente dentro del componente
-  const columns = props.destinatarioType === 'interno' ? columnsInterno : columnsExterno;
-
-  const { searchTerm, setSearchTerm } = useModal({
-    data: props.datosEmpleados,
-    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
-  });
-
-  // Función para manejar la selección de destinatario
-  const handleRowClick = (rowData: Empleado | OficioUsuExterno) => {
-    const nombreCompleto = 'nombreCompleto' in rowData ? rowData.nombreCompleto : rowData.nombre; // Obtener nombre del destinatario
-    formik.setFieldValue('selectedDestinatario', nombreCompleto);
-    setError(null);
-  };
-
-  // Función para guardar el destinatario
-  const handleSave = () => {
-    const { selectedDestinatario } = formik.values;
-
-    if (!selectedDestinatario) {
-      setError('Debes seleccionar un destinatario');
-      return;
-    }
-
-    // Busca en empleados internos
-    const empleado = props.datosEmpleados.find(emp => emp.nombreCompleto === selectedDestinatario);
-
-    // Busca en usuarios externos si no es un empleado
-    const usuarioExterno = props.datosUsuariosExt.find(user => user.nombre === selectedDestinatario);
-
-    if (empleado) {
-      // Guardar destinatario empleado
-      console.log('Guardando empleado:', empleado);
-      props.onSave({
-        nombre: empleado.nombreCompleto,
-        destDepen: empleado.descripcionDepto,
-        destCargo: empleado.descripcionPuesto,
-        destSiglas: empleado.destSiglas,
-      });
-    } else if (usuarioExterno) {
-      // Guardar destinatario usuario externo
-      console.log('Guardando usuario externo:', usuarioExterno);
-      props.onSave({
-        nombre: usuarioExterno.nombre,
-        destDepen: usuarioExterno.empresa,
-        destCargo: usuarioExterno.cargo,
-        destSiglas: usuarioExterno.siglas,
-      });
-    } else {
-      setError('No se encontró el destinatario seleccionado');
-    }
-  };
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Remitente | Empleados) =>
+        "nombreCompleto" in row ? row.nombreCompleto : row.nombre,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Remitente | Empleados) => {
+        if (props.tipoDestinatario === "1") {
+          // Interno
+          if (props.tipo === "1") {
+            return "COMISION ESTATAL DEL AGUA";
+          } else if (props.tipo === "2") {
+            return "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+        }
+        // Externo
+        return "empresa" in row ? row.empresa : row.descripcionDepto;
+      },
+    },
+    {
+      header: "Siglas",
+      accessor: (row: Remitente | Empleados) => {
+        if (props.tipoDestinatario === "1") {
+          // Interno
+          return props.tipo === "1" ? "CEA" : "SEPROA";
+        }
+        // Externo
+        return "siglas" in row ? row.siglas : "";
+      },
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Remitente | Empleados) =>
+        "descripcionPuesto" in row ? row.descripcionPuesto : row.cargo,
+    },
+  ];
 
   if (!props.isOpen) return null;
 
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
+    }
+  }
+
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Destinatario</h2>
-
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Personal Interno
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -152,36 +130,29 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
-        <TableComponente<Empleado | OficioUsuExterno>
-  data={props.destinatarioType.toLowerCase() === 'interno' ? props.datosEmpleados : props.datosUsuariosExt}
-  columns={columns}
-  accessor={accessor}
-  onRowClick={(nombre: string, depto: string) => {
-    formik.setFieldValue('selectedDestinatario', nombre);
-    setError(null);
-  }}
-  columnKeyForRowClick={props.destinatarioType === 'interno' ? 'Nombre Completo' : 'Nombre'} // Cambia esto según el tipo de destinatario
-  searchTerm={searchTerm}
-/>
-
-
-        </div>
-
-        {error && <div className="text-red-500">{error}</div>}
+        <TableComponentModales<Empleados | Remitente>
+          data={paginatedData}
+          columns={columns}
+          onRowClick={handleRowClick}
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setRowsPerPage={setRowsPerPage}
+        ></TableComponentModales>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
             type="button"
             onClick={props.onClose}
-            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+            className="bg-[#641c34] text-white py-2 px-4 rounded"
           >
             Cancelar
           </button>
           <button
             type="button"
-            onClick={handleSave}
-            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+            onClick={onSave}
+            className="bg-[#993233] text-white py-2 px-4 rounded"
           >
             Guardar
           </button>

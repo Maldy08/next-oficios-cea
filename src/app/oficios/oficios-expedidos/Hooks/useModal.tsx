@@ -5,11 +5,15 @@ import { useState, useEffect } from "react";
 interface UseModalParams<T> {
   data: T[];
   columnsToFilter: (keyof T)[];
+  onClose: () => void;
+  onSave: (item: T) => void; // Cambiado de (name: string) => void a (item: T) => void
 }
 
 export function useModal<T extends Record<string, any>>({
   data,
-  columnsToFilter
+  columnsToFilter,
+  onClose,
+  onSave,
 }: UseModalParams<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -17,16 +21,15 @@ export function useModal<T extends Record<string, any>>({
   const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
   // Filtrado de datos
-  const filteredData = (data || []).filter(item =>
-    columnsToFilter.some(column =>
+  const filteredData = (data || []).filter((item) =>
+    columnsToFilter.some((column) =>
       String(item[column]).toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
-  
 
   // Paginación
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  
+
   const paginatedData = filteredData.slice(
     currentPage * rowsPerPage,
     (currentPage + 1) * rowsPerPage
@@ -47,7 +50,13 @@ export function useModal<T extends Record<string, any>>({
     }
   };
 
+  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(
+    null
+  );
+
   return {
+    setSelectedRemitente,
+    selectedRemitente,
     searchTerm,
     setSearchTerm,
     paginatedData,
@@ -59,6 +68,6 @@ export function useModal<T extends Record<string, any>>({
     selectedItem,
     setSelectedItem,
     handleRowClick,
-    handleSave
+    handleSave,
   };
 }

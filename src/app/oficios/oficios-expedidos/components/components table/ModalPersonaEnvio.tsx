@@ -2,70 +2,80 @@
 
 import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import TableComponente from '../../components/tablecomponente';
-import { useModal } from '../../Hooks/useModal';
+import axios from "axios";
+import TableComponentModales from "../TablecomponentModales";
+import { useModal } from "../../Hooks/useModal";
 
-interface Empleado {
+interface ModalPersonaEnvioProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (datosEmpleados: Empleados) => void;
+  datosEmpleados: Empleados[];
+}
+
+interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
 }
 
-interface ModalPersonaEnvioProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (name: string) => void;
-  datosEmpleados: Empleado[];
-}
-
-const columns = ['Nombre Completo', 'Departamento', 'Puesto'];
-
-const accessor = (item: Empleado, column: string) => {
-  switch (column) {
-    case 'Nombre Completo':
-      return item.nombreCompleto;
-    case 'Departamento':
-      return item.descripcionDepto;
-    case 'Puesto':
-      return item.descripcionPuesto;
-    default:
-      return '';
-  }
-};
-
 const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
   const {
     searchTerm,
+    handleRowClick,
     setSearchTerm,
     paginatedData,
     currentPage,
     setCurrentPage,
     rowsPerPage,
     setRowsPerPage,
-    totalPages
+    totalPages,
+    selectedItem,
   } = useModal({
     data: props.datosEmpleados,
-    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto']
+    columnsToFilter: [
+      "nombreCompleto",
+      "descripcionDepto",
+      "descripcionPuesto",
+    ],
+    onClose: props.onClose,
+    onSave: props.onSave,
   });
-
-  const [selectedPersona, setSelectedPersona] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   if (!props.isOpen) return null;
 
-  const handleSave = () => {
-    if (!selectedPersona) {
-      setError('Debes seleccionar una persona');
-    } else {
-      props.onSave(selectedPersona);
-      props.onClose();
-      setError(null); // Limpiar error si se guarda correctamente
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
-  };
+  }
+
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Empleados) => row.nombreCompleto,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Empleados) => row.descripcionDepto,
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Empleados) => row.descripcionPuesto,
+    },
+  ];
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Persona de Envío</h2>
@@ -81,23 +91,16 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
-          <TableComponente<Empleado>
-            data={props.datosEmpleados}
-            columns={columns}
-            accessor={accessor}
-            onRowClick={(nombreCompleto) => {
-              setSelectedPersona(nombreCompleto);
-              setError(null); // Limpiar error al seleccionar una persona
-            }}
-            columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}
-          />
-        </div>
-
-        {error && <div className="text-red-500">{error}</div>}
-
-        
+        <TableComponentModales<Empleados>
+          data={paginatedData}
+          columns={columns}
+          onRowClick={handleRowClick}
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setRowsPerPage={setRowsPerPage}
+        ></TableComponentModales>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
@@ -109,7 +112,7 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={onSave}
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar

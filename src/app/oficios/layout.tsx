@@ -10,7 +10,7 @@ export default async function OficiosLayout({
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect('/api/auth/signin');
+    redirect("/api/auth/signin");
   }
 
   return (

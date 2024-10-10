@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import TableComponente from '../components/tablecomponente';
+import { useModal } from "../Hooks/useModal";
+import TableComponentModales from "./TablecomponentModales";
 
 interface Remitente {
   nombre: string;
@@ -11,69 +10,72 @@ interface Remitente {
 }
 
 interface Props {
+  remitentes: Remitente[];
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
-  remitentes: Remitente[];
+  onSave: (remitente: Remitente) => void; // Cambiamos a tipo 'Remitente'
 }
 
-const columns = [
-  'Nombre',
-  'Empresa',
-  'Cargo'
-];
-
-const accessor = (item: Remitente, column: string) => {
-  switch (column) {
-    case 'Nombre':
-      return item.nombre;
-    case 'Empresa':
-      return item.empresa;
-    case 'Cargo':
-      return item.cargo;
-    default:
-      return '';
-  }
-};
-
-// Definimos el esquema de validación de Yup
-const validationSchema = Yup.object().shape({
-  selectedRemitente: Yup.string().required('Debes seleccionar un remitente'),
-});
-
 const ModalRemitenteEnvio = (props: Props) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-
-  // Configuramos Formik
-  const formik = useFormik({
-    initialValues: {
-      selectedRemitente: '',
-    },
-    validationSchema,
-    onSubmit: (values) => {
-      // Este método no se usa porque el botón es de tipo button
-    },
+  const {
+    searchTerm,
+    setSearchTerm,
+    paginatedData,
+    currentPage,
+    setCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    totalPages,
+    handleRowClick,
+    selectedItem, // Aquí obtenemos el item seleccionado, que es de tipo Remitente
+  } = useModal({
+    data: props.remitentes,
+    columnsToFilter: ["nombre", "empresa", "cargo"],
+    onClose: props.onClose,
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
 
-  const handleSave = () => {
-    if (!formik.values.selectedRemitente) {
-      setError('Debes seleccionar un remitente');
-    } else {
-      props.onSave(formik.values.selectedRemitente);
-      props.onClose();
-      setError(null); // Limpiar error si se guarda correctamente
+  // Definir columnas de la tabla
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Remitente) => row.nombre,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Remitente) => row.empresa,
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Remitente) => row.cargo,
+    },
+  ];
+
+  // Función para guardar el remitente seleccionado y cerrar el modal
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
-  };
+  }
 
   if (!props.isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? "block" : "hidden"}`}>
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Remitente</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Seleccionar Remitente
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
@@ -86,21 +88,16 @@ const ModalRemitenteEnvio = (props: Props) => {
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
-          <TableComponente<Remitente>
-            data={props.remitentes}
-            columns={columns}
-            accessor={accessor}
-            onRowClick={(nombre) => {
-              formik.setFieldValue('selectedRemitente', nombre);
-              setError(null); // Limpiar error al seleccionar un remitente
-            }}
-            columnKeyForRowClick="Nombre"
-            searchTerm={searchTerm}
-          />
-        </div>
-
-        {error && <div className="text-red-500">{error}</div>}
+        <TableComponentModales<Remitente>
+          data={paginatedData}
+          columns={columns}
+          onRowClick={handleRowClick}
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setRowsPerPage={setRowsPerPage}
+        ></TableComponentModales>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
@@ -112,7 +109,7 @@ const ModalRemitenteEnvio = (props: Props) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={onSave} // Guardar el remitente seleccionado
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar

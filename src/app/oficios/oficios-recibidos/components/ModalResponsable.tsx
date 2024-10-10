@@ -1,83 +1,81 @@
-import { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
-import { useModal } from '../../oficios-expedidos/Hooks/useModal';  // Asegúrate de que el hook esté en el lugar correcto
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import TableComponente from '../../oficios-expedidos/components/tablecomponente';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
+import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
 
-interface Empleado {
+interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idPue: number;
+  deptoComi: number;
 }
 
 interface ModalResponsableProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
-  datosEmpleados: Empleado[];
+  onSave: (datosEmpleados: Empleados) => void;
+  datosEmpleados: Empleados[];
+  tipo: string;
 }
-
-const columns = ['Nombre Completo', 'Departamento', 'Puesto'];
-
-const accessor = (item: Empleado, column: string) => {
-  switch (column) {
-    case 'Nombre Completo':
-      return item.nombreCompleto;
-    case 'Departamento':
-      return item.descripcionDepto;
-    case 'Puesto':
-      return item.descripcionPuesto;
-    default:
-      return '';
-  }
-};
-
-// Esquema de validación con Yup
-const validationSchema = Yup.object().shape({
-  selectedResponsable: Yup.string().required('Debes seleccionar un responsable'),
-});
 
 const ModalResponsable = (props: ModalResponsableProps) => {
   const {
     searchTerm,
     setSearchTerm,
-    paginatedData, // Datos paginados desde el hook
+    paginatedData,
     currentPage,
     setCurrentPage,
     rowsPerPage,
     setRowsPerPage,
     totalPages,
-  } = useModal({
+    selectedItem,
+    handleRowClick,
+  } = useModalOficioR1({
     data: props.datosEmpleados,
-    columnsToFilter: ['nombreCompleto', 'descripcionDepto', 'descripcionPuesto'],
+    columnsToFilter: [
+      "nombreCompleto",
+      "descripcionDepto",
+      "descripcionPuesto",
+      "deptoComi",
+    ],
+    onClose: props.onClose,
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
 
-  const [error, setError] = useState<string | null>(null);
+  const departamento =
+    props.tipo === "1"
+      ? "COMISION ESTATAL DEL AGUA"
+      : "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+  const siglas = props.tipo === "1" ? "CEA" : "SEPROA";
 
-  // Configuración de Formik
-  const formik = useFormik({
-    initialValues: {
-      selectedResponsable: '',
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Empleados) => row.nombreCompleto,
     },
-    validationSchema,
-    onSubmit: (values) => {
-      // No se usa directamente ya que se maneja con el botón de guardado
+    {
+      header: "Departamento",
+      accessor: () => departamento, // Muestra siempre el departamento seleccionado
     },
-  });
+    {
+      header: "Siglas",
+      accessor: () => siglas, // Muestra siempre las siglas seleccionadas
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Empleados) => row.descripcionPuesto,
+    },
+  ];
 
   if (!props.isOpen) return null;
 
-  const handleSave = () => {
-    if (!formik.values.selectedResponsable) {
-      setError('Debes seleccionar un responsable');
-    } else {
-      props.onSave(formik.values.selectedResponsable);
-      props.onClose();
-      setError(null); // Limpiar error si se guarda correctamente
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
-  };
+  }
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
@@ -96,22 +94,16 @@ const ModalResponsable = (props: ModalResponsableProps) => {
             <FaSearch className="absolute right-2 top-2 text-gray-400 cursor-pointer" />
           </div>
         </div>
-
-        <div className="flex-grow overflow-auto">
-          <TableComponente<Empleado>
-            data={props.datosEmpleados}  
-            columns={columns}
-            accessor={accessor}
-            onRowClick={(nombreCompleto) => {
-              formik.setFieldValue('selectedResponsable', nombreCompleto);
-              setError(null); // Limpiar error al seleccionar un destinatario
-            }}
-            columnKeyForRowClick="Nombre Completo"
-            searchTerm={searchTerm}
-          />
-        </div>
-
-        {error && <div className="text-red-500">{error}</div>}
+        <TableComponentModales<Empleados>
+          data={paginatedData}
+          columns={columns}
+          onRowClick={handleRowClick}
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setRowsPerPage={setRowsPerPage}
+        ></TableComponentModales>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
@@ -123,8 +115,8 @@ const ModalResponsable = (props: ModalResponsableProps) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
-            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+            onClick={onSave}
+            className="bg-[#993233] text-white py-2 px-4 rounded"
           >
             Guardar
           </button>
