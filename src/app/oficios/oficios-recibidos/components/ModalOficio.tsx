@@ -128,9 +128,9 @@ export default function ModalOficio({
         destinatarioType: destinatarioType || "2",
         remitenteType: remitenteType || "1",
 
-        oficioResponsable: [{ empleado: 0 }],
-        empleado: 0,
+        idEmpleado: 0,
         rol: 0,
+        oficioResponsable: [{ idEmpleado: 0, rol: 0 }],
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -218,13 +218,15 @@ export default function ModalOficio({
 
             oficioResponsable: [
               {
-                empleado: values.empleado,
-                rol: 1,
+                IdEmpleado: values.idEmpleado,
+                rol: "1",
               },
             ],
           };
           console.log("AQUI JSON");
           console.log(objetoOficio);
+          console.log("Arreglo");
+          console.log(objetoOficio.oficioResponsable);
 
           // Enviar el objeto a la API
           try {
@@ -636,7 +638,6 @@ export default function ModalOficio({
                     setFieldValue("destSiglas", datosDestinatario.siglas);
                     setFieldValue("destCargo", datosDestinatario.puesto);
                     setFieldValue("depto", datosDestinatario.deptoComi); // Asigna deptoComi a depto
-                    setFieldValue("empleado", datosDestinatario.empleado);
                     // Si el destinatario es interno, asigna deptoComi también al responsable
 
                     if (values.destinatarioType === "1") {
@@ -644,7 +645,9 @@ export default function ModalOficio({
                         "responsableName",
                         datosDestinatario.nombre
                       );
+
                       setFieldValue("deptoRespon", datosDestinatario.deptoComi); // Asigna deptoComi a deptoRespon
+                      setFieldValue("idEmpleado", datosDestinatario.empleado);
 
                       console.log("entro a destinatario11111");
                     }
@@ -699,7 +702,8 @@ export default function ModalOficio({
                   onSave={(datosEmpleados) => {
                     const datosResponsable = {
                       nombreCompleto: datosEmpleados.nombreCompleto,
-                      deptoComi: datosEmpleados.deptoComi || "", // Aseguramos que deptoComi esté asignado
+                      deptoComi: datosEmpleados.deptoComi, // Aseguramos que deptoComi esté asignado
+                      empleado: datosEmpleados.empleado,
                     };
 
                     // Asigna los datos del responsable al campo correspondiente
@@ -708,6 +712,8 @@ export default function ModalOficio({
                       "responsableName",
                       datosResponsable.nombreCompleto
                     );
+                    setFieldValue("idEmpleado", datosResponsable.empleado);
+
                     setFieldValue("deptoRespon", datosResponsable.deptoComi); // Asigna deptoComi a deptoRespon
 
                     // Si el destinatario es externo, asigna deptoComi también al destinatario
