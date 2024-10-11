@@ -130,7 +130,13 @@ export default function ModalOficio({
 
         idEmpleado: 0,
         rol: 0,
-        oficioResponsables: [{ idEmpleado: 0, rol: 0 }],
+        id: 0,
+        ejercicio: 4,
+        eor: 0,
+        iox: 8,
+        oficioResponsables: [
+          { idEmpleado: 0, rol: 0, id: 0, ejercicio: 0, eor: 0, iox: 0 },
+        ],
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -221,9 +227,9 @@ export default function ModalOficio({
                 id: 0,
                 idEmpleado: values.idEmpleado,
                 rol: 1,
-                folio: 4,
-                ejercicio: 4,
-                eor: 0,
+                folio: values.folio,
+                ejercicio: 2024,
+                eor: 1,
                 iox: 8,
               },
             ],
