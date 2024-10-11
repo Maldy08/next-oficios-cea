@@ -8,7 +8,7 @@ interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idExterno: number;
+  empleado: number;
   deptoComi: number;
 }
 
@@ -18,6 +18,7 @@ interface Remitente {
   cargo: string;
   siglas: string;
   deptoComi: number;
+  empleado: number;
 }
 
 interface ModalDestinatarioProps {

@@ -19,7 +19,7 @@ interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  idExterno: number;
+  empleado: number;
   deptoComi: number;
 }
 
@@ -29,6 +29,7 @@ interface remitentes {
   cargo: string;
   siglas: string;
   deptoComi: number;
+  empleado: number;
 }
 
 export default function ModalOficio({
@@ -39,7 +40,6 @@ export default function ModalOficio({
   remitentes,
 }: ModalOficioProps) {
   const {
-    // Son todos los yup el Validation Schema
     validationSchema,
     remitenteType,
     setRemitenteType,
@@ -102,7 +102,7 @@ export default function ModalOficio({
         noOficio: "",
         observaciones: "",
         pdfpath: null,
-        archivo: "",
+        archivo: null,
 
         tema: "",
         estatus: 0,
@@ -127,6 +127,9 @@ export default function ModalOficio({
 
         destinatarioType: destinatarioType || "2",
         remitenteType: remitenteType || "1",
+
+        oficioResponsable: [{ empleado: 0 }],
+        empleado: 0,
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -177,7 +180,6 @@ export default function ModalOficio({
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
 
-          oo;
           const objetoOficio = {
             ejercicio: 2024,
             folio: values.folio,
@@ -187,7 +189,6 @@ export default function ModalOficio({
             tipo: values.tipo,
             // Revisar el tipo
 
-            archivo: values.archivo,
             noOficio: values.noOficio,
             pdfpath: null,
             fecha: currentDate,
@@ -212,30 +213,35 @@ export default function ModalOficio({
 
             depto: values.depto,
             deptoRespon: values.deptoRespon,
+            archivo: values.archivo,
+
+            oficioResponsable: [
+              {
+                empleado: values.empleado,
+              },
+            ],
           };
-
-          // Crear un objeto FormData para enviar el archivo y el JSON
-          const formData = new FormData();
-          formData.append("datos", JSON.stringify(objetoOficio)); // Agregar el JSON convertido a string
-
-          // Agregar el archivo PDF si está presente
-          if (values.archivo) {
-            formData.append("archivo", values.archivo); // Agregar el archivo PDF
-          }
-
           console.log("AQUI JSON");
           console.log(objetoOficio);
 
           // Enviar el objeto a la API
           try {
+            const formData = new FormData(); // <-- Crear un objeto FormData
+            (
+              Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]
+            ).forEach((key) => {
+              formData.append(key, objetoOficio[key] as string); // <-- Asegurar el tipo de valor
+            });
+
+            if (values.archivo) {
+              formData.append("archivo", values.archivo); // <-- Adjuntar archivo
+            }
+
             const response = await fetch(
               "http://200.56.97.5:7281/api/Oficios",
               {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(objetoOficio),
+                body: formData, // <-- Enviar FormData
               }
             );
 
@@ -243,8 +249,7 @@ export default function ModalOficio({
               throw new Error("Error en la solicitud");
             }
 
-            // Aquí puedes manejar la respuesta
-            onSave(); // Llama a la función onSave si es necesario
+            onSave();
           } catch (error) {
             console.error("Error al guardar el oficio:", error);
           }
@@ -555,13 +560,21 @@ export default function ModalOficio({
                 {/* Adjuntar Archivo */}
                 <div className="flex items-center mb-4">
                   <input
-                    id="archivo"
-                    name="archivo"
+                    id="pdfpath"
+                    name="archivo" // Cambiar a archivo para que sea capturado correctamente
                     type="file"
                     accept=".pdf"
                     onChange={(event) => {
                       if (event.currentTarget.files) {
-                        setFieldValue("archivo", event.currentTarget.files[0]);
+                        const file = event.currentTarget.files[0];
+
+                        // Validación de tipo de archivo
+                        if (file && file.type !== "application/pdf") {
+                          alert("Por favor, sube un archivo PDF."); // Mensaje de alerta para el usuario
+                          return;
+                        }
+
+                        setFieldValue("archivo", file); // Almacenar archivo en values.archivo
                       }
                     }}
                     className="border border-gray-300 rounded p-2 w-full"
@@ -611,7 +624,8 @@ export default function ModalOficio({
                         "descripcionPuesto" in datosEmpleados
                           ? datosEmpleados.descripcionPuesto
                           : datosEmpleados.cargo,
-                      deptoComi: datosEmpleados.deptoComi || "", // Aseguramos que deptoComi esté asignado
+                      deptoComi: datosEmpleados.deptoComi || "",
+                      empleado: datosEmpleados.empleado || " ",
                     };
 
                     // Asigna los datos completos en los campos de Formik
@@ -620,14 +634,17 @@ export default function ModalOficio({
                     setFieldValue("destSiglas", datosDestinatario.siglas);
                     setFieldValue("destCargo", datosDestinatario.puesto);
                     setFieldValue("depto", datosDestinatario.deptoComi); // Asigna deptoComi a depto
-
+                    setFieldValue("empleado", datosDestinatario.empleado);
                     // Si el destinatario es interno, asigna deptoComi también al responsable
+
                     if (values.destinatarioType === "1") {
                       setFieldValue(
                         "responsableName",
                         datosDestinatario.nombre
                       );
                       setFieldValue("deptoRespon", datosDestinatario.deptoComi); // Asigna deptoComi a deptoRespon
+
+                      console.log("entro a destinatario11111");
                     }
 
                     setShowDestinatarioModal(false);
@@ -693,10 +710,6 @@ export default function ModalOficio({
 
                     // Si el destinatario es externo, asigna deptoComi también al destinatario
                     if (values.destinatarioType === "2") {
-                      setFieldValue(
-                        "destNombre",
-                        datosResponsable.nombreCompleto
-                      );
                       setFieldValue("depto", datosResponsable.deptoComi); // Asigna deptoComi a depto
                     }
 
