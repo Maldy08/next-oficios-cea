@@ -130,7 +130,7 @@ export default function ModalOficio({
 
         idEmpleado: 0,
         rol: 0,
-        oficioResponsable: [{ idEmpleado: 0, rol: 0 }],
+        oficioResponsables: [{ idEmpleado: 0, rol: 0 }],
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -216,17 +216,24 @@ export default function ModalOficio({
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
 
-            oficioResponsable: [
+            oficioResponsables: [
               {
-                IdEmpleado: values.idEmpleado,
-                rol: "1",
+                id: 0,
+                idEmpleado: values.idEmpleado,
+                rol: 1,
+                folio: 4,
+                ejercicio: 4,
+                eor: 0,
+                iox: 8,
               },
             ],
           };
           console.log("AQUI JSON");
           console.log(objetoOficio);
           console.log("Arreglo");
-          console.log(objetoOficio.oficioResponsable);
+          console.log(objetoOficio.oficioResponsables);
+
+          console.log(objetoOficio.oficioResponsables[0]);
 
           // Enviar el objeto a la API
           try {
