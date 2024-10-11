@@ -130,6 +130,7 @@ export default function ModalOficio({
 
         oficioResponsable: [{ empleado: 0 }],
         empleado: 0,
+        rol: 0,
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -218,6 +219,7 @@ export default function ModalOficio({
             oficioResponsable: [
               {
                 empleado: values.empleado,
+                rol: 1,
               },
             ],
           };
