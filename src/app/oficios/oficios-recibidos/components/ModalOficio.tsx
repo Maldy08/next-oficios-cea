@@ -217,8 +217,13 @@ export default function ModalOficio({
             archivo: values.archivo,
 
             oficioResponsable: { // Cambia de array a objeto
+              id: 0,
+              ejercicio: 2024,
+              folio: values.folio,
+              eor: 2,
               IdEmpleado: values.idEmpleado,
-              rol: '1'
+              rol: '1',
+              iox: 0,
             }
           };
           console.log("AQUI JSON");
