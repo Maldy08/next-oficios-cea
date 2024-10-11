@@ -82,6 +82,11 @@ export default function UseOficioMODAL() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedArea, setSelectedArea] = useState("");
   const [personaEntregaName, setPersonaEntregaName] = useState("");
+  const [Empleado, resEmpleado] = useState<number | null>(
+    null
+  );
+
+  
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -183,5 +188,7 @@ export default function UseOficioMODAL() {
     setresponsabledeptoRespon,
     setCurrentDate,
     validationSchema,
+    Empleado,
+    resEmpleado
   };
 }

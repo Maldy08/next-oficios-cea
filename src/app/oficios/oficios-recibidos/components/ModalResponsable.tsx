@@ -9,6 +9,7 @@ interface Empleados {
   descripcionDepto: string;
   descripcionPuesto: string;
   deptoComi: number;
+  empleado: number;
 }
 
 interface ModalResponsableProps {
