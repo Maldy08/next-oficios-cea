@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 interface Departamento {
   idCea: number;
@@ -13,20 +13,28 @@ interface Remitentes {
   empresa: string; // Añade esta propiedad si es necesaria
 }
 
-const UseModalOficioExpedido = ({ departamentos }: { departamentos: Departamento[] }) => {
+const UseModalOficioExpedido = ({
+  departamentos,
+}: {
+  departamentos: Departamento[];
+}) => {
   const [textareaRows, setTextareaRows] = useState(3);
-  const [currentDate, setCurrentDate] = useState<string>(new Date().toLocaleDateString());
+  const [currentDate, setCurrentDate] = useState<string>(
+    new Date().toLocaleDateString()
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
   const [showPersonaEnvioModal, setShowPersonaEnvioModal] = useState(false);
-  const [destinatarioName, setDestinatarioName] = useState('');
-  const [remitenteName, setRemitenteName] = useState('');
-  const [responsableName, setResponsableName] = useState('');
-  const [personaEntregaName, setPersonaEntregaName] = useState('');
-  const [destinatarioType, setDestinatarioType] = useState<'Interno' | 'Externo' | ''>('');
-  const [selectedArea, setSelectedArea] = useState('');
+  const [destinatarioName, setDestinatarioName] = useState("");
+  const [remitenteName, setRemitenteName] = useState("");
+  const [responsableName, setResponsableName] = useState("");
+  const [personaEntregaName, setPersonaEntregaName] = useState("");
+  const [destinatarioType, setDestinatarioType] = useState<
+    "Interno" | "Externo" | ""
+  >("");
+  const [selectedArea, setSelectedArea] = useState("");
   const [remitentes, setRemitentes] = useState<Remitentes[]>([]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {

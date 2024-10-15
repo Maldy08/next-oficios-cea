@@ -4,11 +4,11 @@ export interface Oficios {
     eor:               number;
     tipo:              number;
     noOficio:          string;
-    pdfpath:           null;
+    pdfpath:           null | string;
     fecha:             Date;
     fechaCaptura:      Date;
     fechaAcuse:        Date;
-    fechaLimite:       null;
+    fechaLimite:       null | Date;
     remDepen:          string;
     remSiglas:         string;
     remNombre:         string;
@@ -20,7 +20,7 @@ export interface Oficios {
     tema:              string;
     estatus:           number;
     empqentrega:       number;
-    relacionoficio:    null;
+    relacionoficio:    null | string;
     depto:             number;
     deptoRespon:       number;
     idEmpleado:        number;

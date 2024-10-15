@@ -1,62 +1,65 @@
-"use client";
+import { useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { useModal } from "../Hooks/useModal";
+import TableComponentModales from "./TablecomponentModales";
 
-import { useState, useEffect } from "react";
-import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import axios from "axios";
-
-interface remitentes {
+interface Remitente {
   nombre: string;
   empresa: string;
   cargo: string;
 }
 
 interface Props {
+  remitentes: Remitente[];
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
-  remitentes: remitentes[];
+  onSave: (remitente: Remitente) => void; // Cambiamos a tipo 'Remitente'
 }
 
 const ModalRemitenteEnvio = (props: Props) => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchText, setSearchText] = useState("");
-  const [selectedRemitente, setSelectedRemitente] = useState<string | null>(null);
-  const [data, setData] = useState<remitentes[]>(props.remitentes);
+  const {
+    searchTerm,
+    setSearchTerm,
+    paginatedData,
+    currentPage,
+    setCurrentPage,
+    rowsPerPage,
+    setRowsPerPage,
+    totalPages,
+    handleRowClick,
+    selectedItem, // Aquí obtenemos el item seleccionado, que es de tipo Remitente
+  } = useModal({
+    data: props.remitentes,
+    columnsToFilter: ["nombre", "empresa", "cargo"],
+    onClose: props.onClose,
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
+  });
 
-  const handleChangePage = (newPage: number) => {
-    setPage(newPage);
-  };
+  // Definir columnas de la tabla
+  const columns = [
+    {
+      header: "Nombre Completo",
+      accessor: (row: Remitente) => row.nombre,
+    },
+    {
+      header: "Departamento",
+      accessor: (row: Remitente) => row.empresa,
+    },
+    {
+      header: "Puesto",
+      accessor: (row: Remitente) => row.cargo,
+    },
+  ];
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-    setPage(0);
-  };
-
-  const handleRowClick = (name: string) => {
-    setSelectedRemitente(name);
-  };
-
-  const handleSave = () => {
-    if (selectedRemitente) {
-      props.onSave(selectedRemitente);
-      props.onClose();
+  // Función para guardar el remitente seleccionado y cerrar el modal
+  function onSave() {
+    if (selectedItem) {
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
-  };
+  }
 
-  const filteredData = data.filter(
-    (row) =>
-      row.nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.empresa.toLowerCase().includes(searchText.toLowerCase()) ||
-      row.cargo.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  if (!props.isOpen) return null;
 
   return (
     <div
@@ -64,84 +67,37 @@ const ModalRemitenteEnvio = (props: Props) => {
         props.isOpen ? "block" : "hidden"
       }`}
     >
-      <div className="fixed inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        aria-hidden="true"
+      ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Remitente</h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+            Seleccionar Remitente
+          </h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"
               placeholder="Buscar..."
-              value={searchText}
-              onChange={handleSearchChange}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full border-b border-gray-300 py-2 px-3 text-sm rounded-none focus:border-blue-500 focus:outline-none"
             />
             <FaSearch className="absolute right-2 top-2 text-gray-400 cursor-pointer" />
           </div>
         </div>
 
-        <div className="flex-grow overflow-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="font-bold border-b py-2 px-4">NOMBRE COMPLETO</th>
-                <th className="font-bold border-b py-2 px-4">DEPARTAMENTO</th>
-                <th className="font-bold border-b py-2 px-4">CARGO</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <tr
-                    key={index}
-                    onClick={() => handleRowClick(row.nombre)}
-                    className={`cursor-pointer ${
-                      selectedRemitente === row.nombre ? "bg-blue-100" : ""
-                    }`}
-                  >
-                    <td className="border-b py-2 px-4">{row.nombre}</td>
-                    <td className="border-b py-2 px-4">{row.empresa}</td>
-                    <td className="border-b py-2 px-4">{row.cargo}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={() => handleChangePage(Math.max(0, page - 1))}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={page === 0}
-            >
-              <FaChevronLeft />
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                handleChangePage(Math.min(totalPages - 1, page + 1))
-              }
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              disabled={page >= totalPages - 1}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">Folios por pág:</span>
-            <select
-              value={rowsPerPage}
-              onChange={handleChangeRowsPerPage}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-            </select>
-          </div>
-        </div>
+        <TableComponentModales<Remitente>
+          data={paginatedData}
+          columns={columns}
+          onRowClick={handleRowClick}
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setRowsPerPage={setRowsPerPage}
+        ></TableComponentModales>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
@@ -153,7 +109,7 @@ const ModalRemitenteEnvio = (props: Props) => {
           </button>
           <button
             type="button"
-            onClick={handleSave}
+            onClick={onSave} // Guardar el remitente seleccionado
             className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Guardar
