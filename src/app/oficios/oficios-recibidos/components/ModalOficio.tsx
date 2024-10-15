@@ -90,6 +90,8 @@ export default function ModalOficio({
     responsabledeptoRespon,
     setresponsabledeptoRespon,
     getCurrentDate,
+    idEmpleado,
+    setidEmpleado,
   } = UseOficioMODAL();
 
   return (
@@ -217,7 +219,6 @@ export default function ModalOficio({
             archivo: values.archivo,
 
             oficioResponsable: { // Cambia de array a objeto
-              id: 0,
               ejercicio: 2024,
               folio: values.folio,
               eor: 2,
@@ -233,16 +234,22 @@ export default function ModalOficio({
 
           // Enviar el objeto a la API
           try {
-            const formData = new FormData(); // <-- Crear un objeto FormData
-            (
-              Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]
-            ).forEach((key) => {
-              formData.append(key, objetoOficio[key] as string); // <-- Asegurar el tipo de valor
-            });
+            const formData = new FormData();
 
-            if (values.archivo) {
-              formData.append("archivo", values.archivo); // <-- Adjuntar archivo
-            }
+Object.keys(objetoOficio).forEach((key) => {
+  if (key in objetoOficio) {
+    const value = (objetoOficio as any)[key]; // Acceso seguro con 'any'
+    formData.append(key, value?.toString() ?? ''); // Convierte a cadena o envía vacío si es null o undefined
+  }
+});
+
+formData.append('IdEmpleado', objetoOficio.oficioResponsable.IdEmpleado.toString());
+
+if (values.archivo) {
+  formData.append("archivo", values.archivo); 
+}
+
+
 
             const response = await fetch(
               "http://200.56.97.5:7281/api/Oficios",

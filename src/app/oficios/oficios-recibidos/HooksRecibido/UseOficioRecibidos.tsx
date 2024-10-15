@@ -83,8 +83,9 @@ export default function UseOficioMODAL() {
   const [selectedArea, setSelectedArea] = useState("");
   const [personaEntregaName, setPersonaEntregaName] = useState("");
   const [Empleado, resEmpleado] = useState<number | null>(
-    null
-  );
+    null);
+
+    const [idEmpleado, setidEmpleado] = useState<string | null>(null);
 
   
 
@@ -189,6 +190,8 @@ export default function UseOficioMODAL() {
     setCurrentDate,
     validationSchema,
     Empleado,
-    resEmpleado
+    resEmpleado,
+    idEmpleado,
+    setidEmpleado,
   };
 }
