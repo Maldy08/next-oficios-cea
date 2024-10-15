@@ -139,59 +139,49 @@ export default function ModalOficio({
       validateOnBlur={false} // Desactivar validación en cada desenfoque
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-
-        if (!values.remNombre)
-          errors.remNombre = "Nombre del remitente es requerido";
-        if (!values.destNombre)
-          errors.destNombre = "Nombre del destinatario es requerido";
-        if (!values.responsableName)
-          errors.responsableName = "Nombre del responsable es requerido";
-
+      
+        if (!values.remNombre) errors.remNombre = "Nombre del remitente es requerido";
+        if (!values.destNombre) errors.destNombre = "Nombre del destinatario es requerido";
+        if (!values.responsableName) errors.responsableName = "Nombre del responsable es requerido";
+      
         // Si hay errores, se actualizan y no se envía el formulario
         if (Object.keys(errors).length) {
           setErrors(errors);
-          setTouched({
-            // Marcar campos como tocados
-          });
+          setTouched({});
         } else {
           // Crear el objeto JSON
-          // Lógica para cambiar los valores según el remitenteType
           let remSiglas = values.remSiglas;
           let remDepen = values.remDepen;
           let destDepen = values.destDepen;
           let destSiglas = values.destSiglas;
-
+      
           if (values.remitenteType === "1" && values.tipo == "1") {
             remSiglas = "CEA";
             remDepen = "COMISION ESTATAL DEL AGUA";
           }
-
+      
           if (values.destinatarioType === "1" && values.tipo == "1") {
             destDepen = "COMISION ESTATAL DEL AGUA";
             destSiglas = "CEA";
           }
-
+      
           if (values.remitenteType === "1" && values.tipo == "2") {
             remSiglas = "SEPROA";
             destSiglas = "CEA";
             remDepen =
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
-
+      
           if (values.destinatarioType === "1" && values.tipo == "2") {
             destDepen =
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
-
+      
           const objetoOficio = {
             ejercicio: 2024,
             folio: values.folio,
             eor: 2,
-
-            // El tipo me fallo en el croops del error de la api
             tipo: values.tipo,
-            // Revisar el tipo
-
             noOficio: values.noOficio,
             pdfpath: null,
             fecha: currentDate,
@@ -202,73 +192,47 @@ export default function ModalOficio({
             remSiglas: remSiglas,
             remNombre: values.remNombre,
             remCargo: values.remCargo,
-
-            // Me funciono todo pero en destSiglas
             destDepen: destDepen,
             destSiglas: destSiglas,
             destNombre: values.destNombre,
             destCargo: values.destCargo,
-
             tema: values.tema,
             estatus: 1,
             empqentrega: 0,
             relacionoficio: "string",
-
             depto: values.depto,
             deptoRespon: values.deptoRespon,
-            archivo: values.archivo,
-
-            oficioResponsable: { // Cambia de array a objeto
+            archivo: values.archivo, // Si es necesario mantener el archivo en JSON, aunque lo usual sería manejarlo aparte
+            oficioResponsable: {
               ejercicio: 2024,
               folio: values.folio,
               eor: 2,
               IdEmpleado: values.idEmpleado,
-              rol: '1',
+              rol: "1",
               iox: 0,
-            }
+            },
           };
-          console.log("AQUI JSON");
-          console.log(objetoOficio);
-          console.log("Arreglo");
-          console.log(objetoOficio.oficioResponsable);
-
-          // Enviar el objeto a la API
+      
           try {
-            const formData = new FormData();
-
-Object.keys(objetoOficio).forEach((key) => {
-  if (key in objetoOficio) {
-    const value = (objetoOficio as any)[key]; // Acceso seguro con 'any'
-    formData.append(key, value?.toString() ?? ''); // Convierte a cadena o envía vacío si es null o undefined
-  }
-});
-
-formData.append('IdEmpleado', objetoOficio.oficioResponsable.IdEmpleado.toString());
-
-if (values.archivo) {
-  formData.append("archivo", values.archivo); 
-}
-
-
-
-            const response = await fetch(
-              "http://200.56.97.5:7281/api/Oficios",
-              {
-                method: "POST",
-                body: formData, // <-- Enviar FormData
-              }
-            );
-
+            const response = await fetch("http://200.56.97.5:7281/api/Oficios", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Indicamos que el contenido es JSON
+              },
+              body: JSON.stringify(objetoOficio), // Convertimos el objeto a JSON
+            });
+      
             if (!response.ok) {
               throw new Error("Error en la solicitud");
             }
-
+      
             onSave();
           } catch (error) {
             console.error("Error al guardar el oficio:", error);
           }
         }
       }}
+      
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
