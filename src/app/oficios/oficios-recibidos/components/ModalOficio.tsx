@@ -191,11 +191,7 @@ export default function ModalOficio({
             ejercicio: 2024,
             folio: values.folio,
             eor: 2,
-
-            // El tipo me fallo en el croops del error de la api
             tipo: values.tipo,
-            // Revisar el tipo
-
             noOficio: values.noOficio,
             pdfpath: null,
             fecha: currentDate,
@@ -206,22 +202,17 @@ export default function ModalOficio({
             remSiglas: remSiglas,
             remNombre: values.remNombre,
             remCargo: values.remCargo,
-
-            // Me funciono todo pero en destSiglas
             destDepen: destDepen,
             destSiglas: destSiglas,
             destNombre: values.destNombre,
             destCargo: values.destCargo,
-
             tema: values.tema,
             estatus: 1,
             empqentrega: 0,
             relacionoficio: "string",
-
             depto: values.depto,
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
-
             oficioResponsables: [
               {
                 id: 0,
@@ -234,26 +225,46 @@ export default function ModalOficio({
               },
             ],
           };
+
+          // En en form data le haces unapen ,
+          // Como agregarlo en un arreglo
           console.log("AQUI JSON");
           console.log(objetoOficio);
           console.log("Arreglo");
           console.log(objetoOficio.oficioResponsables);
 
-          console.log(objetoOficio.oficioResponsables[0]);
+          // Crear un nuevo objeto FormData
+          const formData = new FormData();
 
+          // Recorrer cada propiedad en objetoOficio para agregarla a formData
+          (Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]).forEach(
+            (key) => {
+              if (key === "archivo" && values.archivo) {
+                formData.append(key, values.archivo);
+              } else if (key === "oficioResponsables") {
+                // Iterar sobre cada objeto en el array oficioResponsables y agregarlo individualmente
+                objetoOficio.oficioResponsables.forEach(
+                  (responsable, index) => {
+                    (
+                      Object.keys(responsable) as (keyof typeof responsable)[]
+                    ).forEach((field) => {
+                      formData.append(
+                        `oficioResponsables[${index}][${field}]`,
+                        String(responsable[field])
+                      );
+                    });
+                  }
+                );
+              } else {
+                formData.append(
+                  key,
+                  String(objetoOficio[key as keyof typeof objetoOficio])
+                );
+              }
+            }
+          );
           // Enviar el objeto a la API
           try {
-            const formData = new FormData(); // <-- Crear un objeto FormData
-            (
-              Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]
-            ).forEach((key) => {
-              formData.append(key, objetoOficio[key] as string); // <-- Asegurar el tipo de valor
-            });
-
-            if (values.archivo) {
-              formData.append("archivo", values.archivo); // <-- Adjuntar archivo
-            }
-
             const response = await fetch(
               "http://200.56.97.5:7281/api/Oficios",
               {
