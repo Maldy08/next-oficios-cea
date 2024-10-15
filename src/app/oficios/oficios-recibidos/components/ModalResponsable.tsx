@@ -3,6 +3,8 @@ import axios from "axios";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
 import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
+import { OficioResponsable } from "@/app/domain/entities/oficioResponsable";
+import { number } from "yup";
 
 interface Empleados {
   nombreCompleto: string;
@@ -18,9 +20,12 @@ interface ModalResponsableProps {
   onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
   tipo: string;
+  oficioResponsable: OficioResponsable[];
 }
 
 const ModalResponsable = (props: ModalResponsableProps) => {
+  console.log("Aqui esta la interface");
+  console.log(props.oficioResponsable);
   const {
     searchTerm,
     setSearchTerm,
@@ -41,6 +46,7 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       "deptoComi",
       "empleado",
     ],
+
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
