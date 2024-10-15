@@ -32,6 +32,46 @@ interface remitentes {
   empleado: number;
 }
 
+interface OficioResponsable {
+  id: number;
+  ejercicio: number;
+  folio: string;
+  eor: number;
+  IdEmpleado: number;
+  rol: string;
+  iox: number;
+}
+
+interface ObjetoOficio {
+  ejercicio: number;
+  folio: string;
+  eor: number;
+  tipo: string;
+  noOficio: string;
+  pdfpath: null;
+  fecha: string;
+  fechaCaptura: string;
+  fechaAcuse: string;
+  fechaLimite: string;
+  remDepen: string;
+  remSiglas: string;
+  remNombre: string;
+  remCargo: string;
+  destDepen: string;
+  destSiglas: string;
+  destNombre: string;
+  destCargo: string;
+  tema: string;
+  estatus: number;
+  empqentrega: number;
+  relacionoficio: string;
+  depto: string;
+  deptoRespon: string;
+  archivo: string;
+  oficioResponsable: OficioResponsable;
+}
+
+
 export default function ModalOficio({
   isOpen,
   onClose,
@@ -233,33 +273,47 @@ export default function ModalOficio({
 
           // Enviar el objeto a la API
           try {
-            const formData = new FormData(); // <-- Crear un objeto FormData
-            (
-              Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]
-            ).forEach((key) => {
-              formData.append(key, objetoOficio[key] as string); // <-- Asegurar el tipo de valor
+            const formData = new FormData(); // Crear un objeto FormData
+        
+            // Agregar propiedades de objetoOficio al FormData
+            (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach((key) => {
+                const value = objetoOficio[key];
+                // Asegurarse de que el valor sea de tipo string
+                if (typeof value !== 'object' || value === null) {
+                    formData.append(key, String(value)); // Convertir a string si no es un objeto
+                }
             });
-
+        
+            // Agregar "oficioResponsable" como un arreglo
+            const oficioResponsable = objetoOficio.oficioResponsable;
+            const index = 0; // Aquí puedes cambiar el índice si tienes más de un oficioResponsable
+            formData.append(`oficioResponsable[${index}].id`, String(oficioResponsable.id));
+            formData.append(`oficioResponsable[${index}].ejercicio`, String(oficioResponsable.ejercicio));
+            formData.append(`oficioResponsable[${index}].folio`, oficioResponsable.folio);
+            formData.append(`oficioResponsable[${index}].eor`, String(oficioResponsable.eor));
+            formData.append(`oficioResponsable[${index}].IdEmpleado`, String(oficioResponsable.IdEmpleado));
+            formData.append(`oficioResponsable[${index}].rol`, oficioResponsable.rol);
+            formData.append(`oficioResponsable[${index}].iox`, String(oficioResponsable.iox));
+        
+            // Adjuntar archivo si existe
             if (values.archivo) {
-              formData.append("archivo", values.archivo); // <-- Adjuntar archivo
+                formData.append("archivo", values.archivo);
             }
-
-            const response = await fetch(
-              "http://200.56.97.5:7281/api/Oficios",
-              {
+        
+            // Enviar la solicitud a la API
+            const response = await fetch("http://200.56.97.5:7281/api/Oficios", {
                 method: "POST",
-                body: formData, // <-- Enviar FormData
-              }
-            );
-
+                body: formData, // Enviar FormData
+            });
+        
             if (!response.ok) {
-              throw new Error("Error en la solicitud");
+                throw new Error("Error en la solicitud");
             }
-
+        
             onSave();
-          } catch (error) {
+        } catch (error) {
             console.error("Error al guardar el oficio:", error);
-          }
+        }
         }
       }}
     >
