@@ -1,3 +1,4 @@
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
@@ -85,12 +86,11 @@ export default function UseOficioMODAL() {
   const [Empleado, resEmpleado] = useState<number | null>(
     null);
 
-    const [idEmpleado, setidEmpleado] = useState<string | null>(null);
-    const [OficioResponsable, setOficioResponsable] = useState<string | null
-    >(null);
+  const [idEmpleado, setidEmpleado] = useState<string | null>(null);
+
+  const [oficioResponsable, setOficioResponsable] = useState<OficioResponsable[]>([]);
 
 
-  
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -196,7 +196,7 @@ export default function UseOficioMODAL() {
     resEmpleado,
     idEmpleado,
     setidEmpleado,
-    OficioResponsable,
+    oficioResponsable,
     setOficioResponsable,
   };
 }

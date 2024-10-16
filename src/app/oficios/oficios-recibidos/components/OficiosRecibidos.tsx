@@ -73,7 +73,8 @@ export default function OficiosPage({
           onClose={handleCloseModal}
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
-          remitentes={remitentes} oficioResponsable={[]}        />
+          remitentes={remitentes}
+        />
       )}
     </>
   );

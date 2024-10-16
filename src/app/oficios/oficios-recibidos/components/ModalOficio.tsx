@@ -7,7 +7,7 @@ import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { OficiosResponsable } from "@/app/domain/entities/oficioResponsable";
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 
 interface ModalOficioProps {
   isOpen: boolean;
@@ -15,7 +15,6 @@ interface ModalOficioProps {
   onSave: () => void;
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
-  oficioResponsable: OficiosResponsable[]; 
 }
 interface Empleados {
   nombreCompleto: string;
@@ -34,13 +33,44 @@ interface remitentes {
   empleado: number;
 }
 
+
+
+interface ObjetoOficio {
+  ejercicio: number;
+  folio: string;
+  eor: number;
+  tipo: string;
+  noOficio: string;
+  pdfpath: null;
+  fecha: string;
+  fechaCaptura: string;
+  fechaAcuse: string;
+  fechaLimite: string;
+  remDepen: string;
+  remSiglas: string;
+  remNombre: string;
+  remCargo: string;
+  destDepen: string;
+  destSiglas: string;
+  destNombre: string;
+  destCargo: string;
+  tema: string;
+  estatus: number;
+  empqentrega: number;
+  relacionoficio: string;
+  depto: string;
+  deptoRespon: string;
+  archivo: string;
+
+}
+
+
 export default function ModalOficio({
   isOpen,
   onClose,
   onSave,
   datosEmpleados,
   remitentes,
-  oficioResponsable,
 }: ModalOficioProps) {
   const {
     validationSchema,
@@ -93,7 +123,24 @@ export default function ModalOficio({
     responsabledeptoRespon,
     setresponsabledeptoRespon,
     getCurrentDate,
+    oficioResponsable,
+    setOficioResponsable,
   } = UseOficioMODAL();
+
+
+  const handleOficioResponsable = (data: OficioResponsable) => {
+    setOficioResponsable( prev => [...prev,  {
+      idEmpleado: data.idEmpleado,
+      rol: data.rol,
+      ejercicio: data.ejercicio,
+      eor: data.eor,
+      folio: data.folio,
+    }]);
+
+    console.log(oficioResponsable);
+  }
+
+
 
   return (
     <Formik
@@ -130,10 +177,11 @@ export default function ModalOficio({
 
         destinatarioType: destinatarioType || "2",
         remitenteType: remitenteType || "1",
+        oficioResponsable: oficioResponsable || "1",
 
         idEmpleado: 0,
         rol: 0,
-        oficioResponsable: [{ idEmpleado: 0, rol: 0 }],
+
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -184,87 +232,93 @@ export default function ModalOficio({
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
 
-          const objetoOficio = {
-            ejercicio: 2024,
-            folio: values.folio,
-            eor: 2,
+          // Crear el objeto 'objetoOficio'
+const objetoOficio = {
+  ejercicio: 2024,
+  folio: values.folio,
+  eor: 2,
+  tipo: values.tipo,
+  noOficio: values.noOficio,
+  pdfpath: null,
+  fecha: currentDate,
+  fechaCaptura: values.fechaCaptura,
+  fechaAcuse: "2024-10-03T07:02:08.170Z",
+  fechaLimite: values.fechaLimite,
+  remDepen: remDepen,
+  remSiglas: remSiglas,
+  remNombre: values.remNombre,
+  remCargo: values.remCargo,
+  destDepen: destDepen,
+  destSiglas: destSiglas,
+  destNombre: values.destNombre,
+  destCargo: values.destCargo,
+  tema: values.tema,
+  estatus: 1,
+  empqentrega: 0,
+  relacionoficio: "string",
+  depto: values.depto,
+  deptoRespon: values.deptoRespon,
+  archivo: values.archivo,
+};
 
-            // El tipo me fallo en el croops del error de la api
-            tipo: values.tipo,
-            // Revisar el tipo
+try {
+  // Enviar el objeto 'objetoOficio' a la API
+  const formData = new FormData(); // Crear un objeto FormData
 
-            noOficio: values.noOficio,
-            pdfpath: null,
-            fecha: currentDate,
-            fechaCaptura: values.fechaCaptura,
-            fechaAcuse: "2024-10-03T07:02:08.170Z",
-            fechaLimite: values.fechaLimite,
-            remDepen: remDepen,
-            remSiglas: remSiglas,
-            remNombre: values.remNombre,
-            remCargo: values.remCargo,
+  // Agregar propiedades de objetoOficio al FormData
+  (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach((key) => {
+      const value = objetoOficio[key];
+      if (typeof value !== 'object' || value === null) {
+          formData.append(key, String(value)); // Convertir a string si no es un objeto
+      }
+  });
 
-            // Me funciono todo pero en destSiglas
-            destDepen: destDepen,
-            destSiglas: destSiglas,
-            destNombre: values.destNombre,
-            destCargo: values.destCargo,
+  // Adjuntar archivo si existe
+  if (values.archivo) {
+      formData.append("archivo", values.archivo);
+  }
 
-            tema: values.tema,
-            estatus: 1,
-            empqentrega: 0,
-            relacionoficio: "string",
+  // Enviar la primera solicitud a la API
+  const response = await fetch("http://localhost:5178/api/Oficios", {
+      method: "POST",
+      body: formData, 
+  });
 
-            depto: values.depto,
-            deptoRespon: values.deptoRespon,
-            archivo: values.archivo,
+  if (!response.ok) {
+      throw new Error("Error en la solicitud del oficio");
+  }
 
-            oficioResponsable: { // Cambia de array a objeto
-              id: 0,
-              ejercicio: 2024,
-              folio: values.folio,
-              eor: 2,
-              IdEmpleado: values.idEmpleado,
-              rol: '1',
-              iox: 0,
-            }
-          };
-          console.log("AQUI JSON");
-          console.log(objetoOficio);
-          console.log("Arreglo");
-          console.log(objetoOficio.oficioResponsable);
+  // Crear el objeto 'OficioResponsable' solo si la primera solicitud fue exitosa
+  const oficioResponsableData = {
+      idEmpleado: values.idEmpleado || 0,
+      rol: values.rol || 0,
+      ejercicio: 2024,
+      eor: 2,
+      folio: values.folio,
+  };
 
-          // Enviar el objeto a la API
-          try {
-            const formData = new FormData(); // <-- Crear un objeto FormData
-            (
-              Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]
-            ).forEach((key) => {
-              formData.append(key, objetoOficio[key] as string); // <-- Asegurar el tipo de valor
-            });
+  // Enviar el objeto 'OficioResponsable' a la API
+  const responseOficioResponsable = await fetch("http://localhost:5178/api/OficiosResponsables", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify(oficioResponsableData),
+  });
 
-            if (values.archivo) {
-              formData.append("archivo", values.archivo); // <-- Adjuntar archivo
-            }
+  if (!responseOficioResponsable.ok) {
+      throw new Error("Error en la solicitud de OficioResponsable");
+  }
 
-            const response = await fetch(
-              "http://200.56.97.5:7281/api/Oficios",
-              {
-                method: "POST",
-                body: formData, // <-- Enviar FormData
-              }
-            );
+  // Si ambas solicitudes son exitosas, llama a onSave
+  onSave();
+} catch (error) {
+  // Manejo de errores si alguna de las solicitudes falla
+  console.error("Error al guardar el oficio o el oficio responsable:", error);
+}
 
-            if (!response.ok) {
-              throw new Error("Error en la solicitud");
-            }
-
-            onSave();
-          } catch (error) {
-            console.error("Error al guardar el oficio:", error);
-          }
-        }
-      }}
+      }
+    }}
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
@@ -705,7 +759,10 @@ export default function ModalOficio({
                 <ModalResponsable
                   isOpen={showResponsableModal}
                   onClose={() => setShowResponsableModal(false)}
+                  handleOficioResponsable={ handleOficioResponsable}
                   onSave={(datosEmpleados) => {
+
+                    
                     const datosResponsable = {
                       nombreCompleto: datosEmpleados.nombreCompleto,
                       deptoComi: datosEmpleados.deptoComi, // Aseguramos que deptoComi esté asignado
@@ -722,16 +779,16 @@ export default function ModalOficio({
 
                     setFieldValue("deptoRespon", datosResponsable.deptoComi); // Asigna deptoComi a deptoRespon
 
-
                     // Si el destinatario es externo, asigna deptoComi también al destinatario
                     if (values.destinatarioType === "2") {
                       setFieldValue("depto", datosResponsable.deptoComi); // Asigna deptoComi a depto
                     }
 
                     setShowResponsableModal(false);
-                  } }
+                  }}
                   tipo={values.tipo.toString()}
-                  datosEmpleados={datosEmpleados} oficioResponsable={[]}                />
+                  datosEmpleados={datosEmpleados}
+                />
               )}
             </div>
           </div>

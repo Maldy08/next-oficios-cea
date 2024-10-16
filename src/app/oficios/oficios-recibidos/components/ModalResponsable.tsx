@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
 import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 
 interface Empleados {
   nombreCompleto: string;
@@ -12,21 +13,13 @@ interface Empleados {
   empleado: number;
 }
 
-interface OficiosResponsable {
-  ejercicio: string;
-  folio: string;
-  eor: string;
-  idEmpleado: number;
-  rol: number;
-}
-
 interface ModalResponsableProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
-  oficioResponsable: OficiosResponsable[]; // Agregado
   tipo: string;
+  handleOficioResponsable: (oficioResponsable: OficioResponsable) => void;
 }
 
 const ModalResponsable = (props: ModalResponsableProps) => {
@@ -50,12 +43,8 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       "deptoComi",
     ],
     onClose: props.onClose,
-    onSave: props.onSave,
+    onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
-
-  // Estado para manejar los oficios responsables
-const [oficioResponsable, setOficioResponsable] = useState<OficiosResponsable[]>([]);
-
 
   const departamento =
     props.tipo === "1"
@@ -70,11 +59,11 @@ const [oficioResponsable, setOficioResponsable] = useState<OficiosResponsable[]>
     },
     {
       header: "Departamento",
-      accessor: () => departamento,
+      accessor: () => departamento, // Muestra siempre el departamento seleccionado
     },
     {
       header: "Siglas",
-      accessor: () => siglas,
+      accessor: () => siglas, // Muestra siempre las siglas seleccionadas
     },
     {
       header: "Puesto",
@@ -86,23 +75,24 @@ const [oficioResponsable, setOficioResponsable] = useState<OficiosResponsable[]>
 
   function onSave() {
     if (selectedItem) {
-      const nuevoOficio: OficiosResponsable = {
-        ejercicio: "", // Coloca aquí el valor correspondiente
-        folio: "", // Coloca aquí el valor correspondiente
-        eor: "", // Coloca aquí el valor correspondiente
-        idEmpleado: selectedItem.empleado, // Asignar el idEmpleado
-        rol: 1, // Ajusta según tus requerimientos
-      };
-  
-      // Actualiza el oficioResponsable con el nuevo empleado
-      props.oficioResponsable.push(nuevoOficio);
-  
-      // Llama a onSave con el empleado seleccionado
-      props.onSave(selectedItem);
-      props.onClose(); // Cerrar el modal
+/*       props.oficioResponsable.push({
+        ejercicio : 2024,
+        eor : 2,
+        folio: 1,
+        idEmpleado: selectedItem.empleado,
+        rol: 1,
+      }) */
+      props.handleOficioResponsable({
+        ejercicio: 2024,
+        eor: 2,
+        folio: 1,
+        idEmpleado: selectedItem.empleado,
+        rol: 1,
+      });
+      props.onSave(selectedItem); // Guardamos el remitente seleccionado
+      props.onClose(); // Cerramos el modal
     }
   }
-  
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
@@ -130,7 +120,7 @@ const [oficioResponsable, setOficioResponsable] = useState<OficiosResponsable[]>
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
           setRowsPerPage={setRowsPerPage}
-        />
+        ></TableComponentModales>
 
         <div className="flex justify-end space-x-4 mt-4">
           <button
