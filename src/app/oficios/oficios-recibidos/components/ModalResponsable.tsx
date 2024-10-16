@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
 import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 
 interface Empleados {
   nombreCompleto: string;
@@ -18,6 +19,7 @@ interface ModalResponsableProps {
   onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
   tipo: string;
+  handleOficioResponsable: (oficioResponsable: OficioResponsable) => void;
 }
 
 const ModalResponsable = (props: ModalResponsableProps) => {
@@ -73,6 +75,20 @@ const ModalResponsable = (props: ModalResponsableProps) => {
 
   function onSave() {
     if (selectedItem) {
+/*       props.oficioResponsable.push({
+        ejercicio : 2024,
+        eor : 2,
+        folio: 1,
+        idEmpleado: selectedItem.empleado,
+        rol: 1,
+      }) */
+      props.handleOficioResponsable({
+        ejercicio: 2024,
+        eor: 2,
+        folio: 1,
+        idEmpleado: selectedItem.empleado,
+        rol: 1,
+      });
       props.onSave(selectedItem); // Guardamos el remitente seleccionado
       props.onClose(); // Cerramos el modal
     }

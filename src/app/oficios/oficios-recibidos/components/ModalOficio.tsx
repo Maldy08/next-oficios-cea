@@ -7,6 +7,7 @@ import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 
 interface ModalOficioProps {
   isOpen: boolean;
@@ -32,15 +33,7 @@ interface remitentes {
   empleado: number;
 }
 
-interface OficioResponsable {
-  id: number;
-  ejercicio: number;
-  folio: string;
-  eor: number;
-  IdEmpleado: number;
-  rol: string;
-  iox: number;
-}
+
 
 interface ObjetoOficio {
   ejercicio: number;
@@ -68,7 +61,7 @@ interface ObjetoOficio {
   depto: string;
   deptoRespon: string;
   archivo: string;
-  oficioResponsable: OficioResponsable;
+
 }
 
 
@@ -130,7 +123,24 @@ export default function ModalOficio({
     responsabledeptoRespon,
     setresponsabledeptoRespon,
     getCurrentDate,
+    oficioResponsable,
+    setOficioResponsable,
   } = UseOficioMODAL();
+
+
+  const handleOficioResponsable = (data: OficioResponsable) => {
+    setOficioResponsable( prev => [...prev,  {
+      idEmpleado: data.idEmpleado,
+      rol: data.rol,
+      ejercicio: data.ejercicio,
+      eor: data.eor,
+      folio: data.folio,
+    }]);
+
+    console.log(oficioResponsable);
+  }
+
+
 
   return (
     <Formik
@@ -170,7 +180,7 @@ export default function ModalOficio({
 
         idEmpleado: 0,
         rol: 0,
-        oficioResponsable: [{ idEmpleado: 0, rol: 0 }],
+
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -256,20 +266,7 @@ export default function ModalOficio({
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
 
-            oficioResponsable: { // Cambia de array a objeto
-              id: 0,
-              ejercicio: 2024,
-              folio: values.folio,
-              eor: 2,
-              IdEmpleado: values.idEmpleado,
-              rol: '1',
-              iox: 0,
-            }
           };
-          console.log("AQUI JSON");
-          console.log(objetoOficio);
-          console.log("Arreglo");
-          console.log(objetoOficio.oficioResponsable);
 
           // Enviar el objeto a la API
           try {
@@ -284,26 +281,18 @@ export default function ModalOficio({
                 }
             });
         
-            // Agregar "oficioResponsable" como un arreglo
-            const oficioResponsable = objetoOficio.oficioResponsable;
-            const index = 0; // Aquí puedes cambiar el índice si tienes más de un oficioResponsable
-            formData.append(`oficioResponsable[${index}].id`, String(oficioResponsable.id));
-            formData.append(`oficioResponsable[${index}].ejercicio`, String(oficioResponsable.ejercicio));
-            formData.append(`oficioResponsable[${index}].folio`, oficioResponsable.folio);
-            formData.append(`oficioResponsable[${index}].eor`, String(oficioResponsable.eor));
-            formData.append(`oficioResponsable[${index}].IdEmpleado`, String(oficioResponsable.IdEmpleado));
-            formData.append(`oficioResponsable[${index}].rol`, oficioResponsable.rol);
-            formData.append(`oficioResponsable[${index}].iox`, String(oficioResponsable.iox));
         
             // Adjuntar archivo si existe
             if (values.archivo) {
                 formData.append("archivo", values.archivo);
             }
+
         
             // Enviar la solicitud a la API
-            const response = await fetch("http://200.56.97.5:7281/api/Oficios", {
+            const response = await fetch("http://localhost:5178/api/Oficios", {
                 method: "POST",
-                body: formData, // Enviar FormData
+                body: formData, 
+    
             });
         
             if (!response.ok) {
@@ -756,7 +745,10 @@ export default function ModalOficio({
                 <ModalResponsable
                   isOpen={showResponsableModal}
                   onClose={() => setShowResponsableModal(false)}
+                  handleOficioResponsable={ handleOficioResponsable}
                   onSave={(datosEmpleados) => {
+
+                    
                     const datosResponsable = {
                       nombreCompleto: datosEmpleados.nombreCompleto,
                       deptoComi: datosEmpleados.deptoComi, // Aseguramos que deptoComi esté asignado
