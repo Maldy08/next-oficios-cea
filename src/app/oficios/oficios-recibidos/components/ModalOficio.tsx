@@ -7,6 +7,7 @@ import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 
 interface ModalOficioProps {
   isOpen: boolean;
@@ -30,6 +31,34 @@ interface remitentes {
   siglas: string;
   deptoComi: number;
   empleado: number;
+}
+
+interface ObjetoOficio {
+  ejercicio: number;
+  folio: string;
+  eor: number;
+  tipo: string;
+  noOficio: string;
+  pdfpath: null;
+  fecha: string;
+  fechaCaptura: string;
+  fechaAcuse: string;
+  fechaLimite: string;
+  remDepen: string;
+  remSiglas: string;
+  remNombre: string;
+  remCargo: string;
+  destDepen: string;
+  destSiglas: string;
+  destNombre: string;
+  destCargo: string;
+  tema: string;
+  estatus: number;
+  empqentrega: number;
+  relacionoficio: string;
+  depto: string;
+  deptoRespon: string;
+  archivo: string;
 }
 
 export default function ModalOficio({
@@ -90,7 +119,24 @@ export default function ModalOficio({
     responsabledeptoRespon,
     setresponsabledeptoRespon,
     getCurrentDate,
+    oficioResponsable,
+    setOficioResponsable,
   } = UseOficioMODAL();
+
+  const handleOficioResponsable = (data: OficioResponsable) => {
+    setOficioResponsable((prev) => [
+      ...prev,
+      {
+        idEmpleado: data.idEmpleado,
+        rol: data.rol,
+        ejercicio: data.ejercicio,
+        eor: data.eor,
+        folio: data.folio,
+      },
+    ]);
+
+    console.log(oficioResponsable);
+  };
 
   return (
     <Formik
@@ -130,13 +176,6 @@ export default function ModalOficio({
 
         idEmpleado: 0,
         rol: 0,
-        id: 0,
-        ejercicio: 4,
-        eor: 0,
-        iox: 8,
-        oficioResponsables: [
-          { idEmpleado: 0, rol: 0, id: 0, ejercicio: 0, eor: 0, iox: 0 },
-        ],
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
@@ -213,46 +252,33 @@ export default function ModalOficio({
             depto: values.depto,
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
-            oficioResponsables: [
-              {
-                id: 0,
-                idEmpleado: values.idEmpleado,
-                rol: 1,
-                folio: values.folio,
-                ejercicio: 2024,
-                eor: 1,
-                iox: 8,
-              },
-            ],
           };
-
-          // En en form data le haces unapen ,
-          // Como agregarlo en un arreglo
-          console.log("AQUI JSON");
-          console.log(objetoOficio);
-          console.log("Arreglo");
-          console.log(objetoOficio.oficioResponsables);
 
           // Enviar el objeto a la API
           try {
-            const formData = new FormData(); // <-- Crear un objeto FormData
-            (
-              Object.keys(objetoOficio) as (keyof typeof objetoOficio)[]
-            ).forEach((key) => {
-              formData.append(key, objetoOficio[key] as string); // <-- Asegurar el tipo de valor
-            });
+            const formData = new FormData(); // Crear un objeto FormData
 
-            if (values.archivo) {
-              formData.append("archivo", values.archivo); // <-- Adjuntar archivo
-            }
-
-            const response = await fetch(
-              "http://200.56.97.5:7281/api/Oficios",
-              {
-                method: "POST",
-                body: formData, // <-- Enviar FormData
+            // Agregar propiedades de objetoOficio al FormData
+            (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach(
+              (key) => {
+                const value = objetoOficio[key];
+                // Asegurarse de que el valor sea de tipo string
+                if (typeof value !== "object" || value === null) {
+                  formData.append(key, String(value)); // Convertir a string si no es un objeto
+                }
               }
             );
+
+            // Adjuntar archivo si existe
+            if (values.archivo) {
+              formData.append("archivo", values.archivo);
+            }
+
+            // Enviar la solicitud a la API
+            const response = await fetch("http://localhost:5178/api/Oficios", {
+              method: "POST",
+              body: formData,
+            });
 
             if (!response.ok) {
               throw new Error("Error en la solicitud");
@@ -704,6 +730,7 @@ export default function ModalOficio({
                 <ModalResponsable
                   isOpen={showResponsableModal}
                   onClose={() => setShowResponsableModal(false)}
+                  handleOficioResponsable={handleOficioResponsable}
                   onSave={(datosEmpleados) => {
                     const datosResponsable = {
                       nombreCompleto: datosEmpleados.nombreCompleto,

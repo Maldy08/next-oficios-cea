@@ -3,8 +3,7 @@ import axios from "axios";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useModalOficioR1 from "../HooksRecibido/UseTablasModal";
 import TableComponentModales from "../../oficios-expedidos/components/TablecomponentModales";
-import { OficioResponsable } from "@/app/domain/entities/oficioResponsable";
-import { number } from "yup";
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 
 interface Empleados {
   nombreCompleto: string;
@@ -20,7 +19,7 @@ interface ModalResponsableProps {
   onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
   tipo: string;
-  // oficioResponsable: OficioResponsable[];
+  handleOficioResponsable: (oficioResponsable: OficioResponsable) => void;
 }
 
 const ModalResponsable = (props: ModalResponsableProps) => {
@@ -80,13 +79,31 @@ const ModalResponsable = (props: ModalResponsableProps) => {
 
   function onSave() {
     if (selectedItem) {
+      /*       props.oficioResponsable.push({
+        ejercicio : 2024,
+        eor : 2,
+        folio: 1,
+        idEmpleado: selectedItem.empleado,
+        rol: 1,
+      }) */
+      props.handleOficioResponsable({
+        ejercicio: 2024,
+        eor: 2,
+        folio: 1,
+        idEmpleado: selectedItem.empleado,
+        rol: 1,
+      });
       props.onSave(selectedItem); // Guardamos el remitente seleccionado
       props.onClose(); // Cerramos el modal
     }
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${
+        props.isOpen ? "block" : "hidden"
+      }`}
+    >
       <div
         className="fixed inset-0 bg-black bg-opacity-50"
         aria-hidden="true"
@@ -94,7 +111,7 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
           <h2 className="text-lg font-semibold mb-2 sm:mb-0">
-            Personal Externo
+            Seleccionar Responsable
           </h2>
           <div className="relative w-full max-w-[300px]">
             <input
@@ -122,7 +139,7 @@ const ModalResponsable = (props: ModalResponsableProps) => {
           <button
             type="button"
             onClick={props.onClose}
-            className="bg-[#641c34] text-white py-2 px-4 rounded"
+            className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
           >
             Cancelar
           </button>

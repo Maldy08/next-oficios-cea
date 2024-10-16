@@ -1,5 +1,5 @@
 import { Oficios } from "@/app/domain/entities";
-import React from "react";
+import React, { Component } from "react";
 import { FiEdit, FiEye, FiList } from "react-icons/fi";
 import ModalPersonaEnvio from "./ModalResponsableEnvio";
 interface Empleados {
@@ -92,3 +92,4 @@ const TableComponent = (props: TableProps) => {
 };
 
 export default TableComponent;
+

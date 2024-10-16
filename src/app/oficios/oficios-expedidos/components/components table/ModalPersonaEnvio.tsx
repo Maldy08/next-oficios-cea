@@ -1,4 +1,6 @@
-import { FC, useState, useEffect } from "react";
+"use client";
+
+import { useState } from "react";
 import { FaSearch, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
 import TableComponentModales from "../TablecomponentModales";
@@ -76,9 +78,7 @@ const ModalPersonaEnvio = (props: ModalPersonaEnvioProps) => {
       ></div>
       <div className="bg-white w-full max-w-4xl h-[80vh] max-h-[600px] p-6 rounded-lg shadow-lg relative flex flex-col z-10">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
-          <h2 className="text-lg font-semibold mb-2 sm:mb-0">
-            Seleccionar Persona de Envío
-          </h2>
+          <h2 className="text-lg font-semibold mb-2 sm:mb-0">Seleccionar Persona de Envío</h2>
           <div className="relative w-full max-w-[300px]">
             <input
               type="text"

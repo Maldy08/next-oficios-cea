@@ -1,3 +1,4 @@
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
@@ -82,6 +83,14 @@ export default function UseOficioMODAL() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedArea, setSelectedArea] = useState("");
   const [personaEntregaName, setPersonaEntregaName] = useState("");
+  const [Empleado, resEmpleado] = useState<number | null>(
+    null);
+
+  const [idEmpleado, setidEmpleado] = useState<string | null>(null);
+
+  const [oficioResponsable, setOficioResponsable] = useState<OficioResponsable[]>([]);
+
+
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -183,5 +192,11 @@ export default function UseOficioMODAL() {
     setresponsabledeptoRespon,
     setCurrentDate,
     validationSchema,
+    Empleado,
+    resEmpleado,
+    idEmpleado,
+    setidEmpleado,
+    oficioResponsable,
+    setOficioResponsable,
   };
 }

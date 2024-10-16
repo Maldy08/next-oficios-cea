@@ -20,7 +20,6 @@ interface ModalEditProps {
 }
 
 interface Departamento {
-  //Identifica las opciones de la lista desplegable de area o departemetno
   idCea: number;
   descripcion: string;
 }

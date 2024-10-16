@@ -3,6 +3,8 @@ export { default as ModalDestinatarioEnvio } from './components/ModalDestinatari
 export { default as ModalRemitenteEnvio } from './components/ModalRemitenteEnvio';
 export { default as ModalResponsableEnvio } from './components/ModalResponsableEnvio';
 export { default as ModalPersonaEnvio } from './components/components table/ModalPersonaEnvio';
+import 'font-awesome/css/font-awesome.min.css';
+
 
 // Exporta el hook usando la ruta específica proporcionada
 export { default as UseModalOficioExpedido } from './Hooks/UseModalOficioExpedido';

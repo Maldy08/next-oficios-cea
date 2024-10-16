@@ -8,8 +8,9 @@ interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
   descripcionPuesto: string;
-  empleado: number;
+  //idExterno: number;
   deptoComi: number;
+  empleado: number;
 }
 
 interface Remitente {
