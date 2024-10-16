@@ -12,11 +12,20 @@ interface Empleados {
   empleado: number;
 }
 
+interface OficiosResponsable {
+  ejercicio: string;
+  folio: string;
+  eor: string;
+  idEmpleado: number;
+  rol: number;
+}
+
 interface ModalResponsableProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
+  oficioResponsable: OficiosResponsable[]; // Agregado
   tipo: string;
 }
 
@@ -41,8 +50,12 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       "deptoComi",
     ],
     onClose: props.onClose,
-    onSave: props.onSave, // Dejamos que onSave venga desde los props
+    onSave: props.onSave,
   });
+
+  // Estado para manejar los oficios responsables
+const [oficioResponsable, setOficioResponsable] = useState<OficiosResponsable[]>([]);
+
 
   const departamento =
     props.tipo === "1"
@@ -57,11 +70,11 @@ const ModalResponsable = (props: ModalResponsableProps) => {
     },
     {
       header: "Departamento",
-      accessor: () => departamento, // Muestra siempre el departamento seleccionado
+      accessor: () => departamento,
     },
     {
       header: "Siglas",
-      accessor: () => siglas, // Muestra siempre las siglas seleccionadas
+      accessor: () => siglas,
     },
     {
       header: "Puesto",
@@ -73,10 +86,23 @@ const ModalResponsable = (props: ModalResponsableProps) => {
 
   function onSave() {
     if (selectedItem) {
-      props.onSave(selectedItem); // Guardamos el remitente seleccionado
-      props.onClose(); // Cerramos el modal
+      const nuevoOficio: OficiosResponsable = {
+        ejercicio: "", // Coloca aquí el valor correspondiente
+        folio: "", // Coloca aquí el valor correspondiente
+        eor: "", // Coloca aquí el valor correspondiente
+        idEmpleado: selectedItem.empleado, // Asignar el idEmpleado
+        rol: 1, // Ajusta según tus requerimientos
+      };
+  
+      // Actualiza el oficioResponsable con el nuevo empleado
+      props.oficioResponsable.push(nuevoOficio);
+  
+      // Llama a onSave con el empleado seleccionado
+      props.onSave(selectedItem);
+      props.onClose(); // Cerrar el modal
     }
   }
+  
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-y-auto ${props.isOpen ? 'block' : 'hidden'}`}>
@@ -104,7 +130,7 @@ const ModalResponsable = (props: ModalResponsableProps) => {
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
           setRowsPerPage={setRowsPerPage}
-        ></TableComponentModales>
+        />
 
         <div className="flex justify-end space-x-4 mt-4">
           <button

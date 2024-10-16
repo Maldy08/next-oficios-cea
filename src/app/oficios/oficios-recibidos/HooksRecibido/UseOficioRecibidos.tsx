@@ -86,6 +86,9 @@ export default function UseOficioMODAL() {
     null);
 
     const [idEmpleado, setidEmpleado] = useState<string | null>(null);
+    const [OficioResponsable, setOficioResponsable] = useState<string | null
+    >(null);
+
 
   
 
@@ -193,5 +196,7 @@ export default function UseOficioMODAL() {
     resEmpleado,
     idEmpleado,
     setidEmpleado,
+    OficioResponsable,
+    setOficioResponsable,
   };
 }
