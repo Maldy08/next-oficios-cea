@@ -255,38 +255,77 @@ export default function ModalOficio({
           };
 
           // Enviar el objeto a la API
-          try {
-            const formData = new FormData(); // Crear un objeto FormData
 
-            // Agregar propiedades de objetoOficio al FormData
+          console.log("Aqui est el json");
+          console.log(objetoOficio);
+          console.log("Aqui el arreglo");
+          console.log(oficioResponsable);
+
+          try {
+            // Primer POST: Enviar objeto JSON usando FormData (sin modificar objetoOficio)
+            const formData = new FormData();
+
             (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach(
               (key) => {
                 const value = objetoOficio[key];
-                // Asegurarse de que el valor sea de tipo string
-                if (typeof value !== "object" || value === null) {
-                  formData.append(key, String(value)); // Convertir a string si no es un objeto
+                if (value !== null && value !== undefined) {
+                  formData.append(key, value.toString());
                 }
               }
             );
 
-            // Adjuntar archivo si existe
             if (values.archivo) {
               formData.append("archivo", values.archivo);
             }
 
-            // Enviar la solicitud a la API
-            const response = await fetch("http://localhost:5178/api/Oficios", {
-              method: "POST",
-              body: formData,
-            });
+            const response = await fetch(
+              "http://200.56.97.5:7281/api/Oficios",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
 
             if (!response.ok) {
-              throw new Error("Error en la solicitud");
+              throw new Error(
+                "Error en la solicitud al enviar los datos generales."
+              );
             }
 
+            const data = await response.json();
+            console.log("Datos generales enviados correctamente:", data);
+
+            // Segundo POST: Enviar el arreglo oficioResponsable
+            const responseArray = await fetch(
+              "http://200.56.97.5:7281/api/OficioResponsable/CreateOficioResponsable",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(oficioResponsable),
+              }
+            );
+
+            if (!responseArray.ok) {
+              throw new Error(
+                "Error en la solicitud al enviar el arreglo oficioResponsable."
+              );
+            }
+
+            const responseArrayData = await responseArray.json();
+            console.log(
+              "Arreglo oficioResponsable enviado correctamente:",
+              responseArrayData
+            );
+
+            // Llamar a la función onSave si ambos POST fueron exitosos
             onSave();
           } catch (error) {
-            console.error("Error al guardar el oficio:", error);
+            console.error(
+              "Error al guardar el oficio o enviar el arreglo:",
+              error
+            );
           }
         }
       }}
