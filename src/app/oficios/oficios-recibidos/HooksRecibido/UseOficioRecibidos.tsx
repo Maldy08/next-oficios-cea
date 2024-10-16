@@ -83,14 +83,13 @@ export default function UseOficioMODAL() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedArea, setSelectedArea] = useState("");
   const [personaEntregaName, setPersonaEntregaName] = useState("");
-  const [Empleado, resEmpleado] = useState<number | null>(
-    null);
+  const [Empleado, resEmpleado] = useState<number | null>(null);
 
   const [idEmpleado, setidEmpleado] = useState<string | null>(null);
 
-  const [oficioResponsable, setOficioResponsable] = useState<OficioResponsable[]>([]);
-
-
+  const [oficioResponsables, setOficioResponsable] = useState<
+    OficioResponsable[]
+  >([]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -196,7 +195,7 @@ export default function UseOficioMODAL() {
     resEmpleado,
     idEmpleado,
     setidEmpleado,
-    oficioResponsable,
+    oficioResponsables,
     setOficioResponsable,
   };
 }

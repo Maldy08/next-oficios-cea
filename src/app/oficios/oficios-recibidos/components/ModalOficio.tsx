@@ -119,7 +119,7 @@ export default function ModalOficio({
     responsabledeptoRespon,
     setresponsabledeptoRespon,
     getCurrentDate,
-    oficioResponsable,
+    oficioResponsables,
     setOficioResponsable,
   } = UseOficioMODAL();
 
@@ -135,7 +135,7 @@ export default function ModalOficio({
       },
     ]);
 
-    console.log(oficioResponsable);
+    console.log(oficioResponsables);
   };
 
   return (
@@ -259,7 +259,7 @@ export default function ModalOficio({
           console.log("Aqui est el json");
           console.log(objetoOficio);
           console.log("Aqui el arreglo");
-          console.log(oficioResponsable);
+          console.log(oficioResponsables);
 
           try {
             // Primer POST: Enviar objeto JSON usando FormData (sin modificar objetoOficio)
@@ -303,7 +303,7 @@ export default function ModalOficio({
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(oficioResponsable),
+                body: JSON.stringify(oficioResponsables),
               }
             );
 
