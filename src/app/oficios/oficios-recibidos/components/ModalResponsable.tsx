@@ -20,12 +20,12 @@ interface ModalResponsableProps {
   onSave: (datosEmpleados: Empleados) => void;
   datosEmpleados: Empleados[];
   tipo: string;
-  oficioResponsable: OficioResponsable[];
+  // oficioResponsable: OficioResponsable[];
 }
 
 const ModalResponsable = (props: ModalResponsableProps) => {
-  console.log("Aqui esta la interface");
-  console.log(props.oficioResponsable);
+  //console.log("Aqui esta la interface");
+  //console.log(props.oficioResponsable);
   const {
     searchTerm,
     setSearchTerm,

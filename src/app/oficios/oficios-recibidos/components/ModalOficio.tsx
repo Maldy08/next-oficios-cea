@@ -728,15 +728,16 @@ export default function ModalOficio({
 
                     setShowResponsableModal(false);
                   }}
-                  oficioResponsable={[
-                    {
-                      ejercicio: 2024,
-                      folio: values.folio,
-                      eor: 1,
-                      idEmpleado: values.idEmpleado,
-                      rol: 1,
-                    },
-                  ]}
+                  // oficioResponsable={[
+                  //   {
+                  //     ejercicio: 2024,
+                  //     folio: values.folio,
+                  //     eor: 1,
+                  //     idEmpleado: values.idEmpleado,
+                  //     rol: 1,
+                  //   },
+                  // ]}
+                  //
                   tipo={values.tipo.toString()}
                   datosEmpleados={datosEmpleados}
                 />
