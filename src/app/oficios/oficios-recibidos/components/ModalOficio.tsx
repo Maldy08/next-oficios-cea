@@ -737,7 +737,7 @@ export default function ModalOficio({
                   //     rol: 1,
                   //   },
                   // ]}
-                  //
+
                   tipo={values.tipo.toString()}
                   datosEmpleados={datosEmpleados}
                 />
