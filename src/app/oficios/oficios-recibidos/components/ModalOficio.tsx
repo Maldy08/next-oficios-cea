@@ -177,10 +177,11 @@ export default function ModalOficio({
 
         destinatarioType: destinatarioType || "2",
         remitenteType: remitenteType || "1",
-        oficioResponsable: oficioResponsable || "1",
 
         idEmpleado: 0,
         rol: 0,
+        ejercicio: 2024,
+        eor: 0,
 
       }}
       validationSchema={validationSchema}
@@ -232,93 +233,92 @@ export default function ModalOficio({
               "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
 
-          // Crear el objeto 'objetoOficio'
-const objetoOficio = {
-  ejercicio: 2024,
-  folio: values.folio,
-  eor: 2,
-  tipo: values.tipo,
-  noOficio: values.noOficio,
-  pdfpath: null,
-  fecha: currentDate,
-  fechaCaptura: values.fechaCaptura,
-  fechaAcuse: "2024-10-03T07:02:08.170Z",
-  fechaLimite: values.fechaLimite,
-  remDepen: remDepen,
-  remSiglas: remSiglas,
-  remNombre: values.remNombre,
-  remCargo: values.remCargo,
-  destDepen: destDepen,
-  destSiglas: destSiglas,
-  destNombre: values.destNombre,
-  destCargo: values.destCargo,
-  tema: values.tema,
-  estatus: 1,
-  empqentrega: 0,
-  relacionoficio: "string",
-  depto: values.depto,
-  deptoRespon: values.deptoRespon,
-  archivo: values.archivo,
-};
-
-try {
-  // Enviar el objeto 'objetoOficio' a la API
-  const formData = new FormData(); // Crear un objeto FormData
-
-  // Agregar propiedades de objetoOficio al FormData
-  (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach((key) => {
-      const value = objetoOficio[key];
-      if (typeof value !== 'object' || value === null) {
-          formData.append(key, String(value)); // Convertir a string si no es un objeto
-      }
-  });
-
-  // Adjuntar archivo si existe
-  if (values.archivo) {
-      formData.append("archivo", values.archivo);
-  }
-
-  // Enviar la primera solicitud a la API
-  const response = await fetch("http://localhost:5178/api/Oficios", {
-      method: "POST",
-      body: formData, 
-  });
-
-  if (!response.ok) {
-      throw new Error("Error en la solicitud del oficio");
-  }
-
-  // Crear el objeto 'OficioResponsable' solo si la primera solicitud fue exitosa
-  const oficioResponsableData = {
-      idEmpleado: values.idEmpleado || 0,
-      rol: values.rol || 0,
-      ejercicio: 2024,
-      eor: 2,
-      folio: values.folio,
-  };
-
-  // Enviar el objeto 'OficioResponsable' a la API
-  const responseOficioResponsable = await fetch("http://localhost:5178/api/OficiosResponsables", {
-      method: "POST",
-      headers: {
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify(oficioResponsableData),
-  });
-
-  if (!responseOficioResponsable.ok) {
-      throw new Error("Error en la solicitud de OficioResponsable");
-  }
-
-  // Si ambas solicitudes son exitosas, llama a onSave
-  onSave();
-} catch (error) {
-  // Manejo de errores si alguna de las solicitudes falla
-  console.error("Error al guardar el oficio o el oficio responsable:", error);
-}
-
-      }
-    }}
+          const objetoOficio = {
+            ejercicio: 2024,
+            folio: values.folio,
+            eor: 2,
+            tipo: values.tipo,
+            noOficio: values.noOficio,
+            pdfpath: null,
+            fecha: currentDate,
+            fechaCaptura: values.fechaCaptura,
+            fechaAcuse: "2024-10-03T07:02:08.170Z",
+            fechaLimite: values.fechaLimite,
+            remDepen: remDepen,
+            remSiglas: remSiglas,
+            remNombre: values.remNombre,
+            remCargo: values.remCargo,
+            destDepen: destDepen,
+            destSiglas: destSiglas,
+            destNombre: values.destNombre,
+            destCargo: values.destCargo,
+            tema: values.tema,
+            estatus: 1,
+            empqentrega: 0,
+            relacionoficio: "string",
+            depto: values.depto,
+            deptoRespon: values.deptoRespon,
+            archivo: values.archivo,
+          };
+          
+          try {
+            // Enviar el objeto 'objetoOficio' a la API
+            const formData = new FormData(); // Crear un objeto FormData
+          
+            // Agregar propiedades de objetoOficio al FormData
+            (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach((key) => {
+                const value = objetoOficio[key];
+                if (typeof value !== 'object' || value === null) {
+                    formData.append(key, String(value)); // Convertir a string si no es un objeto
+                }
+            });
+          
+            // Adjuntar archivo si existe
+            if (values.archivo) {
+                formData.append("archivo", values.archivo);
+            }
+          
+            // Enviar la primera solicitud a la API
+            const response = await fetch("http://200.56.97.5:7281/api/Oficios", {
+                method: "POST",
+                body: formData, 
+            });
+          
+            if (!response.ok) {
+                throw new Error("Error en la solicitud del oficio");
+            }
+          
+            // Crear el objeto 'OficioResponsable' solo si la primera solicitud fue exitosa
+            const oficioResponsableData = {
+              idEmpleado: values.idEmpleado,
+              rol: values.rol,
+              ejercicio: values.ejercicio,
+              eor: values.eor,
+              folio: values.folio,
+            };
+          
+            // Enviar el objeto 'OficioResponsable' a la API
+            const responseOficioResponsable = await fetch("http://200.56.97.5:7281/api/OficioResponsable/CreateOficioResponsable", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(oficioResponsableData),
+            });
+          
+            if (!responseOficioResponsable.ok) {
+                throw new Error("Error en la solicitud de OficioResponsables");
+            }
+          
+            // Si ambas solicitudes son exitosas, llama a onSave
+            onSave();
+          } catch (error) {
+            // Manejo de errores si alguna de las solicitudes falla
+            console.error("Error al guardar el oficio o el oficio responsable:", error);
+          }
+          
+                }
+              }}
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
