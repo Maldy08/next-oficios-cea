@@ -176,6 +176,7 @@ export default function ModalOficio({
 
         idEmpleado: 0,
         rol: 0,
+        //nombreResponsable: "",
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
