@@ -1,8 +1,7 @@
-export interface OficiosResponsable {
-
+export interface OficioResponsable {
     ejercicio : number;
-    folio: number;
-    eor: number;
-    idEmpleado: number;
-    rol: number;
+    folio : number;
+    eor : number ;
+    idEmpleado : number;
+    rol : number;
 }

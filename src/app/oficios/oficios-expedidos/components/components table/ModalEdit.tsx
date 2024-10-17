@@ -153,7 +153,7 @@ export default function ModalEdit({
               style={{ maxHeight: "80vh", overflowY: "auto" }}
             >
               <h2 className="text-lg font-semibold mb-4">
-                Ingresar Oficio Expedidos
+                Editar Oficio Expedidos
               </h2>
 
               <div className="flex flex-col space-y-4">

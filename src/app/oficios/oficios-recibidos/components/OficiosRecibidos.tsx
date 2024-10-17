@@ -6,6 +6,7 @@ import ModalOficio from "./ModalOficio";
 import ModalResponsable from "./ModalResponsable";
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
 import { FiSearch } from "react-icons/fi";
+import ModalEdit from "../components/components table/ModalEdit";
 
 interface OficiosPageProps {
   remitentes: any[];
@@ -75,6 +76,16 @@ export default function OficiosPage({
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
         />
+      )}
+
+        {modalType === "edit" && (
+          <ModalEdit
+            isOpen={modalType === "edit"}
+            onClose={handleCloseModal}
+            onSave={handleSave}
+            datosEmpleados={datosEmpleados}
+            remitentes={remitentes}
+          />
       )}
     </>
   );
