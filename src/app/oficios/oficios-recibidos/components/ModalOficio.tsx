@@ -180,8 +180,6 @@ export default function ModalOficio({
 
         idEmpleado: 0,
         rol: 0,
-        ejercicio: 2024,
-        eor: 0,
 
       }}
       validationSchema={validationSchema}
@@ -237,7 +235,11 @@ export default function ModalOficio({
             ejercicio: 2024,
             folio: values.folio,
             eor: 2,
+
+            // El tipo me fallo en el croops del error de la api
             tipo: values.tipo,
+            // Revisar el tipo
+
             noOficio: values.noOficio,
             pdfpath: null,
             fecha: currentDate,
@@ -248,77 +250,61 @@ export default function ModalOficio({
             remSiglas: remSiglas,
             remNombre: values.remNombre,
             remCargo: values.remCargo,
+
+            // Me funciono todo pero en destSiglas
             destDepen: destDepen,
             destSiglas: destSiglas,
             destNombre: values.destNombre,
             destCargo: values.destCargo,
+
             tema: values.tema,
             estatus: 1,
             empqentrega: 0,
             relacionoficio: "string",
+
             depto: values.depto,
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
+
           };
-          
+
+          // Enviar el objeto a la API
           try {
-            // Enviar el objeto 'objetoOficio' a la API
             const formData = new FormData(); // Crear un objeto FormData
-          
+        
             // Agregar propiedades de objetoOficio al FormData
             (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach((key) => {
                 const value = objetoOficio[key];
+                // Asegurarse de que el valor sea de tipo string
                 if (typeof value !== 'object' || value === null) {
                     formData.append(key, String(value)); // Convertir a string si no es un objeto
                 }
             });
-          
+        
+        
             // Adjuntar archivo si existe
             if (values.archivo) {
                 formData.append("archivo", values.archivo);
             }
-          
-            // Enviar la primera solicitud a la API
-            const response = await fetch("http://200.56.97.5:7281/api/Oficios", {
+
+        
+            // Enviar la solicitud a la API
+            const response = await fetch("http://localhost:5178/api/Oficios", {
                 method: "POST",
                 body: formData, 
+    
             });
-          
+        
             if (!response.ok) {
-                throw new Error("Error en la solicitud del oficio");
+                throw new Error("Error en la solicitud");
             }
-          
-            // Crear el objeto 'OficioResponsable' solo si la primera solicitud fue exitosa
-            const oficioResponsableData = {
-              idEmpleado: values.idEmpleado,
-              rol: values.rol,
-              ejercicio: values.ejercicio,
-              eor: values.eor,
-              folio: values.folio,
-            };
-          
-            // Enviar el objeto 'OficioResponsable' a la API
-            const responseOficioResponsable = await fetch("http://200.56.97.5:7281/api/OficioResponsable/CreateOficioResponsable", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(oficioResponsableData),
-            });
-          
-            if (!responseOficioResponsable.ok) {
-                throw new Error("Error en la solicitud de OficioResponsables");
-            }
-          
-            // Si ambas solicitudes son exitosas, llama a onSave
+        
             onSave();
-          } catch (error) {
-            // Manejo de errores si alguna de las solicitudes falla
-            console.error("Error al guardar el oficio o el oficio responsable:", error);
-          }
-          
-                }
-              }}
+        } catch (error) {
+            console.error("Error al guardar el oficio:", error);
+        }
+        }
+      }}
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
