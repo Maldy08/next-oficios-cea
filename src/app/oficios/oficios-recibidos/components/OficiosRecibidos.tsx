@@ -6,7 +6,7 @@ import ModalOficio from "./ModalOficio";
 import ModalResponsable from "./ModalResponsable";
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
 import { FiSearch } from "react-icons/fi";
-import ModalEdit from "../components/components table/ModalEdit";
+import { useState } from "react";
 
 interface OficiosPageProps {
   remitentes: any[];
@@ -39,6 +39,13 @@ export default function OficiosPage({
     rows,
   });
 
+  const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
+
+  const handleEdit = (rowData: any) => {
+    setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
+    handleOpenModal("oficioEdit"); // Abre el modal en modo edición
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -66,6 +73,8 @@ export default function OficiosPage({
         handleCloseModal={handleCloseModal}
         modalType={modalType}
         datosEmpleados={datosEmpleados}
+        editado={true}
+        handleEdit={handleEdit}
       />
 
       {modalType === "oficioRecibido" && (
@@ -75,17 +84,22 @@ export default function OficiosPage({
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
+          esNuevo={true}
+          editado={false}
+          rowData={selectedRow}
         />
       )}
-
-        {modalType === "edit" && (
-          <ModalEdit
-            isOpen={modalType === "edit"}
-            onClose={handleCloseModal}
-            onSave={handleSave}
-            datosEmpleados={datosEmpleados}
-            remitentes={remitentes}
-          />
+      {modalType === "oficioEdit" && (
+        <ModalOficio
+          isOpen={modalType === "oficioEdit"}
+          onClose={handleCloseModal}
+          onSave={handleSave}
+          datosEmpleados={datosEmpleados}
+          remitentes={remitentes}
+          esNuevo={false}
+          editado={true}
+          rowData={selectedRow}
+        />
       )}
     </>
   );

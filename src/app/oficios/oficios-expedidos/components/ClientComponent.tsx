@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import ModalEdit from "../components/components table/ModalEdit";
 import TableComponent from "../components/table";
 import ModalOficioExpedido from "../components/ModalOficioExpedido";
 import ModalList from "../components/components table/ModalList";
@@ -86,7 +85,7 @@ export default function ClientComponent({
       )}
 
       {modalType === "edit" && (
-        <ModalEdit
+        <ModalOficioExpedido
           isOpen={modalType === "edit"}
           onClose={handleCloseModal}
           onSave={handleSave}
