@@ -24,7 +24,12 @@ export default function UseOficioMODAL() {
       .required("Debes seleccionar una opción"),
     fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
     // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
-    noOficio: Yup.number().required("Número de Oficio es requerido"),
+    noOficio: Yup.string()
+      .matches(
+        /^[0-9\-]+$/,
+        "El número de oficio solo puede contener números y guiones"
+      )
+      .required("El número de oficio es requerido"),
     tema: Yup.string().required("Tema es requerido"),
     observaciones: Yup.string(),
     // pdfpath: Yup.mixed().required("Archivo es requerido"),
@@ -87,7 +92,7 @@ export default function UseOficioMODAL() {
 
   const [idEmpleado, setidEmpleado] = useState<string | null>(null);
 
-  const [oficioResponsables, setOficioResponsable] = useState<
+  const [oficioResponsable, setOficioResponsable] = useState<
     OficioResponsable[]
   >([]);
 
@@ -195,7 +200,7 @@ export default function UseOficioMODAL() {
     resEmpleado,
     idEmpleado,
     setidEmpleado,
-    oficioResponsables,
+    oficioResponsable,
     setOficioResponsable,
   };
 }
