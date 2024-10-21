@@ -289,15 +289,29 @@ export default function ModalOficio({
 
         
             // Enviar la solicitud a la API
-            const response = await fetch("http://localhost:5178/api/Oficios", {
-                method: "POST",
-                body: formData, 
+            // const response = await fetch("http://localhost:5178/api/Oficios", {
+            //     method: "POST",
+            //     body: formData, 
     
-            });
+            // });
+
+            const reponseOficioReponsable = await fetch("http://localhost:5178/api/OficioResponsable/CreateOficioResponsable", {
+              method: "POST",
+              body: JSON.stringify(oficioResponsable),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+          });
         
-            if (!response.ok) {
-                throw new Error("Error en la solicitud");
-            }
+            // if (!response.ok) {
+            //     throw new Error("Error en la solicitud");
+            // }
+
+            if (!reponseOficioReponsable.ok) {
+              throw new Error("Error en la solicitud");
+          }
+
+
         
             onSave();
         } catch (error) {
