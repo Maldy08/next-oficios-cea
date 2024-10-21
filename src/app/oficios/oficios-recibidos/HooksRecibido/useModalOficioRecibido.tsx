@@ -1,4 +1,6 @@
+import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 import { useEffect, useState } from "react";
+import * as Yup from "yup";
 
 export default function UseOficioMODAL() {
   const [modalType, setModalType] = useState<string | null>(null);
@@ -16,23 +18,63 @@ export default function UseOficioMODAL() {
     setModalType(null);
   };
 
+  const validationSchema = Yup.object().shape({
+    tipo: Yup.string()
+      .oneOf(["", "1", "2"], "Debes seleccionar una opció")
+      .required("Debes seleccionar una opción"),
+    fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
+    // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
+    noOficio: Yup.number().required("Número de Oficio es requerido"),
+    tema: Yup.string().required("Tema es requerido"),
+    observaciones: Yup.string(),
+    // pdfpath: Yup.mixed().required("Archivo es requerido"),
+    remNombre: Yup.string().required("Nombre del remitente es requerido"),
+    destNombre: Yup.string().required("Nombre del destinatario es requerido"),
+    responsableName: Yup.string().required(
+      "Nombre del responsable es requerido"
+    ),
+    destinatarioType: Yup.string()
+      .oneOf(["", "1", "2"], "Tipo de destinatario inválido")
+      .required("Tipo de destinatario es requerido"),
+    remitenteType: Yup.string()
+      .oneOf(["", "1", "2"], "Tipo de remitente inválido")
+      .required("Tipo de remitente es requerido"),
+    // remSiglas: Yup.string().required("Siglas del remitente son requeridas"), // Añadido remSiglas como requerido
+  });
+
   // Guardar cambios y cerrar modal
   const handleSave = () => {
-    console.log("Datos guardados");
+    //console.log("Datos guardados");
     handleCloseModal();
   };
-
   const [remitenteType, setRemitenteType] = useState("");
-  const [destinatarioType, setDestinatarioType] = useState("");
-  const [remNombre, setremNombre] = useState<string | null>(null);
-  const [destNombre, setdestNombre] = useState<string | null>(null);
-  const [destDepen, setdestDepen] = useState<string | null>(null);
-  const [destCargo, setdestCargo] = useState<string | null>(null);
-  const [remDepen, setremDepen] = useState<string | null>(null);
-  const [remCargo, setremCargo] = useState<string | null>(null);
-  const [remsiglas, setremsiglas] = useState<string | null>(null);
-  const [destSiglas, setdestSiglas] = useState<string | null>(null);
+  const [remitenteName, setRemitenteName] = useState<string | null>(null);
+  const [remitenteOcupacion, setRemitenteOcupacion] = useState<string | null>(
+    null
+  );
+
+  const [remitenteSiglas, setremitenteSiglas] = useState<string | null>(null);
+  const [remitentePuesto, setremitentePuesto] = useState<string | null>(null);
+
+  const [destinatarioType, setDestinatarioType] = useState<string | null>(null);
+  const [destinatarioName, setDestinatarioName] = useState<string | null>(null);
+  const [destinatarioDepartamento, setdestinatarioDepartamento] = useState<
+    string | null
+  >(null);
+  const [destinatarioPuesto, setDestinatarioPuesto] = useState<string | null>(
+    null
+  );
+
+  const [destinatarioSiglas, setDestinatarioSigla] = useState<string | null>(
+    null
+  );
+
   const [responsableName, setResponsableName] = useState<string | null>(null);
+  const [responsableDepto, setresponsableDepto] = useState<string | null>(null);
+  const [responsabledeptoRespon, setresponsabledeptoRespon] = useState<
+    string | null
+  >(null);
+
   const [showDestinatarioModal, setShowDestinatarioModal] = useState(false);
   const [showRemitenteModal, setShowRemitenteModal] = useState(false);
   const [showResponsableModal, setShowResponsableModal] = useState(false);
@@ -40,6 +82,14 @@ export default function UseOficioMODAL() {
   const [currentDate, setCurrentDate] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedArea, setSelectedArea] = useState("");
+  const [personaEntregaName, setPersonaEntregaName] = useState("");
+  const [Empleado, resEmpleado] = useState<number | null>(null);
+
+  const [idEmpleado, setidEmpleado] = useState<string | null>(null);
+
+  const [oficioResponsables, setOficioResponsable] = useState<
+    OficioResponsable[]
+  >([]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -56,26 +106,36 @@ export default function UseOficioMODAL() {
     }
   };
 
-  const handleDestinatarioSave = (name: string, ) => {
-    setdestNombre(name);
+  const handleDestinatarioSave = (name: string) => {
+    setDestinatarioName(name);
+    console.log("Datos aguardados");
     setShowDestinatarioModal(false);
   };
 
   const handleResponsableSave = (name: string) => {
     setResponsableName(name);
+    console.log("Datos aguardados");
     setShowResponsableModal(false);
   };
 
   const handleRemitenteSave = (name: string) => {
-    setremNombre(name);
+    setRemitenteName(name);
+    console.log("Datos aguardados");
     setShowRemitenteModal(false);
   };
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedArea(event.target.value);
+  const getCurrentDate = () => {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const year = today.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
   return {
+    getCurrentDate,
+    personaEntregaName,
+    setPersonaEntregaName,
     selectedArea,
     setSelectedArea,
     handleFileChange,
@@ -94,8 +154,8 @@ export default function UseOficioMODAL() {
     setRemitenteType,
     destinatarioType,
     setDestinatarioType,
-    remNombre,
-    destNombre,
+    remitenteName,
+    destinatarioName,
     responsableName,
     showDestinatarioModal,
     handleDestinatarioSave,
@@ -110,21 +170,32 @@ export default function UseOficioMODAL() {
     setShowDestinatarioModal,
     setShowResponsableModal,
     setShowRemitenteModal,
-    setdestNombre,
-    setremNombre,
-    setdestDepen,
-    destDepen,
-    destCargo,
-    setdestCargo,
-    remDepen,
-    setremDepen,
-    remCargo,
-    setremCargo,
-    remsiglas,
-    setremsiglas,
-    destSiglas,
-    setdestSiglas,
+    setDestinatarioName,
+    setRemitenteName,
     setResponsableName,
-    handleSelectChange,
+    remitenteOcupacion,
+    setRemitenteOcupacion,
+    remitenteSiglas,
+    setremitenteSiglas,
+    remitentePuesto,
+    setremitentePuesto,
+    destinatarioDepartamento,
+    setdestinatarioDepartamento,
+    destinatarioPuesto,
+    setDestinatarioPuesto,
+    destinatarioSiglas,
+    setDestinatarioSigla,
+    responsableDepto,
+    setresponsableDepto,
+    responsabledeptoRespon,
+    setresponsabledeptoRespon,
+    setCurrentDate,
+    validationSchema,
+    Empleado,
+    resEmpleado,
+    idEmpleado,
+    setidEmpleado,
+    oficioResponsables,
+    setOficioResponsable,
   };
 }

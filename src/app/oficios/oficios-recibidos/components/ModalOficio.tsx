@@ -15,6 +15,9 @@ interface ModalOficioProps {
   onSave: () => void;
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
+  esNuevo: boolean;
+  editado: boolean;
+  rowData: any;
 }
 interface Empleados {
   nombreCompleto: string;
@@ -32,8 +35,6 @@ interface remitentes {
   deptoComi: number;
   empleado: number;
 }
-
-
 
 interface ObjetoOficio {
   ejercicio: number;
@@ -61,11 +62,12 @@ interface ObjetoOficio {
   depto: string;
   deptoRespon: string;
   archivo: string;
-
 }
 
-
 export default function ModalOficio({
+  rowData,
+  esNuevo,
+  editado,
   isOpen,
   onClose,
   onSave,
@@ -127,66 +129,78 @@ export default function ModalOficio({
     setOficioResponsable,
   } = UseOficioMODAL();
 
-
-  const handleOficioResponsable = (data: OficioResponsable) => {
-    setOficioResponsable( prev => [...prev,  {
-      idEmpleado: data.idEmpleado,
-      rol: data.rol,
-      ejercicio: data.ejercicio,
-      eor: data.eor,
-      folio: data.folio,
-    }]);
-
-    console.log(oficioResponsable);
+  if (editado) {
+    console.log("Entro a editarrrrr");
+    console.log(rowData);
+  }
+  if (esNuevo) {
+    console.log("Entro a nuevoooooooooo");
   }
 
+  let numero1 = 2;
+  const handleOficioResponsable = (data: OficioResponsable) => {
+    setOficioResponsable((prev) => [
+      ...prev,
+      {
+        idEmpleado: data.idEmpleado,
+        rol: data.rol,
+        ejercicio: data.ejercicio,
+        eor: data.eor,
+        folio: data.folio,
+      },
+    ]);
 
+    console.log(oficioResponsable);
+  };
+
+
+  
+  const datosTabla = {};
 
   return (
     <Formik
       initialValues={{
-        folio: "",
-        tipo: "1",
-        fechaCaptura: getCurrentDate(),
-        fechaLimite: getCurrentDate(),
-        noOficio: "",
-        observaciones: "",
-        pdfpath: null,
-        archivo: null,
+        folio: editado ? rowData.folio : 0,
+        tipo: editado ? rowData.tipo.toString() : "1", // Convertir a string
+        fechaCaptura: editado && rowData.fechaCaptura 
+  ? new Date(rowData.fechaCaptura).toISOString().split("T")[0] 
+  : getCurrentDate(),
+        fechaLimite: editado && rowData.fechaLimite 
+  ? new Date(rowData.fechaLimite).toISOString().split("T")[0] 
+  : getCurrentDate(),
+        noOficio: editado ? rowData.noOficio : "",
+        observaciones: editado ? rowData.observaciones : "",
+        pdfpath: editado ? rowData.pdfpath : null,
+        archivo: editado ? rowData.archivo : null, // Asumes que el archivo es nuevo o se seleccionará al crear o editar
+        tema: editado ? rowData.tema : "",
+        estatus: editado ? rowData.estatus : 0,
+        empqentrega: editado ? rowData.empqentrega : 0,
+        relacionoficio: editado ? rowData.relacionoficio : "",
+        selectedArea: editado ? rowData.selectedArea : "",
+        remNombre: editado ? rowData.remNombre : "",
+        remDepen: editado ? rowData.remDepen : "",
+        remSiglas: editado ? rowData.remSiglas : "",
+        remCargo: editado ? rowData.remCargo : "",
+        destNombre: editado ? rowData.destNombre : "",
+        destDepen: editado ? rowData.destDepen : "",
+        destCargo: editado ? rowData.destCargo : "",
+        destSiglas: editado ? rowData.destSiglas : "",
+        depto: editado ? rowData.depto : "",
+        deptoRespon: editado ? rowData.deptoRespon : "",
+        responsableName: editado ? rowData.nombreResponsable : "",
+        destinatarioType: editado ? "1" : "2", // Interno por defecto en editado
+        remitenteType: editado ? "2" : "1",    // Externo por defecto en editado
 
-        tema: "",
-        estatus: 0,
-        empqentrega: 0,
-        relacionoficio: "",
-
-        selectedArea: selectedArea || "",
-
-        remNombre: remitenteName || "",
-        remDepen: remitenteOcupacion || "",
-        remSiglas: remitenteSiglas || "",
-        remCargo: remitentePuesto || "",
-
-        destNombre: destinatarioName || "",
-        destDepen: destinatarioDepartamento || "",
-        destCargo: destinatarioPuesto || "",
-        destSiglas: destinatarioSiglas || "",
-
-        depto: responsableDepto || "",
-        deptoRespon: responsabledeptoRespon || "",
-        responsableName: responsableName || "",
-
-        destinatarioType: destinatarioType || "2",
-        remitenteType: remitenteType || "1",
-
-        idEmpleado: 0,
-        rol: 0,
-
+        //nombreResponsable: "",
       }}
       validationSchema={validationSchema}
       validateOnChange={false} // Desactivar validación en cada cambio
       validateOnBlur={false} // Desactivar validación en cada desenfoque
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
+
+        if (numero1 > 1) {
+        }
 
         if (!values.remNombre)
           errors.remNombre = "Nombre del remitente es requerido";
@@ -235,11 +249,7 @@ export default function ModalOficio({
             ejercicio: 2024,
             folio: values.folio,
             eor: 2,
-
-            // El tipo me fallo en el croops del error de la api
             tipo: values.tipo,
-            // Revisar el tipo
-
             noOficio: values.noOficio,
             pdfpath: null,
             fecha: currentDate,
@@ -250,43 +260,44 @@ export default function ModalOficio({
             remSiglas: remSiglas,
             remNombre: values.remNombre,
             remCargo: values.remCargo,
-
-            // Me funciono todo pero en destSiglas
             destDepen: destDepen,
             destSiglas: destSiglas,
             destNombre: values.destNombre,
             destCargo: values.destCargo,
-
             tema: values.tema,
             estatus: 1,
             empqentrega: 0,
             relacionoficio: "string",
-
             depto: values.depto,
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
-
           };
 
           // Enviar el objeto a la API
+
+          console.log("Aqui est el json");
+          console.log(objetoOficio);
+          console.log("Aqui el arreglo");
+          console.log(oficioResponsable);
+
           try {
-            const formData = new FormData(); // Crear un objeto FormData
-        
-            // Agregar propiedades de objetoOficio al FormData
-            (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach((key) => {
+            // Primer POST: Enviar objeto JSON usando FormData (sin modificar objetoOficio)
+            const formData = new FormData();
+
+            (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach(
+              (key) => {
                 const value = objetoOficio[key];
-                // Asegurarse de que el valor sea de tipo string
-                if (typeof value !== 'object' || value === null) {
-                    formData.append(key, String(value)); // Convertir a string si no es un objeto
+                if (value !== null && value !== undefined) {
+                  formData.append(key, value.toString());
                 }
-            });
-        
-        
-            // Adjuntar archivo si existe
+              }
+            );
+
             if (values.archivo) {
-                formData.append("archivo", values.archivo);
+              formData.append("archivo", values.archivo);
             }
 
+<<<<<<< HEAD
         
             // Enviar la solicitud a la API
             // const response = await fetch("http://localhost:5178/api/Oficios", {
@@ -313,10 +324,57 @@ export default function ModalOficio({
 
 
         
+=======
+            const response = await fetch(
+              "http://200.56.97.5:7281/api/Oficios",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(
+                "Error en la solicitud al enviar los datos generales."
+              );
+            }
+
+            const data = await response.json();
+            console.log("Datos generales enviados correctamente:", data);
+
+            // Segundo POST: Enviar el arreglo oficioResponsable
+            const responseArray = await fetch(
+              "http://200.56.97.5:7281/api/OficioResponsable/CreateOficioResponsable",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(oficioResponsable),
+              }
+            );
+
+            if (!responseArray.ok) {
+              throw new Error(
+                "Error en la solicitud al enviar el arreglo oficioResponsable."
+              );
+            }
+
+            const responseArrayData = await responseArray.json();
+            console.log(
+              "Arreglo oficioResponsable enviado correctamente:",
+              responseArrayData
+            );
+
+            // Llamar a la función onSave si ambos POST fueron exitosos
+>>>>>>> roberto
             onSave();
-        } catch (error) {
-            console.error("Error al guardar el oficio:", error);
-        }
+          } catch (error) {
+            console.error(
+              "Error al guardar el oficio o enviar el arreglo:",
+              error
+            );
+          }
         }
       }}
     >
@@ -327,9 +385,16 @@ export default function ModalOficio({
               className="bg-white w-full max-w-3xl p-6 rounded-lg shadow-lg relative mx-4 sm:mx-0 overflow-y-auto"
               style={{ maxHeight: "80vh" }}
             >
-              <h2 className="text-lg font-semibold mb-4">
-                Ingresar Oficio Recibido
-              </h2>
+              {esNuevo && (
+                <h2 className="text-lg font-semibold mb-4">
+                  Ingresar Oficio Recibido
+                </h2>
+              )}
+              {editado && (
+                <h2 className="text-lg font-semibold mb-4">
+                  Editar Oficio Recibido
+                </h2>
+              )}
 
               <div className="flex flex-col space-y-4">
                 {/* Folio y Selección */}
@@ -346,14 +411,13 @@ export default function ModalOficio({
 
                   <div className="flex items-center space-x-3">
                     <label className="flex items-center cursor-pointer">
-                      <Field
-                        //checked={1}
-                        type="radio"
-                        name="tipo"
-                        value="1"
-                        className="mr-1"
-                      />
-                      CEA
+                    <Field
+        type="radio"
+        name="tipo"
+        value="1"
+        className="mr-1"
+      />
+      CEA
                     </label>
                     <label className="flex items-center cursor-pointer">
                       <Field
@@ -366,10 +430,11 @@ export default function ModalOficio({
                     </label>
                   </div>
                   {touched.tipo && errors.tipo && (
-                    <div className="left-0 top-full mt-1 text-red-600 text-sm">
-                      {errors.tipo}
-                    </div>
-                  )}
+  <div className="text-red-600">
+    {/* Verifica si el error es un string */}
+    {typeof errors.tipo === 'string' ? errors.tipo : null}
+  </div>
+)}
 
                   <div className="flex items-center">
                     <span className="w-24 sm:w-12">Fecha:</span>
@@ -394,7 +459,7 @@ export default function ModalOficio({
                       placeholder="Número de oficio"
                       className="border border-gray-300 rounded p-2 w-full"
                       onInput={(e: { target: { value: string } }) => {
-                        e.target.value = e.target.value.replace(/[^0-9]/g, ""); // Solo permite números
+                        e.target.value = e.target.value.replace(/[^0-9\-]/g, ""); // Solo permite números
                       }}
                     />
                     <ErrorMessage
@@ -471,8 +536,11 @@ export default function ModalOficio({
                       </div>
                     </label>
                     {touched.remitenteType && errors.remitenteType && (
-                      <div className="text-red-600">{errors.remitenteType}</div>
-                    )}
+  <div className="text-red-600">
+    {/* Verifica si el error es un string */}
+    {typeof errors.remitenteType === 'string' ? errors.remitenteType : null}
+  </div>
+)}
                     <div className="relative">
                       <Field
                         id="remNombre"
@@ -490,8 +558,11 @@ export default function ModalOficio({
                       />
                     </div>
                     {touched.remNombre && errors.remNombre && (
-                      <div className="text-red-600">{errors.remNombre}</div>
-                    )}
+  <div className="text-red-600">
+    {/* Verifica si el error es un string */}
+    {typeof errors.remNombre === 'string' ? errors.remNombre : null}
+  </div>
+)}
                   </div>
 
                   <div className="flex flex-col">
@@ -530,10 +601,11 @@ export default function ModalOficio({
                       </div>
                     </label>
                     {touched.destinatarioType && errors.destinatarioType && (
-                      <div className="text-red-600">
-                        {errors.destinatarioType}
-                      </div>
-                    )}
+  <div className="text-red-600">
+    {/* Verifica si el error es un string */}
+    {typeof errors.destinatarioType === 'string' ? errors.destinatarioType : null}
+  </div>
+)}
 
                     <div className="relative">
                       <Field
@@ -551,8 +623,11 @@ export default function ModalOficio({
                         className="absolute right-2 top-2 text-gray-400 cursor-pointer"
                       />
                       {touched.destNombre && errors.destNombre && (
-                        <div className="text-red-600">{errors.destNombre}</div>
-                      )}
+  <div className="text-red-600">
+    {/* Verifica si el error es un string */}
+    {typeof errors.destNombre === 'string' ? errors.destNombre : null}
+  </div>
+)}
                     </div>
                   </div>
 
@@ -650,7 +725,6 @@ export default function ModalOficio({
                   />
                 </div>
               </div>
-
               <div className="flex justify-end space-x-4 mt-4">
                 <button
                   onClick={onClose}
@@ -658,16 +732,27 @@ export default function ModalOficio({
                 >
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-                >
-                  Guardar
-                </button>
+                {editado && (
+                  <button
+                    type="submit"
+                    className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+                  >
+                    Editar
+                  </button>
+                )}
+
+                {esNuevo && (
+                  <button
+                    type="submit"
+                    className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+                  >
+                    Guardar
+                  </button>
+                )}
+
                 {/* <h1>Remitentes: {values.remitenteType}</h1>
                 <h1>Destinatario: {values.destinatarioType}</h1> */}
               </div>
-
               {showDestinatarioModal && (
                 <ModalDestinatario
                   isOpen={showDestinatarioModal}
@@ -754,15 +839,12 @@ export default function ModalOficio({
                   empleados={datosEmpleados}
                 />
               )}
-
               {showResponsableModal && (
                 <ModalResponsable
                   isOpen={showResponsableModal}
                   onClose={() => setShowResponsableModal(false)}
-                  handleOficioResponsable={ handleOficioResponsable}
+                  handleOficioResponsable={handleOficioResponsable}
                   onSave={(datosEmpleados) => {
-
-                    
                     const datosResponsable = {
                       nombreCompleto: datosEmpleados.nombreCompleto,
                       deptoComi: datosEmpleados.deptoComi, // Aseguramos que deptoComi esté asignado
@@ -786,6 +868,16 @@ export default function ModalOficio({
 
                     setShowResponsableModal(false);
                   }}
+                  // oficioResponsable={[
+                  //   {
+                  //     ejercicio: 2024,
+                  //     folio: values.folio,
+                  //     eor: 1,
+                  //     idEmpleado: values.idEmpleado,
+                  //     rol: 1,
+                  //   },
+                  // ]}
+
                   tipo={values.tipo.toString()}
                   datosEmpleados={datosEmpleados}
                 />
@@ -797,3 +889,5 @@ export default function ModalOficio({
     </Formik>
   );
 }
+
+Yup

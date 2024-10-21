@@ -15,6 +15,8 @@ interface TableProps {
   handleCloseModal: () => void;
   modalType: string | null;
   datosEmpleados: Empleados[];
+  editado: boolean;
+  handleEdit: any;
 }
 
 const TableComponent = (props: TableProps) => {
@@ -33,9 +35,7 @@ const TableComponent = (props: TableProps) => {
                 NO DE OFICIO
               </th>
               <th className="py-2 px-4 font-semibold text-left">REMITENTE</th>
-              <th className="py-2 px-4 font-semibold text-left">
-                DESTINATARIO
-              </th>
+              <th className="py-2 px-4 font-semibold text-left">DESTINATARIO</th>
               <th className="py-2 px-4 font-semibold text-left">ESTATUS</th>
             </tr>
           </thead>
@@ -52,7 +52,7 @@ const TableComponent = (props: TableProps) => {
                   <td className="py-2 px-4">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => props.handleOpenModal("edit")}
+                        onClick={() => props.handleEdit(row)} // Pasa la fila seleccionada
                         className="text-gray-600 hover:text-primary-900"
                       >
                         <FiEdit />
@@ -92,4 +92,3 @@ const TableComponent = (props: TableProps) => {
 };
 
 export default TableComponent;
-
