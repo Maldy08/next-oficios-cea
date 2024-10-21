@@ -16,7 +16,7 @@ interface ModalOficioProps {
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
   esNuevo: boolean;
-  editado: boolean;
+  esEditar: boolean;
   rowData: any;
 }
 interface Empleados {
@@ -67,7 +67,7 @@ interface ObjetoOficio {
 export default function ModalOficio({
   rowData,
   esNuevo,
-  editado,
+  esEditar,
   isOpen,
   onClose,
   onSave,
@@ -76,60 +76,20 @@ export default function ModalOficio({
 }: ModalOficioProps) {
   const {
     validationSchema,
-    remitenteType,
-    setRemitenteType,
-    destinatarioType,
-    setDestinatarioType,
-    remitenteName,
-    destinatarioName,
-    responsableName,
     showDestinatarioModal,
-    handleDestinatarioSave,
-    handleResponsableSave,
-    handleRemitenteSave,
     showRemitenteModal,
-    textareaRows,
     showResponsableModal,
     currentDate,
-    setCurrentDate,
-    selectedFile,
-    setTextareaRows,
-    searchTerm,
-    setSearchTerm,
-    rowsPerPage,
-    setRowsPerPage,
-    handleSave,
     setShowDestinatarioModal,
     setShowResponsableModal,
     setShowRemitenteModal,
-    handleFileChange,
-    setDestinatarioName,
-    setRemitenteName,
     setResponsableName,
-    selectedArea,
-    setSelectedArea,
-    remitenteOcupacion,
-    setRemitenteOcupacion,
-    remitenteSiglas,
-    setremitenteSiglas,
-    remitentePuesto,
-    setremitentePuesto,
-    destinatarioDepartamento,
-    setdestinatarioDepartamento,
-    destinatarioPuesto,
-    setDestinatarioPuesto,
-    destinatarioSiglas,
-    setDestinatarioSigla,
-    responsableDepto,
-    setresponsableDepto,
-    responsabledeptoRespon,
-    setresponsabledeptoRespon,
     getCurrentDate,
     oficioResponsable,
     setOficioResponsable,
   } = UseOficioMODAL();
 
-  if (editado) {
+  if (esEditar) {
     console.log("Entro a editarrrrr");
     console.log(rowData);
   }
@@ -153,43 +113,40 @@ export default function ModalOficio({
     console.log(oficioResponsable);
   };
 
-  const datosTabla = {};
 
   return (
     <Formik
       initialValues={{
-        folio: editado ? rowData.folio : 0,
-        tipo: editado ? rowData.tipo.toString() : "1", // Convertir a string
-        fechaCaptura:
-          editado && rowData.fechaCaptura
-            ? new Date(rowData.fechaCaptura).toISOString().split("T")[0]
-            : getCurrentDate(),
-        fechaLimite:
-          editado && rowData.fechaLimite
-            ? new Date(rowData.fechaLimite).toISOString().split("T")[0]
-            : getCurrentDate(),
-        noOficio: editado ? rowData.noOficio : "",
-        observaciones: editado ? rowData.observaciones : "",
-        pdfpath: editado ? rowData.pdfpath : null,
-        archivo: editado ? rowData.archivo : null, // Asumes que el archivo es nuevo o se seleccionará al crear o editar
-        tema: editado ? rowData.tema : "",
-        estatus: editado ? rowData.estatus : 0,
-        empqentrega: editado ? rowData.empqentrega : 0,
-        relacionoficio: editado ? rowData.relacionoficio : "",
-        selectedArea: editado ? rowData.selectedArea : "",
-        remNombre: editado ? rowData.remNombre : "",
-        remDepen: editado ? rowData.remDepen : "",
-        remSiglas: editado ? rowData.remSiglas : "",
-        remCargo: editado ? rowData.remCargo : "",
-        destNombre: editado ? rowData.destNombre : "",
-        destDepen: editado ? rowData.destDepen : "",
-        destCargo: editado ? rowData.destCargo : "",
-        destSiglas: editado ? rowData.destSiglas : "",
-        depto: editado ? rowData.depto : "",
-        deptoRespon: editado ? rowData.deptoRespon : "",
-        responsableName: editado ? rowData.nombreResponsable : "",
-        destinatarioType: editado ? "1" : "2", // Interno por defecto en editado
-        remitenteType: editado ? "2" : "1", // Externo por defecto en editado
+        folio: esEditar ? rowData.folio : 0,
+        tipo: esEditar ? rowData.tipo.toString() : "1", // Convertir a string
+        fechaCaptura: esEditar && rowData.fechaCaptura
+          ? new Date(rowData.fechaCaptura).toISOString().split("T")[0]
+          : getCurrentDate(),
+        fechaLimite: esEditar && rowData.fechaLimite
+          ? new Date(rowData.fechaLimite).toISOString().split("T")[0]
+          : getCurrentDate(),
+        noOficio: esEditar ? rowData.noOficio : "",
+        observaciones: esEditar ? rowData.observaciones : "",
+        pdfpath: esEditar ? rowData.pdfpath : null,
+        archivo: esEditar ? rowData.archivo : null, // Asumes que el archivo es nuevo o se seleccionará al crear o editar
+        tema: esEditar ? rowData.tema : "",
+        estatus: esEditar ? rowData.estatus : 0,
+        empqentrega: esEditar ? rowData.empqentrega : 0,
+        relacionoficio: esEditar ? rowData.relacionoficio : "",
+        selectedArea: esEditar ? rowData.selectedArea : "",
+        remNombre: esEditar ? rowData.remNombre : "",
+        remDepen: esEditar ? rowData.remDepen : "",
+        remSiglas: esEditar ? rowData.remSiglas : "",
+        remCargo: esEditar ? rowData.remCargo : "",
+        destNombre: esEditar ? rowData.destNombre : "",
+        destDepen: esEditar ? rowData.destDepen : "",
+        destCargo: esEditar ? rowData.destCargo : "",
+        destSiglas: esEditar ? rowData.destSiglas : "",
+        depto: esEditar ? rowData.depto : "",
+        deptoRespon: esEditar ? rowData.deptoRespon : "",
+        responsableName: esEditar ? rowData.nombreResponsable : "",
+        destinatarioType: esEditar ? "1" : "2", // Interno por defecto en esEditar
+        remitenteType: esEditar ? "2" : "1",    // Externo por defecto en esEditar
 
         //nombreResponsable: "",
       }}
@@ -361,7 +318,7 @@ export default function ModalOficio({
                   Ingresar Oficio Recibido
                 </h2>
               )}
-              {editado && (
+              {esEditar && (
                 <h2 className="text-lg font-semibold mb-4">
                   Editar Oficio Recibido
                 </h2>
@@ -403,7 +360,7 @@ export default function ModalOficio({
                   {touched.tipo && errors.tipo && (
                     <div className="text-red-600">
                       {/* Verifica si el error es un string */}
-                      {typeof errors.tipo === "string" ? errors.tipo : null}
+                      {typeof errors.tipo === 'string' ? errors.tipo : null}
                     </div>
                   )}
 
@@ -448,7 +405,7 @@ export default function ModalOficio({
                       name="fechaCaptura"
                       type="date"
                       className="border border-gray-300 rounded p-2 w-full"
-                      // value={currentDate}
+                    // value={currentDate}
                     />
                     <ErrorMessage
                       name="fechaCaptura"
@@ -462,7 +419,7 @@ export default function ModalOficio({
                       name="fechaLimite"
                       type="date"
                       className="border border-gray-300 rounded p-2 w-full"
-                      //   value={currentDate}
+                    //   value={currentDate}
                     />
                     {/* <ErrorMessage
                       name="fechaLimite"
@@ -512,9 +469,7 @@ export default function ModalOficio({
                     {touched.remitenteType && errors.remitenteType && (
                       <div className="text-red-600">
                         {/* Verifica si el error es un string */}
-                        {typeof errors.remitenteType === "string"
-                          ? errors.remitenteType
-                          : null}
+                        {typeof errors.remitenteType === 'string' ? errors.remitenteType : null}
                       </div>
                     )}
                     <div className="relative">
@@ -536,9 +491,7 @@ export default function ModalOficio({
                     {touched.remNombre && errors.remNombre && (
                       <div className="text-red-600">
                         {/* Verifica si el error es un string */}
-                        {typeof errors.remNombre === "string"
-                          ? errors.remNombre
-                          : null}
+                        {typeof errors.remNombre === 'string' ? errors.remNombre : null}
                       </div>
                     )}
                   </div>
@@ -554,7 +507,7 @@ export default function ModalOficio({
                           name="destinatarioType"
                           value="1"
                           className="mr-2"
-                          //  checked={true}
+                        //  checked={true}
                         />
                         <label
                           htmlFor="destinatarioInterno"
@@ -581,9 +534,7 @@ export default function ModalOficio({
                     {touched.destinatarioType && errors.destinatarioType && (
                       <div className="text-red-600">
                         {/* Verifica si el error es un string */}
-                        {typeof errors.destinatarioType === "string"
-                          ? errors.destinatarioType
-                          : null}
+                        {typeof errors.destinatarioType === 'string' ? errors.destinatarioType : null}
                       </div>
                     )}
 
@@ -605,9 +556,7 @@ export default function ModalOficio({
                       {touched.destNombre && errors.destNombre && (
                         <div className="text-red-600">
                           {/* Verifica si el error es un string */}
-                          {typeof errors.destNombre === "string"
-                            ? errors.destNombre
-                            : null}
+                          {typeof errors.destNombre === 'string' ? errors.destNombre : null}
                         </div>
                       )}
                     </div>
@@ -714,7 +663,7 @@ export default function ModalOficio({
                 >
                   Cancelar
                 </button>
-                {editado && (
+                {esEditar && (
                   <button
                     type="submit"
                     className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
@@ -871,3 +820,4 @@ export default function ModalOficio({
     </Formik>
   );
 }
+

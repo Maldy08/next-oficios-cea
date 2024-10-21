@@ -11,15 +11,17 @@ export default function UseClienteComponent({ rows }: ClientComponentProps) {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [page, setPage] = useState<number>(0);
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
-  // Abrir modal con tipo
-  const handleOpenModal = (type: string) => {
-    setModalType(type);
-  };
+
+  // Abrir modal para editar o crear oficio
+  const handleOpenModal = () => {
+     setOpenModal(true);
+  }
 
   // Cerrar modal
   const handleCloseModal = () => {
-    setModalType(null);
+    setOpenModal(false);
   };
 
   // Guardar cambios y cerrar modal
@@ -80,5 +82,7 @@ export default function UseClienteComponent({ rows }: ClientComponentProps) {
     filteredRows,
     paginatedRows,
     handleSearchChange,
+    openModal,
+    setOpenModal,
   };
 }
