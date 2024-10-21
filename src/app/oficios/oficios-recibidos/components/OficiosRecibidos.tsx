@@ -46,6 +46,11 @@ export default function OficiosPage({
     handleOpenModal("oficioEdit"); // Abre el modal en modo edición
   };
 
+  const handlebita = (rowData: any) => {
+    setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
+    handleOpenModal("oficioBitaco"); // Abre el modal en modo edición
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -75,6 +80,7 @@ export default function OficiosPage({
         datosEmpleados={datosEmpleados}
         editado={true}
         handleEdit={handleEdit}
+        handlebita={handlebita}
       />
 
       {modalType === "oficioRecibido" && (

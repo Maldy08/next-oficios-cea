@@ -56,6 +56,7 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
     onClose: props.onClose,
     onSave: props.onSave, // Dejamos que onSave venga desde los props
   });
+  
 
   const columns = [
     {
@@ -104,6 +105,8 @@ const ModalDestinatario = (props: ModalDestinatarioProps) => {
       props.onClose(); // Cerramos el modal
     }
   }
+
+  
 
   return (
     <div

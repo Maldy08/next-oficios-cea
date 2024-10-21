@@ -40,6 +40,18 @@ export default function ClientComponent({
     rows,
   });
 
+  const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
+
+  const handleEdit = (rowData: any) => {
+    setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
+    handleOpenModal("oficioExpedidoEdit"); // Abre el modal en modo edición
+  };
+
+  const handlebita = (rowData: any) => {
+    setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
+    handleOpenModal("oficioBitaco"); // Abre el modal en modo edición
+  };
+  
   return (
     <>
       {/* Barra de búsqueda y botón de nuevo oficio */}
@@ -70,6 +82,9 @@ export default function ClientComponent({
         handleCloseModal={handleCloseModal}
         modalType={modalType}
         datosEmpleados={datosEmpleados}
+        editado={true}
+        handleEdit={handleEdit}
+        handlebita={handlebita}
       />
 
       {/* Modales */}
@@ -96,7 +111,10 @@ export default function ClientComponent({
       )}
 
       {modalType === "list" && (
-        <ModalList isOpen={modalType === "list"} onClose={handleCloseModal} />
+        <ModalList 
+        isOpen={modalType === "list"} 
+        onClose={handleCloseModal}
+         />
       )}
     </>
   );

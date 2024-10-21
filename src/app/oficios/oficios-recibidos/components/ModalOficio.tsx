@@ -153,8 +153,6 @@ export default function ModalOficio({
     console.log(oficioResponsable);
   };
 
-
-  
   const datosTabla = {};
 
   return (
@@ -162,12 +160,14 @@ export default function ModalOficio({
       initialValues={{
         folio: editado ? rowData.folio : 0,
         tipo: editado ? rowData.tipo.toString() : "1", // Convertir a string
-        fechaCaptura: editado && rowData.fechaCaptura 
-  ? new Date(rowData.fechaCaptura).toISOString().split("T")[0] 
-  : getCurrentDate(),
-        fechaLimite: editado && rowData.fechaLimite 
-  ? new Date(rowData.fechaLimite).toISOString().split("T")[0] 
-  : getCurrentDate(),
+        fechaCaptura:
+          editado && rowData.fechaCaptura
+            ? new Date(rowData.fechaCaptura).toISOString().split("T")[0]
+            : getCurrentDate(),
+        fechaLimite:
+          editado && rowData.fechaLimite
+            ? new Date(rowData.fechaLimite).toISOString().split("T")[0]
+            : getCurrentDate(),
         noOficio: editado ? rowData.noOficio : "",
         observaciones: editado ? rowData.observaciones : "",
         pdfpath: editado ? rowData.pdfpath : null,
@@ -189,7 +189,7 @@ export default function ModalOficio({
         deptoRespon: editado ? rowData.deptoRespon : "",
         responsableName: editado ? rowData.nombreResponsable : "",
         destinatarioType: editado ? "1" : "2", // Interno por defecto en editado
-        remitenteType: editado ? "2" : "1",    // Externo por defecto en editado
+        remitenteType: editado ? "2" : "1", // Externo por defecto en editado
 
         //nombreResponsable: "",
       }}
@@ -382,13 +382,13 @@ export default function ModalOficio({
 
                   <div className="flex items-center space-x-3">
                     <label className="flex items-center cursor-pointer">
-                    <Field
-        type="radio"
-        name="tipo"
-        value="1"
-        className="mr-1"
-      />
-      CEA
+                      <Field
+                        type="radio"
+                        name="tipo"
+                        value="1"
+                        className="mr-1"
+                      />
+                      CEA
                     </label>
                     <label className="flex items-center cursor-pointer">
                       <Field
@@ -401,11 +401,11 @@ export default function ModalOficio({
                     </label>
                   </div>
                   {touched.tipo && errors.tipo && (
-  <div className="text-red-600">
-    {/* Verifica si el error es un string */}
-    {typeof errors.tipo === 'string' ? errors.tipo : null}
-  </div>
-)}
+                    <div className="text-red-600">
+                      {/* Verifica si el error es un string */}
+                      {typeof errors.tipo === "string" ? errors.tipo : null}
+                    </div>
+                  )}
 
                   <div className="flex items-center">
                     <span className="w-24 sm:w-12">Fecha:</span>
@@ -430,7 +430,10 @@ export default function ModalOficio({
                       placeholder="Número de oficio"
                       className="border border-gray-300 rounded p-2 w-full"
                       onInput={(e: { target: { value: string } }) => {
-                        e.target.value = e.target.value.replace(/[^0-9\-]/g, ""); // Solo permite números
+                        e.target.value = e.target.value.replace(
+                          /[^0-9\-]/g,
+                          ""
+                        ); // Solo permite números
                       }}
                     />
                     <ErrorMessage
@@ -507,11 +510,13 @@ export default function ModalOficio({
                       </div>
                     </label>
                     {touched.remitenteType && errors.remitenteType && (
-  <div className="text-red-600">
-    {/* Verifica si el error es un string */}
-    {typeof errors.remitenteType === 'string' ? errors.remitenteType : null}
-  </div>
-)}
+                      <div className="text-red-600">
+                        {/* Verifica si el error es un string */}
+                        {typeof errors.remitenteType === "string"
+                          ? errors.remitenteType
+                          : null}
+                      </div>
+                    )}
                     <div className="relative">
                       <Field
                         id="remNombre"
@@ -529,11 +534,13 @@ export default function ModalOficio({
                       />
                     </div>
                     {touched.remNombre && errors.remNombre && (
-  <div className="text-red-600">
-    {/* Verifica si el error es un string */}
-    {typeof errors.remNombre === 'string' ? errors.remNombre : null}
-  </div>
-)}
+                      <div className="text-red-600">
+                        {/* Verifica si el error es un string */}
+                        {typeof errors.remNombre === "string"
+                          ? errors.remNombre
+                          : null}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-col">
@@ -572,11 +579,13 @@ export default function ModalOficio({
                       </div>
                     </label>
                     {touched.destinatarioType && errors.destinatarioType && (
-  <div className="text-red-600">
-    {/* Verifica si el error es un string */}
-    {typeof errors.destinatarioType === 'string' ? errors.destinatarioType : null}
-  </div>
-)}
+                      <div className="text-red-600">
+                        {/* Verifica si el error es un string */}
+                        {typeof errors.destinatarioType === "string"
+                          ? errors.destinatarioType
+                          : null}
+                      </div>
+                    )}
 
                     <div className="relative">
                       <Field
@@ -594,11 +603,13 @@ export default function ModalOficio({
                         className="absolute right-2 top-2 text-gray-400 cursor-pointer"
                       />
                       {touched.destNombre && errors.destNombre && (
-  <div className="text-red-600">
-    {/* Verifica si el error es un string */}
-    {typeof errors.destNombre === 'string' ? errors.destNombre : null}
-  </div>
-)}
+                        <div className="text-red-600">
+                          {/* Verifica si el error es un string */}
+                          {typeof errors.destNombre === "string"
+                            ? errors.destNombre
+                            : null}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -860,5 +871,3 @@ export default function ModalOficio({
     </Formik>
   );
 }
-
-Yup

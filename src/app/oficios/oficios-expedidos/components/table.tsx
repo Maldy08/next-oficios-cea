@@ -17,6 +17,7 @@ interface TableProps {
   datosEmpleados: Empleados[];
   editado: boolean;
   handleEdit: any;
+  handlebita: any;
 }
 
 const TableComponent = (props: TableProps) => {
