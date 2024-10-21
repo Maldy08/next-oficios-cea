@@ -19,22 +19,14 @@ export default function OficiosPage({
   datosEmpleados,
   rows,
 }: OficiosPageProps) {
-  const { modalType, handleOpenModal, handleCloseModal, handleSave } =
+  const { modalType, handleOpenModal, handleCloseModal, handleSave, openModal, edit, setEdit } =
     UseOficioR();
 
   const {
-    setModalType,
     searchTerm,
-    setSearchTerm,
-    rowsPerPage,
-    setRowsPerPage,
-    page,
-    setPage,
-    handleChangeRowsPerPage,
-    handleChangePage,
-    filteredRows,
     paginatedRows,
     handleSearchChange,
+
   } = UseClienteComponent({
     rows,
   });
@@ -43,14 +35,19 @@ export default function OficiosPage({
 
   const handleEdit = (rowData: any) => {
     setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
-    handleOpenModal("oficioEdit"); // Abre el modal en modo edición
+    handleOpenModal();
+    setEdit(true); // Abre el modal en modo edición
+    console.log(edit);
   };
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <button
-          onClick={() => handleOpenModal("oficioRecibido")}
+          onClick={() => {
+            handleOpenModal();
+            setEdit(false);
+          }}
           className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
         >
           INGRESAR OFICIO RECIBIDOS
@@ -77,30 +74,19 @@ export default function OficiosPage({
         handleEdit={handleEdit}
       />
 
-      {modalType === "oficioRecibido" && (
+      {openModal && (
         <ModalOficio
-          isOpen={modalType === "oficioRecibido"}
+          isOpen={openModal}
           onClose={handleCloseModal}
           onSave={handleSave}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
-          esNuevo={true}
-          editado={false}
+          esNuevo={edit ? false : true}
+          esEditar={edit}
           rowData={selectedRow}
         />
       )}
-      {modalType === "oficioEdit" && (
-        <ModalOficio
-          isOpen={modalType === "oficioEdit"}
-          onClose={handleCloseModal}
-          onSave={handleSave}
-          datosEmpleados={datosEmpleados}
-          remitentes={remitentes}
-          esNuevo={false}
-          editado={true}
-          rowData={selectedRow}
-        />
-      )}
+
     </>
   );
 }

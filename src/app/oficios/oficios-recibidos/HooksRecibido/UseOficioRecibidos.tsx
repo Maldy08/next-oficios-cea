@@ -7,16 +7,19 @@ export default function UseOficioMODAL() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [page, setPage] = useState<number>(0);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
 
   // Abrir modal con tipo
-  const handleOpenModal = (type: string) => {
-    setModalType(type);
+  const handleOpenModal = () => {
+    setOpenModal(true);
   };
 
   // Cerrar modal
   const handleCloseModal = () => {
-    setModalType(null);
+    setOpenModal(false);
   };
+  
 
   const validationSchema = Yup.object().shape({
     tipo: Yup.string()
@@ -25,8 +28,8 @@ export default function UseOficioMODAL() {
     fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
     // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
     noOficio: Yup.string()
-    .matches(/^[0-9\-]+$/, "El número de oficio solo puede contener números y guiones")
-    .required("El número de oficio es requerido"),
+      .matches(/^[0-9\-]+$/, "El número de oficio solo puede contener números y guiones")
+      .required("El número de oficio es requerido"),
     tema: Yup.string().required("Tema es requerido"),
     observaciones: Yup.string(),
     // pdfpath: Yup.mixed().required("Archivo es requerido"),
@@ -89,7 +92,6 @@ export default function UseOficioMODAL() {
     null);
 
   const [idEmpleado, setidEmpleado] = useState<string | null>(null);
-
   const [oficioResponsable, setOficioResponsable] = useState<OficioResponsable[]>([]);
 
 
@@ -135,7 +137,7 @@ export default function UseOficioMODAL() {
     return `${year}-${month}-${day}`;
   };
 
-  
+
 
   return {
     getCurrentDate,
@@ -202,5 +204,9 @@ export default function UseOficioMODAL() {
     setidEmpleado,
     oficioResponsable,
     setOficioResponsable,
+    openModal,
+    setOpenModal,
+    edit,
+    setEdit,
   };
 }
