@@ -16,6 +16,10 @@ export class AxiosAdapter implements HttpAdapter {
             params: options.params
         });
     }
+    async post<T>(url: string, data:any , options?: Record<string, unknown>): Promise<T> {
+        const response = await this.axiosInstance.post<T>(url, data, options);
+        return response.data;
+    }
 
     async get<T>(url: string, options?: Record<string, unknown>): Promise<T> {
        try {

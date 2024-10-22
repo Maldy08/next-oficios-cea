@@ -12,7 +12,7 @@ import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
 interface ModalOficioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: ( data: any ) => void;
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
   esNuevo: boolean;
@@ -231,6 +231,8 @@ export default function ModalOficio({
           };
         
           try {
+            onSave( objetoOficio);
+            return;
             if (esEditar) {
               // Enviar el objeto usando PUT para el oficio
               const response = await fetch(
@@ -326,7 +328,7 @@ export default function ModalOficio({
             console.log("Arreglo oficioResponsable enviado correctamente:", responseArrayData);
           
             // Llamar a la función onSave si ambos procesos fueron exitosos
-            onSave();
+
           
           } catch (error) {
             console.error("Error al guardar el oficio o enviar el arreglo:", error);
