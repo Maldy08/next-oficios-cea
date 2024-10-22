@@ -12,12 +12,12 @@ export default function UseClienteComponent({ rows }: ClientComponentProps) {
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
   const [page, setPage] = useState<number>(0);
   const [openModal, setOpenModal] = useState<boolean>(false);
-
+  const [edit, setEdit] = useState<boolean>(false);
 
   // Abrir modal para editar o crear oficio
   const handleOpenModal = () => {
-     setOpenModal(true);
-  }
+    setOpenModal(true);
+  };
 
   // Cerrar modal
   const handleCloseModal = () => {
@@ -49,14 +49,27 @@ export default function UseClienteComponent({ rows }: ClientComponentProps) {
   };
 
   // Filtrar filas basado en el término de búsqueda
-  const filteredRows = rows.filter((row) => 
-    row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (row.remDepen && typeof row.remDepen === 'string' && row.remDepen.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.tipo && typeof row.tipo === 'string' && row.tipo.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.noOficio && typeof row.noOficio === 'string' && row.noOficio.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.remNombre && typeof row.remNombre === 'string' && row.remNombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.destNombre && typeof row.destNombre === 'string' && row.destNombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.estatus && typeof row.estatus === 'string' && row.estatus.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredRows = rows.filter(
+    (row) =>
+      row.folio?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (row.remDepen &&
+        typeof row.remDepen === "string" &&
+        row.remDepen.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.tipo &&
+        typeof row.tipo === "string" &&
+        row.tipo.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.noOficio &&
+        typeof row.noOficio === "string" &&
+        row.noOficio.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.remNombre &&
+        typeof row.remNombre === "string" &&
+        row.remNombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.destNombre &&
+        typeof row.destNombre === "string" &&
+        row.destNombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.estatus &&
+        typeof row.estatus === "string" &&
+        row.estatus.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Paginación de las filas filtradas
@@ -84,5 +97,7 @@ export default function UseClienteComponent({ rows }: ClientComponentProps) {
     handleSearchChange,
     openModal,
     setOpenModal,
+    setEdit,
+    edit,
   };
 }

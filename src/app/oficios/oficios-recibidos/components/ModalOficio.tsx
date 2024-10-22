@@ -229,49 +229,84 @@ export default function ModalOficio({
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
           };
-
-          // Enviar el objeto a la API
-
-          console.log("Aqui est el json");
-          console.log(objetoOficio);
-          console.log("Aqui el arreglo");
-          console.log(oficioResponsable);
-
+        
           try {
-            // Primer POST: Enviar objeto JSON usando FormData (sin modificar objetoOficio)
-            const formData = new FormData();
-
-            (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach(
-              (key) => {
-                const value = objetoOficio[key];
-                if (value !== null && value !== undefined) {
-                  formData.append(key, value.toString());
+            if (esEditar) {
+              // Enviar el objeto usando PUT para el oficio
+              const response = await fetch(
+                "http://200.56.97.5:7281/api/Oficios", 
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(objetoOficio),
                 }
-              }
-            );
-
-            if (values.archivo) {
-              formData.append("archivo", values.archivo);
-            }
-
-            const response = await fetch(
-              "http://200.56.97.5:7281/api/Oficios",
-              {
-                method: "POST",
-                body: formData,
-              }
-            );
-
-            if (!response.ok) {
-              throw new Error(
-                "Error en la solicitud al enviar los datos generales."
               );
+          
+              if (!response.ok) {
+                throw new Error("Error en la solicitud al actualizar los datos del oficio.");
+              }
+          
+              const data = await response.json();
+              console.log("Datos del oficio actualizados correctamente:", data);
+          
+              // Enviar el arreglo oficioResponsable usando PUT
+              const responseArray = await fetch(
+                "http://200.56.97.5:7281/api/OficioResponsable/UpdateOficioResponsable", // Cambia la URL según sea necesario
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(oficioResponsable), // Asegúrate de que oficioResponsable tenga la estructura correcta
+                }
+              );
+          
+              if (!responseArray.ok) {
+                throw new Error("Error en la solicitud al actualizar el arreglo oficioResponsable.");
+              }
+          
+              const responseArrayData = await responseArray.json();
+              console.log("Arreglo oficioResponsable actualizado correctamente:", responseArrayData);
+          
+              // Agregar un log para confirmar que ambos PUT se han ejecutado
+              console.log("Ambos PUT ejecutados: oficio y oficioResponsable.");
+              
+            } else {
+              // Enviar el objeto usando POST para el oficio
+              const formData = new FormData();
+          
+              (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach(
+                (key) => {
+                  const value = objetoOficio[key];
+                  if (value !== null && value !== undefined) {
+                    formData.append(key, value.toString());
+                  }
+                }
+              );
+          
+              if (values.archivo) {
+                formData.append("archivo", values.archivo);
+              }
+          
+              const response = await fetch(
+                "http://200.56.97.5:7281/api/Oficios",
+                {
+                  method: "POST",
+                  body: formData,
+                }
+              );
+          
+              if (!response.ok) {
+                throw new Error("Error en la solicitud al enviar los datos del oficio.");
+              }
+          
+              const data = await response.json();
+              console.log("Datos del oficio enviados correctamente:", data);
             }
-
-            const data = await response.json();
-            console.log("Datos generales enviados correctamente:", data);
-
-            // Segundo POST: Enviar el arreglo oficioResponsable
+          
+            // Enviar el arreglo oficioResponsable usando POST
             const responseArray = await fetch(
               "http://200.56.97.5:7281/api/OficioResponsable/CreateOficioResponsable",
               {
@@ -279,32 +314,27 @@ export default function ModalOficio({
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify(oficioResponsable),
+                body: JSON.stringify(oficioResponsable), // Asegúrate de que oficioResponsable tenga la estructura correcta
               }
             );
-
+          
             if (!responseArray.ok) {
-              throw new Error(
-                "Error en la solicitud al enviar el arreglo oficioResponsable."
-              );
+              throw new Error("Error en la solicitud al enviar el arreglo oficioResponsable.");
             }
-
+          
             const responseArrayData = await responseArray.json();
-            console.log(
-              "Arreglo oficioResponsable enviado correctamente:",
-              responseArrayData
-            );
-
-            // Llamar a la función onSave si ambos POST fueron exitosos
+            console.log("Arreglo oficioResponsable enviado correctamente:", responseArrayData);
+          
+            // Llamar a la función onSave si ambos procesos fueron exitosos
             onSave();
+          
           } catch (error) {
-            console.error(
-              "Error al guardar el oficio o enviar el arreglo:",
-              error
-            );
+            console.error("Error al guardar el oficio o enviar el arreglo:", error);
           }
+          
+          
         }
-      }}
+        }}
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>

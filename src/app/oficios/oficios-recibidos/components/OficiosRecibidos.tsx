@@ -19,17 +19,21 @@ export default function OficiosPage({
   datosEmpleados,
   rows,
 }: OficiosPageProps) {
-  const { modalType, handleOpenModal, handleCloseModal, handleSave, openModal, edit, setEdit } =
-    UseOficioR();
-
   const {
-    searchTerm,
-    paginatedRows,
-    handleSearchChange,
+    modalType,
+    handleOpenModal,
+    handleCloseModal,
+    handleSave,
+    openModal,
+    edit,
+    setEdit,
+  } = UseOficioR();
 
-  } = UseClienteComponent({
-    rows,
-  });
+  const { searchTerm, paginatedRows, handleSearchChange } = UseClienteComponent(
+    {
+      rows,
+    }
+  );
 
   const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
 
@@ -38,11 +42,6 @@ export default function OficiosPage({
     handleOpenModal();
     setEdit(true); // Abre el modal en modo edición
     console.log(edit);
-  };
-
-  const handlebita = (rowData: any) => {
-    setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
-    handleOpenModal("oficioBitaco"); // Abre el modal en modo edición
   };
 
   return (
@@ -77,7 +76,6 @@ export default function OficiosPage({
         datosEmpleados={datosEmpleados}
         editado={true}
         handleEdit={handleEdit}
-        handlebita={handlebita}
       />
 
       {openModal && (
@@ -92,7 +90,6 @@ export default function OficiosPage({
           rowData={selectedRow}
         />
       )}
-
     </>
   );
 }

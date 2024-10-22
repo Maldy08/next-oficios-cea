@@ -36,6 +36,9 @@ export default function ClientComponent({
     filteredRows,
     paginatedRows,
     handleSearchChange,
+    setEdit,
+    edit,
+    openModal,
   } = UseClienteComponent({
     rows,
   });
@@ -44,20 +47,20 @@ export default function ClientComponent({
 
   const handleEdit = (rowData: any) => {
     setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
-    handleOpenModal("oficioExpedidoEdit"); // Abre el modal en modo edición
+    handleOpenModal();
+    setEdit(true); // Abre el modal en modo edición
+    console.log(edit);
   };
 
-  const handlebita = (rowData: any) => {
-    setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
-    handleOpenModal("oficioBitaco"); // Abre el modal en modo edición
-  };
-  
   return (
     <>
       {/* Barra de búsqueda y botón de nuevo oficio */}
       <div className="flex justify-between items-center mb-4">
         <button
-          onClick={() => handleOpenModal("oficioExpedido")}
+          onClick={() => {
+            handleOpenModal();
+            setEdit(false);
+          }}
           className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
         >
           INGRESAR OFICIO EXPEDIDO
@@ -84,13 +87,12 @@ export default function ClientComponent({
         datosEmpleados={datosEmpleados}
         editado={true}
         handleEdit={handleEdit}
-        handlebita={handlebita}
       />
 
       {/* Modales */}
-      {modalType === "oficioExpedido" && (
+      {openModal && (
         <ModalOficioExpedido
-          isOpen={modalType === "oficioExpedido"}
+          isOpen={openModal}
           onClose={handleCloseModal}
           onSave={handleSave}
           departamentos={departamentos}
@@ -111,10 +113,7 @@ export default function ClientComponent({
       )}
 
       {modalType === "list" && (
-        <ModalList 
-        isOpen={modalType === "list"} 
-        onClose={handleCloseModal}
-         />
+        <ModalList isOpen={modalType === "list"} onClose={handleCloseModal} />
       )}
     </>
   );

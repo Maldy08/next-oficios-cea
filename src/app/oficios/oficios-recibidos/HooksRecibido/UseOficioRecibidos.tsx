@@ -19,7 +19,6 @@ export default function UseOficioMODAL() {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
-  
 
   const validationSchema = Yup.object().shape({
     tipo: Yup.string()
@@ -28,7 +27,10 @@ export default function UseOficioMODAL() {
     fechaCaptura: Yup.date().required("Fecha Captura es requerida"),
     // fechaLimite: Yup.date().required("Fecha Límite es requerida"),
     noOficio: Yup.string()
-      .matches(/^[0-9\-]+$/, "El número de oficio solo puede contener números y guiones")
+      .matches(
+        /^[0-9\-]+$/,
+        "El número de oficio solo puede contener números y guiones"
+      )
       .required("El número de oficio es requerido"),
     tema: Yup.string().required("Tema es requerido"),
     observaciones: Yup.string(),
@@ -88,13 +90,12 @@ export default function UseOficioMODAL() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedArea, setSelectedArea] = useState("");
   const [personaEntregaName, setPersonaEntregaName] = useState("");
-  const [Empleado, resEmpleado] = useState<number | null>(
-    null);
+  const [Empleado, resEmpleado] = useState<number | null>(null);
 
   const [idEmpleado, setidEmpleado] = useState<string | null>(null);
-  const [oficioResponsable, setOficioResponsable] = useState<OficioResponsable[]>([]);
-
-
+  const [oficioResponsable, setOficioResponsable] = useState<
+    OficioResponsable[]
+  >([]);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -136,8 +137,6 @@ export default function UseOficioMODAL() {
     const year = today.getFullYear();
     return `${year}-${month}-${day}`;
   };
-
-
 
   return {
     getCurrentDate,
