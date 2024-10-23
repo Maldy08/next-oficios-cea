@@ -3,6 +3,9 @@ import type { Oficios } from "@/app/domain/entities";
 import { NextResponse } from "next/server";
 
 
+const urlApi = "http://localhost:5178/api/Oficios";
+
+
 export async function GET(request: Request) {
 
   const oficios: Oficios[] = [
@@ -162,8 +165,17 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.formData();
+  const contentType = request.headers.get("Content-Type")
+
+  const response =  await fetch(urlApi,{
+    method: "POST",
+
+    body: body
+  })
+
   console.log(body);
-  return NextResponse.json({ message: "llege al backend" });
+
+  return NextResponse.json({ message: response });
 }
 
 export async function PUT(request: Request) {
