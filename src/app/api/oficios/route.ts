@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 const urlApi = "http://localhost:5178/api/Oficios";
 
 
-
-
 export async function GET(request: Request) {
   const oficios: Oficios[] = [
     {
@@ -178,7 +176,7 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const body = await request.json();
+  const body = await request.formData();
   try {
     const response = await fetch(urlApi, {
       method: "PUT",
