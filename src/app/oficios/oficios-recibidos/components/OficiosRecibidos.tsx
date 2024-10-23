@@ -8,19 +8,18 @@ import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponen
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
 import { createOficio } from "@/app/infrastructure/data-access/oficios/create-oficios";
+import { updateOficio } from "@/app/infrastructure/data-access/oficios/update-oficio ";
 
 interface OficiosPageProps {
   remitentes: any[];
   datosEmpleados: any[];
   rows: any[];
-
 }
 
 export default function OficiosRecibidos({
   remitentes,
   datosEmpleados,
   rows,
-
 }: OficiosPageProps) {
   const {
     modalType,
@@ -31,11 +30,9 @@ export default function OficiosRecibidos({
     setEdit,
   } = UseOficioR();
 
-  const { searchTerm, paginatedRows, handleSearchChange } = UseClienteComponent(
-    {
-      rows,
-    }
-  );
+  const { searchTerm, paginatedRows, handleSearchChange } = UseClienteComponent({
+    rows,
+  });
 
   const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
 
@@ -43,15 +40,16 @@ export default function OficiosRecibidos({
     setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
     handleOpenModal();
     setEdit(true); // Abre el modal en modo edición
-    console.log(edit);
   };
 
-
   const handleSave = async (oficio: any) => {
-    //  console.log("oficio-page", oficio);
-    await createOficio(oficio);
-    // saveOficio(oficio);
-  }
+    await createOficio(oficio); // Usa createOficio para crear
+  };
+  
+  const handleEdito = async (oficio: any) => {
+    await updateOficio(oficio); // Usa updateOficio para actualizar
+  };
+
 
   return (
     <>
@@ -92,6 +90,7 @@ export default function OficiosRecibidos({
           isOpen={openModal}
           onClose={handleCloseModal}
           onSave={handleSave}
+          onEdito={handleEdito}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
           esNuevo={edit ? false : true}

@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 
 const urlApi = "http://localhost:5178/api/Oficios";
 
+
+
+
 export async function GET(request: Request) {
   const oficios: Oficios[] = [
     {
@@ -159,6 +162,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.formData();
+
   //  const contentType = request.headers.get("Content-Type");
 
   try {
@@ -170,6 +174,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json({ message: "Error en el post del oficio" });
   }
+
 }
 
 export async function PUT(request: Request) {
