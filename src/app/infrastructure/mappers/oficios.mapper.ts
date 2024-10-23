@@ -62,6 +62,7 @@ export class OficiosMapper {
         ['idEmpleado']: oficio.idEmpleado,
         ['nombreResponsable']: oficio.nombreResponsable,
         ['rol']: oficio.rol,
+        ['archivo'] : oficio.archivo
     };
   }
 }

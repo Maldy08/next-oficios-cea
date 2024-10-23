@@ -12,10 +12,7 @@ export class OficioRepositoryHttpImplementation implements OficiosRepository {
       // await DbAdapter.post<Oficios>("oficios", oficio);
 
       const data = OficiosMapper.mapFromDomainToApi(oficio);
-
-      console.log("data", data);
-      return 
-      await DbAdapter.post<Oficios>("oficios", data);
+      await DbAdapter.post<Oficios>("oficios", data, { headers: { "Content-Type": "multipart/form-data" } });
       
 
     }

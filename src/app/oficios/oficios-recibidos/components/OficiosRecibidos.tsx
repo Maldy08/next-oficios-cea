@@ -16,7 +16,7 @@ interface OficiosPageProps {
 
 }
 
-export default function OficiosPage({
+export default function OficiosRecibidos({
   remitentes,
   datosEmpleados,
   rows,
@@ -26,7 +26,6 @@ export default function OficiosPage({
     modalType,
     handleOpenModal,
     handleCloseModal,
-
     openModal,
     edit,
     setEdit,
@@ -49,13 +48,10 @@ export default function OficiosPage({
 
 
   const handleSave = async (oficio: any) => {
-  //  console.log("oficio-page", oficio);
-     createOficio(oficio);
-   // saveOficio(oficio);
+    //  console.log("oficio-page", oficio);
+    await createOficio(oficio);
+    // saveOficio(oficio);
   }
-
-  
-  
 
   return (
     <>

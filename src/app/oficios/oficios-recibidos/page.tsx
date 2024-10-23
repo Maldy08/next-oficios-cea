@@ -9,27 +9,24 @@ import {
   Oficios,
 } from "@/app/domain/entities";
 
-import OficiosPage from "./components/OficiosRecibidos";
-import { createOficio } from "@/app/infrastructure/data-access/oficios/create-oficios";
+import OficiosRecibidos from "./components/OficiosRecibidos";
 
 export default async function OficiosRecibidosPage() {
+
   const oficiosExternos: OficioUsuExterno[] = await getOficioUsuExternos();
   const empleados: Empleados[] = await getEmpleados();
   const oficios: Oficios[] = await getOficios();
-
-
-
 
   return (
     <div className="p-6">
       <h1 className="text-lg font-bold mb-4">Oficio Recibidos</h1>
 
-      <OficiosPage
+      <OficiosRecibidos
         remitentes={oficiosExternos}
         datosEmpleados={empleados}
         rows={oficios}
-
       />
+
     </div>
   );
 }
