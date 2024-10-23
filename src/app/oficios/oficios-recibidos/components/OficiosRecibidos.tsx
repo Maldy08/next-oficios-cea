@@ -7,12 +7,16 @@ import ModalResponsable from "./ModalResponsable";
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
+import { Oficios } from "@/app/domain/entities";
 
 interface OficiosPageProps {
   remitentes: any[];
   datosEmpleados: any[];
   rows: any[];
+  onCreateOficio?: (nuevoOficio: Oficios) => Promise<void>;  // Nueva propiedad para enviar oficios
 }
+
+
 
 export default function OficiosPage({
   remitentes,

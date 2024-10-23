@@ -1,6 +1,9 @@
 import { Oficios } from "@/app/domain/entities";
 
 export class OficiosMapper {
+    static mapFromDomainToApi(oficio: Oficios) {
+      throw new Error("Method not implemented.");
+    }
     static mapFromApiToDomain(result: Oficios): Oficios {
         return {
             ejercicio: result.ejercicio,

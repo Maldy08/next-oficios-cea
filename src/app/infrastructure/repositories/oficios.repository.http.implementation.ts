@@ -10,8 +10,19 @@ export class OficioRepositoryHttpImplementation implements OficiosRepository {
       const { data } = await DbAdapter.get<Result<Oficios[]>>("oficios");
       return data.map((oficio) => OficiosMapper.mapFromApiToDomain(oficio));
     } catch (error) {
-      console.error("Error fetching departamentos from repository:", error);
-      throw new Error("Error fetching departamentos from repository");
+      console.error("Error fetching oficios from repository:", error);
+      throw new Error("Error fetching oficios from repository");
+    }
+  }
+
+  async createOficio(oficio: Oficios): Promise<void> {
+    try {
+      const apiOficio = OficiosMapper.mapFromDomainToApi(oficio);  // Mapea el oficio del dominio al formato de API
+      await DbAdapter.post<Result<void>>("oficios", apiOficio);  // Enviar el oficio a la API
+    } catch (error) {
+      console.error("Error creating oficio in repository:", error);
+      throw new Error("Error creating oficio in repository");
     }
   }
 }
+

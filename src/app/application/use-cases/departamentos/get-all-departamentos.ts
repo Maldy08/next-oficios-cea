@@ -1,9 +1,9 @@
 import { Departamentos, Empleados } from "@/app/domain/entities";
 import {
   DepartamentosRepository,
-  EmpleadosRepository,
-} from "../../interfaces/departamentos.interface.repository";
 
+} from "../../interfaces/departamentos.interface.repository";
+import { EmpleadosRepository } from "../../interfaces/empleados.interface.repository";
 export class GetAllDepartamentosUseCase {
   constructor(private departamentosRepository: DepartamentosRepository) {}
 

@@ -8,6 +8,9 @@ interface Options {
 }
 
 export class AxiosAdapter implements HttpAdapter {
+    post<T>(arg0: string, apiOficio: void) {
+      throw new Error("Method not implemented.");
+    }
     private axiosInstance: AxiosInstance;
 
     constructor(options : Options) {
