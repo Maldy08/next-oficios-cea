@@ -12,6 +12,7 @@ interface ModalOficioProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
+  onEdito: (data: any) => void; // Para editar un oficio existente
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
   esNuevo: boolean;
@@ -69,6 +70,7 @@ export default function ModalOficio({
   esEditar,
   onClose,
   onSave,
+  onEdito, // Añadimos onEdito
   datosEmpleados,
   remitentes,
 }: ModalOficioProps) {
@@ -229,22 +231,17 @@ export default function ModalOficio({
           };
 
           try {
-
             if (esEditar) {
-
+              await onEdito(objetoOficio); // Llamar a la función onEdito
             } else {
-
-              onSave(objetoOficio);
-              return;
-
+              await onSave(objetoOficio); // Llamar a la función onSave
             }
-
+            onClose(); // Cerrar el modal después de guardar
           } catch (error) {
-            console.error("Error al guardar el oficio o enviar el arreglo:", error);
+            console.error("Error al guardar el oficio:", error);
           }
-
         }
-      }}
+        }}
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
