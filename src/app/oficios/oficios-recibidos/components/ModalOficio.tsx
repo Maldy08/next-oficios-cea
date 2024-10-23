@@ -87,14 +87,6 @@ export default function ModalOficio({
     setOficioResponsable,
   } = UseOficioMODAL();
 
-  if (esEditar) {
-    console.log("Entro a editarrrrr");
-    console.log(rowData);
-  }
-  if (esNuevo) {
-    console.log("Entro a nuevoooooooooo");
-  }
-
   let numero1 = 2;
   const handleOficioResponsable = (data: OficioResponsable) => {
     setOficioResponsable((prev) => [
