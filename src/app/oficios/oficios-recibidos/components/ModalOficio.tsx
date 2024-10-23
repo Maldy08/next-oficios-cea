@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
-import { FaSearch, FaUserPlus } from "react-icons/fa";
+
+import { FaUserPlus } from "react-icons/fa";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import ModalDestinatario from "../components/ModalDestinatario";
 import ModalRemitente from "../components/ModalRemitente";
 import ModalResponsable from "../components/ModalResponsable";
 import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import axios from "axios";
 import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
+
 
 interface ModalOficioProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (data: any) => void;
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
   esNuevo: boolean;
@@ -68,7 +67,6 @@ export default function ModalOficio({
   rowData,
   esNuevo,
   esEditar,
-  isOpen,
   onClose,
   onSave,
   datosEmpleados,
@@ -229,112 +227,24 @@ export default function ModalOficio({
             deptoRespon: values.deptoRespon,
             archivo: values.archivo,
           };
-        
+
           try {
-  if (esEditar) {
-    // Enviar el objeto usando PUT para el oficio
-    const response = await fetch(
-      `http://200.56.97.5:7281/api/Oficios/${rowData.id}`, // Asegúrate de que rowData tenga un ID
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(objetoOficio),
-      }
-    );
 
-    if (!response.ok) {
-      throw new Error("Error en la solicitud al actualizar los datos del oficio.");
-    }
+            if (esEditar) {
 
-    const data = await response.json();
-    console.log("Datos del oficio actualizados correctamente:", data);
+            } else {
 
-    // Enviar el arreglo oficioResponsable usando PUT
-    const responseArray = await fetch(
-      "http://200.56.97.5:7281/api/OficioResponsable/UpdateOficioResponsable", // Cambia la URL según sea necesario
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(oficioResponsable), // Asegúrate de que oficioResponsable tenga la estructura correcta
-      }
-    );
+              onSave(objetoOficio);
+              return;
 
-    if (!responseArray.ok) {
-      throw new Error("Error en la solicitud al actualizar el arreglo oficioResponsable.");
-    }
+            }
 
-    const responseArrayData = await responseArray.json();
-    console.log("Arreglo oficioResponsable actualizado correctamente:", responseArrayData);
+          } catch (error) {
+            console.error("Error al guardar el oficio o enviar el arreglo:", error);
+          }
 
-    // Agregar un log para confirmar que ambos PUT se han ejecutado
-    console.log("Ambos PUT ejecutados: oficio y oficioResponsable.");
-    
-  } else {
-    // Enviar el objeto usando POST para el oficio
-    const formData = new FormData();
-
-    (Object.keys(objetoOficio) as (keyof ObjetoOficio)[]).forEach(
-      (key) => {
-        const value = objetoOficio[key];
-        if (value !== null && value !== undefined) {
-          formData.append(key, value.toString());
         }
-      }
-    );
-
-    if (values.archivo) {
-      formData.append("archivo", values.archivo);
-    }
-
-    const response = await fetch(
-      "http://200.56.97.5:7281/api/Oficios",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Error en la solicitud al enviar los datos del oficio.");
-    }
-
-    const data = await response.json();
-    console.log("Datos del oficio enviados correctamente:", data);
-  }
-
-  // Enviar el arreglo oficioResponsable usando POST
-  const responseArray = await fetch(
-    "http://200.56.97.5:7281/api/OficioResponsable/CreateOficioResponsable",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(oficioResponsable), // Asegúrate de que oficioResponsable tenga la estructura correcta
-    }
-  );
-
-  if (!responseArray.ok) {
-    throw new Error("Error en la solicitud al enviar el arreglo oficioResponsable.");
-  }
-
-  const responseArrayData = await responseArray.json();
-  console.log("Arreglo oficioResponsable enviado correctamente:", responseArrayData);
-
-  // Llamar a la función onSave si ambos procesos fueron exitosos
-  onSave();
-
-} catch (error) {
-  console.error("Error al guardar el oficio o enviar el arreglo:", error);
-}
-
-          
-        }
-        }}
+      }}
     >
       {({ setFieldValue, values, errors, touched }) => (
         <Form>
@@ -801,6 +711,7 @@ export default function ModalOficio({
                 />
               )}
               {showResponsableModal && (
+
                 <ModalResponsable
                   isOpen={showResponsableModal}
                   onClose={() => setShowResponsableModal(false)}
@@ -829,15 +740,6 @@ export default function ModalOficio({
 
                     setShowResponsableModal(false);
                   }}
-                  // oficioResponsable={[
-                  //   {
-                  //     ejercicio: 2024,
-                  //     folio: values.folio,
-                  //     eor: 1,
-                  //     idEmpleado: values.idEmpleado,
-                  //     rol: 1,
-                  //   },
-                  // ]}
 
                   tipo={values.tipo.toString()}
                   datosEmpleados={datosEmpleados}

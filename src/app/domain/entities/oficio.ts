@@ -26,4 +26,5 @@ export interface Oficios {
     idEmpleado:        number;
     nombreResponsable: string;
     rol:               number;
+    archivo? : any;
 }

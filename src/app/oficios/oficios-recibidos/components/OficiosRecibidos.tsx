@@ -7,27 +7,25 @@ import ModalResponsable from "./ModalResponsable";
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
-import { Oficios } from "@/app/domain/entities";
+import { createOficio } from "@/app/infrastructure/data-access/oficios/create-oficios";
 
 interface OficiosPageProps {
   remitentes: any[];
   datosEmpleados: any[];
   rows: any[];
-  onCreateOficio?: (nuevoOficio: Oficios) => Promise<void>;  // Nueva propiedad para enviar oficios
+
 }
 
-
-
-export default function OficiosPage({
+export default function OficiosRecibidos({
   remitentes,
   datosEmpleados,
   rows,
+
 }: OficiosPageProps) {
   const {
     modalType,
     handleOpenModal,
     handleCloseModal,
-    handleSave,
     openModal,
     edit,
     setEdit,
@@ -47,6 +45,13 @@ export default function OficiosPage({
     setEdit(true); // Abre el modal en modo edición
     console.log(edit);
   };
+
+
+  const handleSave = async (oficio: any) => {
+    //  console.log("oficio-page", oficio);
+    await createOficio(oficio);
+    // saveOficio(oficio);
+  }
 
   return (
     <>
