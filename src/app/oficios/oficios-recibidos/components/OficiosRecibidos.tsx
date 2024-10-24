@@ -3,6 +3,7 @@
 import TableComponent from "../../oficios-expedidos/components/table";
 import UseOficioR from "../HooksRecibido/UseOficioRecibidos";
 import ModalOficio from "./ModalOficio";
+import Modal from "./ModalPDF"; // Asegúrate de que este sea el nombre correcto
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
@@ -35,10 +36,11 @@ export default function OficiosRecibidos({
   });
 
   const [selectedRow, setSelectedRow] = useState(null); // Estado para la fila seleccionada
+  const [pdfUrl, setPdfUrl] = useState(''); // Estado para la URL del PDF
 
   const handleEdit = (rowData: any) => {
     setSelectedRow(rowData); // Guarda los datos de la fila seleccionada
-    handleOpenModal();
+    handleOpenModal("edit"); // Cambié aquí para especificar el tipo
     setEdit(true); // Abre el modal en modo edición
   };
 
@@ -52,15 +54,22 @@ export default function OficiosRecibidos({
 
   const handleSaveOficiosResponsable = async (oficioResponsable: any) => {
     await createOficioResponsable(oficioResponsable);
-  }
+  };
 
+  // Modificado para manejar la apertura del modal con la URL del PDF
+  const handleOpenModalWithPDF = (type: string, url?: string) => {
+    if (type === "view" && url) {
+      setPdfUrl(url); // Establece la URL del PDF
+    }
+    handleOpenModal(type); // Llama a la función original
+  };
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => {
-            handleOpenModal();
+            handleOpenModal("create"); // Cambié aquí para especificar el tipo
             setEdit(false);
           }}
           className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
@@ -81,7 +90,7 @@ export default function OficiosRecibidos({
 
       <TableComponent
         rows={paginatedRows}
-        handleOpenModal={handleOpenModal}
+        handleOpenModal={handleOpenModalWithPDF} // Usa la nueva función
         handleCloseModal={handleCloseModal}
         modalType={modalType}
         datosEmpleados={datosEmpleados}
@@ -89,7 +98,14 @@ export default function OficiosRecibidos({
         handleEdit={handleEdit}
       />
 
-      {openModal && (
+      {openModal && modalType === "view" && pdfUrl && ( // Muestra el modal solo si hay URL
+        <Modal
+          url={pdfUrl} // Pasa la URL del PDF
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {openModal && modalType !== "view" && ( // Muestra el ModalOficio para otros tipos
         <ModalOficio
           isOpen={openModal}
           onClose={handleCloseModal}
@@ -98,7 +114,7 @@ export default function OficiosRecibidos({
           onSaveOficiosResponsable={handleSaveOficiosResponsable}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
-          esNuevo={edit ? false : true}
+          esNuevo={!edit}
           esEditar={edit}
           rowData={selectedRow}
         />

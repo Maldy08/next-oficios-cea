@@ -11,8 +11,9 @@ export default function UseOficioMODAL() {
   const [edit, setEdit] = useState<boolean>(false);
 
   // Abrir modal con tipo
-  const handleOpenModal = () => {
-    setOpenModal(true);
+  const handleOpenModal = (type: string) => {
+    setModalType(type); // Guarda el tipo del modal
+    setOpenModal(true); // Abre el modal
   };
 
   // Cerrar modal
@@ -141,6 +142,7 @@ export default function UseOficioMODAL() {
      // Estados para el modal de confirmación y valores de Formik
      const [showConfirmModal, setShowConfirmModal] = useState(false);
      const [formikValues, setFormikValues] = useState<any>(null);
+     
 
   return {
     getCurrentDate,
