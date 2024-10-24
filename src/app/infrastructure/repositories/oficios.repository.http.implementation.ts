@@ -24,7 +24,7 @@ export class OficioRepositoryHttpImplementation implements OficiosRepository {
     try {
       const data = OficiosMapper.mapFromDomainToApi(oficio);
       // Supongo que usas el folio como identificador único en la URL
-      await DbAdapter.put<Oficios>(`oficios/${oficio.folio}`, data, { headers: { "Content-Type": "multipart/form-data" } });
+      await DbAdapter.put<Oficios>(`oficios`, data, { headers: { "Content-Type": "multipart/form-data" } });
     } catch (error) {
       console.error("Error updating oficio from repository:", error);
       throw new Error("Error updating oficio from repository");

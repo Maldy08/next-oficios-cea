@@ -84,7 +84,7 @@ const ModalResponsable = (props: ModalResponsableProps) => {
       }) */
       props.handleOficioResponsable({
         ejercicio: 2024,
-        eor: 2,
+        eor: 1,
         folio: 1,
         idEmpleado: selectedItem.empleado,
         rol: 1,

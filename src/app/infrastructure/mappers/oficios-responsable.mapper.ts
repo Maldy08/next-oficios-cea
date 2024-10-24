@@ -12,15 +12,14 @@ export class OficioResponsableMapper {
         };
       }
 
-      static mapFromDomainToApi(oficioResponsable: OficioResponsable[] ): Record<string, any> {
-        return {
-          oficioResponsable: oficioResponsable.map((ofresp) => ({
-            ejercicio: ofresp.ejercicio,
-            folio: ofresp.folio,
-            eor: ofresp.eor,
-            rol: ofresp.rol,
-            idEmpleado: ofresp.idEmpleado
-          }))
-        };
+      static mapFromDomainToApi(oficioResponsable: OficioResponsable[] ): Record<string, any>[] {
+        return oficioResponsable.map((ofresp) => ({
+          
+          ejercicio: ofresp.ejercicio,
+          folio: ofresp.folio,
+          eor: ofresp.eor,
+          rol: ofresp.rol,
+          idEmpleado: ofresp.idEmpleado
+        }));
       }
 }

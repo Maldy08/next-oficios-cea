@@ -104,7 +104,7 @@ export default function ModalOficio({
       },
     ]);
 
-    console.log(oficioResponsable);
+   // console.log(oficioResponsable);
   };
 
 
@@ -228,7 +228,13 @@ export default function ModalOficio({
             if (esEditar) {
               await onEdito(objetoOficio); // Llamar a la función onEdito
             } else {
+              
               await onSave(objetoOficio); // Llamar a la función onSave
+              oficioResponsable.forEach((item) => {
+                item.folio = objetoOficio.folio;
+                item.ejercicio = objetoOficio.ejercicio;
+                item.eor = objetoOficio.eor;
+              });
               await onSaveOficiosResponsable(oficioResponsable); // Llamar a la función onSaveOficiosResponsable
             }
             onClose(); // Cerrar el modal después de guardar

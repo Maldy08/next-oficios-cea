@@ -8,7 +8,7 @@ import { Result } from "@/app/domain/common/result";
 export class OficioResponsableRepositoryHttpImplementation implements OficiosResponsableRepository {
     async getOficiosResponsableByEjercicioFolioEor(): Promise<OficioResponsable[]> {
         try {
-            const { data } = await DbAdapter.get<Result<OficioResponsable[]>>("oficios");
+            const { data } = await DbAdapter.get<Result<OficioResponsable[]>>("oficios-responsable");
             return data.map((ofresp) => OficioResponsableMapper.mapFromApiToDomain(ofresp));
 
         } catch (error) {
@@ -18,8 +18,8 @@ export class OficioResponsableRepositoryHttpImplementation implements OficiosRes
     }
     async createOficioResponsable(oficioResponsable: OficioResponsable[]): Promise<void> {
         try {
-            const data = OficioResponsableMapper.mapFromDomainToApi(oficioResponsable);
-            await DbAdapter.post<OficioResponsable>("oficios", data, { headers: { "Content-Type": "multipart/form-data" } });
+          const data = OficioResponsableMapper.mapFromDomainToApi(oficioResponsable);
+          await DbAdapter.post<OficioResponsable[]>("oficios-responsable", oficioResponsable);
         }
         catch(error)
         {

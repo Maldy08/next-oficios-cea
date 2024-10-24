@@ -51,6 +51,7 @@ export default function OficiosRecibidos({
   };
 
   const handleSaveOficiosResponsable = async (oficioResponsable: any) => {
+    //console.log(oficioResponsable);
     await createOficioResponsable(oficioResponsable);
   }
 
