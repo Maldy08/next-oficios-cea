@@ -7,12 +7,9 @@ interface ModalConfirmacionProps {
   message: string;
 }
 
-const ModalConfirmacion = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  message,
-}: ModalConfirmacionProps) => {
+const ModalConfirmacion = (props: ModalConfirmacionProps) => {
+  const { isOpen, onClose, onConfirm, message } = props;
+
   if (!isOpen) return null;
 
   return (

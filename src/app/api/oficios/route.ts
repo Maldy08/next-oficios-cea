@@ -1,7 +1,7 @@
 import type { Oficios } from "@/app/domain/entities";
 import { NextResponse } from "next/server";
 
-const urlApi = "http://localhost:5178/api/Oficios";
+const urlApi = "http://200.56.97.5:7281/api/Oficios";
 
 
 export async function GET(request: Request) {
