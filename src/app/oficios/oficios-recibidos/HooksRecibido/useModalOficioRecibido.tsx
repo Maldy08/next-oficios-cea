@@ -1,4 +1,5 @@
 import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
+import React from "react";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
@@ -132,6 +133,12 @@ export default function UseOficioMODAL() {
     return `${year}-${month}-${day}`;
   };
 
+
+   // Estados para el modal de confirmación y valores de Formik
+   const [showConfirmModal, setShowConfirmModal] = useState(false);
+   const [formikValues, setFormikValues] = useState<any>(null);
+
+
   return {
     getCurrentDate,
     personaEntregaName,
@@ -197,5 +204,9 @@ export default function UseOficioMODAL() {
     setidEmpleado,
     oficioResponsables,
     setOficioResponsable,
+    showConfirmModal,
+    formikValues,
+    setShowConfirmModal,
+    setFormikValues
   };
 }

@@ -1,4 +1,3 @@
-
 import { FaUserPlus } from "react-icons/fa";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import ModalDestinatario from "../components/ModalDestinatario";
@@ -6,7 +5,7 @@ import ModalRemitente from "../components/ModalRemitente";
 import ModalResponsable from "../components/ModalResponsable";
 import UseOficioMODAL from "../HooksRecibido/UseOficioRecibidos";
 import { OficioResponsable } from "@/app/domain/entities/oficioResposable";
-
+import ModalConfirmacion from "./ModalConfirmacion";
 
 interface ModalOficioProps {
   isOpen: boolean;
@@ -19,6 +18,7 @@ interface ModalOficioProps {
   esEditar: boolean;
   rowData: any;
 }
+
 interface Empleados {
   nombreCompleto: string;
   descripcionDepto: string;
@@ -87,17 +87,57 @@ export default function ModalOficio({
     getCurrentDate,
     oficioResponsable,
     setOficioResponsable,
+    formikValues,
+    setFormikValues,
+    showConfirmModal,
+    setShowConfirmModal,
   } = UseOficioMODAL();
 
-  if (esEditar) {
-    console.log("Entro a editarrrrr");
-    console.log(rowData);
-  }
-  if (esNuevo) {
-    console.log("Entro a nuevoooooooooo");
-  }
-
-  let numero1 = 2;
+  const handleConfirmSubmit = async () => {
+    if (formikValues) {
+      try {
+        const objetoOficio = {
+          ejercicio: 2024,
+          folio: formikValues.folio,
+          eor: 2,
+          tipo: formikValues.tipo,
+          noOficio: formikValues.noOficio,
+          pdfpath: null,
+          fecha: currentDate,
+          fechaCaptura: formikValues.fechaCaptura,
+          fechaAcuse: "2024-10-03T07:02:08.170Z",
+          fechaLimite: formikValues.fechaLimite,
+          remDepen: formikValues.remDepen,
+          remSiglas: formikValues.remSiglas,
+          remNombre: formikValues.remNombre,
+          remCargo: formikValues.remCargo,
+          destDepen: formikValues.destDepen,
+          destSiglas: formikValues.destSiglas,
+          destNombre: formikValues.destNombre,
+          destCargo: formikValues.destCargo,
+          tema: formikValues.tema,
+          estatus: 1,
+          empqentrega: 0,
+          relacionoficio: "string",
+          depto: formikValues.depto,
+          deptoRespon: formikValues.deptoRespon,
+          archivo: formikValues.archivo,
+        };
+  
+        if (esEditar) {
+          await onEdito(objetoOficio); // Editar el oficio
+        } else {
+          await onSave(objetoOficio); // Guardar el oficio
+        }
+  
+        onClose(); // Cerrar el modal principal después de confirmar
+        setShowConfirmModal(false); // Cerrar el modal de confirmación
+      } catch (error) {
+        console.error("Error al guardar el oficio:", error);
+      }
+    }
+  };
+  
   const handleOficioResponsable = (data: OficioResponsable) => {
     setOficioResponsable((prev) => [
       ...prev,
@@ -109,16 +149,15 @@ export default function ModalOficio({
         folio: data.folio,
       },
     ]);
-
+  
     console.log(oficioResponsable);
   };
-
-
+  
   return (
     <Formik
       initialValues={{
         folio: esEditar ? rowData.folio : 0,
-        tipo: esEditar ? rowData.tipo.toString() : "1", // Convertir a string
+        tipo: esEditar ? rowData.tipo.toString() : "1",
         fechaCaptura: esEditar && rowData.fechaCaptura
           ? new Date(rowData.fechaCaptura).toISOString().split("T")[0]
           : getCurrentDate(),
@@ -128,7 +167,7 @@ export default function ModalOficio({
         noOficio: esEditar ? rowData.noOficio : "",
         observaciones: esEditar ? rowData.observaciones : "",
         pdfpath: esEditar ? rowData.pdfpath : null,
-        archivo: esEditar ? rowData.archivo : null, // Asumes que el archivo es nuevo o se seleccionará al crear o editar
+        archivo: esEditar ? rowData.archivo : null,
         tema: esEditar ? rowData.tema : "",
         estatus: esEditar ? rowData.estatus : 0,
         empqentrega: esEditar ? rowData.empqentrega : 0,
@@ -145,105 +184,79 @@ export default function ModalOficio({
         depto: esEditar ? rowData.depto : "",
         deptoRespon: esEditar ? rowData.deptoRespon : "",
         responsableName: esEditar ? rowData.nombreResponsable : "",
-        destinatarioType: esEditar ? "1" : "2", // Interno por defecto en esEditar
-        remitenteType: esEditar ? "2" : "1",    // Externo por defecto en esEditar
-
-        //nombreResponsable: "",
+        destinatarioType: esEditar ? "1" : "2",
+        remitenteType: esEditar ? "2" : "1",
       }}
       validationSchema={validationSchema}
-      validateOnChange={false} // Desactivar validación en cada cambio
-      validateOnBlur={false} // Desactivar validación en cada desenfoque
+      validateOnChange={false}
+      validateOnBlur={false}
       onSubmit={async (values, { setErrors, setTouched }) => {
         const errors: { [key: string]: string } = {};
-
-        if (numero1 > 1) {
-        }
-
-        if (!values.remNombre)
-          errors.remNombre = "Nombre del remitente es requerido";
-        if (!values.destNombre)
-          errors.destNombre = "Nombre del destinatario es requerido";
-        if (!values.responsableName)
-          errors.responsableName = "Nombre del responsable es requerido";
-
-        // Si hay errores, se actualizan y no se envía el formulario
+      
+        // Validaciones
+        if (!values.remNombre) errors.remNombre = "Nombre del remitente es requerido";
+        if (!values.destNombre) errors.destNombre = "Nombre del destinatario es requerido";
+        if (!values.responsableName) errors.responsableName = "Nombre del responsable es requerido";
+      
         if (Object.keys(errors).length) {
           setErrors(errors);
-          setTouched({
-            // Marcar campos como tocados
-          });
+          setTouched({});
         } else {
-          // Crear el objeto JSON
-          // Lógica para cambiar los valores según el remitenteType
+          // Inicializar variables
           let remSiglas = values.remSiglas;
           let remDepen = values.remDepen;
           let destDepen = values.destDepen;
           let destSiglas = values.destSiglas;
-
-          if (values.remitenteType === "1" && values.tipo == "1") {
+  
+          // Log de entrada
+          console.log("Entrando a la lógica de establecimiento de siglas");
+  
+          // Lógica para establecer remSiglas y remDepen
+          if (values.remitenteType === "1" && values.tipo === "1") {
             remSiglas = "CEA";
             remDepen = "COMISION ESTATAL DEL AGUA";
+            console.log("Estableciendo remSiglas y remDepen para tipo 1 y remitenteType 1");
           }
-
-          if (values.destinatarioType === "1" && values.tipo == "1") {
+  
+          // Lógica para establecer destSiglas y destDepen
+          if (values.destinatarioType === "1" && values.tipo === "1") {
             destDepen = "COMISION ESTATAL DEL AGUA";
             destSiglas = "CEA";
-          }
-
-          if (values.remitenteType === "1" && values.tipo == "2") {
+            console.log("Estableciendo destDepen y destSiglas para tipo 1 y destinatarioType 1");
+          } else if (values.remitenteType === "1" && values.tipo === "2") {
             remSiglas = "SEPROA";
-            destSiglas = "CEA";
-            remDepen =
-              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+            remDepen = "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+            destSiglas = "CEA";  // Asegúrate de que destSiglas se establece aquí
+            console.log("Estableciendo remSiglas y destSiglas para tipo 2 y remitenteType 1");
+          } else if (values.destinatarioType === "1" && values.tipo === "2") {
+            destDepen = "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+            // Verifica si destSiglas necesita ser establecido aquí también
+            console.log("Estableciendo destDepen para tipo 2 y destinatarioType 1");
           }
-
-          if (values.destinatarioType === "1" && values.tipo == "2") {
-            destDepen =
-              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
-          }
-
-          const objetoOficio = {
-            ejercicio: 2024,
-            folio: values.folio,
-            eor: 2,
-            tipo: values.tipo,
-            noOficio: values.noOficio,
-            pdfpath: null,
-            fecha: currentDate,
-            fechaCaptura: values.fechaCaptura,
-            fechaAcuse: "2024-10-03T07:02:08.170Z",
-            fechaLimite: values.fechaLimite,
-            remDepen: remDepen,
-            remSiglas: remSiglas,
-            remNombre: values.remNombre,
-            remCargo: values.remCargo,
-            destDepen: destDepen,
-            destSiglas: destSiglas,
-            destNombre: values.destNombre,
-            destCargo: values.destCargo,
-            tema: values.tema,
-            estatus: 1,
-            empqentrega: 0,
-            relacionoficio: "string",
-            depto: values.depto,
-            deptoRespon: values.deptoRespon,
-            archivo: values.archivo,
-          };
-
-          try {
-            if (esEditar) {
-              await onEdito(objetoOficio); // Llamar a la función onEdito
-            } else {
-              await onSave(objetoOficio); // Llamar a la función onSave
-            }
-            onClose(); // Cerrar el modal después de guardar
-          } catch (error) {
-            console.error("Error al guardar el oficio:", error);
-          }
+  
+          // Log de las siglas antes de guardar
+          console.log("Siglas antes de guardar:", {
+            remSiglas,
+            remDepen,
+            destSiglas,
+            destDepen,
+          });
+  
+          // Actualizar valores en el formulario
+          setFormikValues({
+            ...values,
+            remSiglas,
+            remDepen,
+            destDepen,
+            destSiglas,
+          });
+  
+          // Mostrar el modal de confirmación
+          setShowConfirmModal(true);
         }
-        }}
+      }}
     >
-      {({ setFieldValue, values, errors, touched }) => (
+      {({ submitForm, setFieldValue, values, errors, touched }) => (
         <Form>
           <div className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto">
             <div
@@ -594,33 +607,21 @@ export default function ModalOficio({
                 </div>
               </div>
               <div className="flex justify-end space-x-4 mt-4">
-                <button
-                  onClick={onClose}
-                  className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-                >
-                  Cancelar
-                </button>
-                {esEditar && (
-                  <button
-                    type="submit"
-                    className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-                  >
-                    Editar
-                  </button>
-                )}
-
-                {esNuevo && (
-                  <button
-                    type="submit"
-                    className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
-                  >
-                    Guardar
-                  </button>
-                )}
-
-                {/* <h1>Remitentes: {values.remitenteType}</h1>
-                <h1>Destinatario: {values.destinatarioType}</h1> */}
-              </div>
+  <button
+    type="button"
+    className="bg-[#641c34] text-white py-2 px-4 rounded  hover:bg-primary-700"
+    onClick={onClose}
+  >
+    Cancelar
+  </button>
+  <button
+    type="button"
+    className="bg-primary-900 text-white px-4 py-2 rounded hover:bg-primary-700"
+    onClick={submitForm} // Ejecuta el submit de Formik
+  >
+    {esNuevo ? "Guardar" : "Editar"}
+  </button>
+</div>
               {showDestinatarioModal && (
                 <ModalDestinatario
                   isOpen={showDestinatarioModal}
@@ -742,6 +743,16 @@ export default function ModalOficio({
                   datosEmpleados={datosEmpleados}
                 />
               )}
+              <ModalConfirmacion
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmit}
+        message={
+          esEditar
+            ? "¿Estás seguro de que deseas editar este oficio?"
+            : "¿Estás seguro de que deseas guardar este nuevo oficio?"
+        }
+      />
             </div>
           </div>
         </Form>
@@ -749,4 +760,3 @@ export default function ModalOficio({
     </Formik>
   );
 }
-

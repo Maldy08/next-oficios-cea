@@ -138,6 +138,10 @@ export default function UseOficioMODAL() {
     return `${year}-${month}-${day}`;
   };
 
+     // Estados para el modal de confirmación y valores de Formik
+     const [showConfirmModal, setShowConfirmModal] = useState(false);
+     const [formikValues, setFormikValues] = useState<any>(null);
+
   return {
     getCurrentDate,
     personaEntregaName,
@@ -207,5 +211,9 @@ export default function UseOficioMODAL() {
     setOpenModal,
     edit,
     setEdit,
+    showConfirmModal,
+    formikValues,
+    setShowConfirmModal,
+    setFormikValues
   };
 }
