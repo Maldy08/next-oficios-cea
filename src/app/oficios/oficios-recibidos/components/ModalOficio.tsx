@@ -12,6 +12,7 @@ interface ModalOficioProps {
   onClose: () => void;
   onSave: (data: any) => void;
   onEdito: (data: any) => void; // Para editar un oficio existente
+  onSaveOficiosResponsable: (data: any) => void;
   datosEmpleados: Empleados[];
   remitentes: remitentes[];
   esNuevo: boolean;
@@ -71,6 +72,7 @@ export default function ModalOficio({
   onClose,
   onSave,
   onEdito, // Añadimos onEdito
+  onSaveOficiosResponsable,
   datosEmpleados,
   remitentes,
 }: ModalOficioProps) {
@@ -93,51 +95,7 @@ export default function ModalOficio({
     setShowConfirmModal,
   } = UseOficioMODAL();
 
-  const handleConfirmSubmit = async () => {
-    if (formikValues) {
-      try {
-        const objetoOficio = {
-          ejercicio: 2024,
-          folio: formikValues.folio,
-          eor: 2,
-          tipo: formikValues.tipo,
-          noOficio: formikValues.noOficio,
-          pdfpath: null,
-          fecha: currentDate,
-          fechaCaptura: formikValues.fechaCaptura,
-          fechaAcuse: "2024-10-03T07:02:08.170Z",
-          fechaLimite: formikValues.fechaLimite,
-          remDepen: formikValues.remDepen,
-          remSiglas: formikValues.remSiglas,
-          remNombre: formikValues.remNombre,
-          remCargo: formikValues.remCargo,
-          destDepen: formikValues.destDepen,
-          destSiglas: formikValues.destSiglas,
-          destNombre: formikValues.destNombre,
-          destCargo: formikValues.destCargo,
-          tema: formikValues.tema,
-          estatus: 1,
-          empqentrega: 0,
-          relacionoficio: "string",
-          depto: formikValues.depto,
-          deptoRespon: formikValues.deptoRespon,
-          archivo: formikValues.archivo,
-        };
-  
-        if (esEditar) {
-          await onEdito(objetoOficio); // Editar el oficio
-        } else {
-          await onSave(objetoOficio); // Guardar el oficio
-        }
-  
-        onClose(); // Cerrar el modal principal después de confirmar
-        setShowConfirmModal(false); // Cerrar el modal de confirmación
-      } catch (error) {
-        console.error("Error al guardar el oficio:", error);
-      }
-    }
-  };
-  
+  let numero1 = 2;
   const handleOficioResponsable = (data: OficioResponsable) => {
     setOficioResponsable((prev) => [
       ...prev,
@@ -225,36 +183,57 @@ export default function ModalOficio({
             console.log("Estableciendo destDepen y destSiglas para tipo 1 y destinatarioType 1");
           } else if (values.remitenteType === "1" && values.tipo === "2") {
             remSiglas = "SEPROA";
-            remDepen = "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
-            destSiglas = "CEA";  // Asegúrate de que destSiglas se establece aquí
-            console.log("Estableciendo remSiglas y destSiglas para tipo 2 y remitenteType 1");
-          } else if (values.destinatarioType === "1" && values.tipo === "2") {
-            destDepen = "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
-            // Verifica si destSiglas necesita ser establecido aquí también
-            console.log("Estableciendo destDepen para tipo 2 y destinatarioType 1");
+            destSiglas = "CEA";
+            remDepen =
+              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
           }
-  
-          // Log de las siglas antes de guardar
-          console.log("Siglas antes de guardar:", {
-            remSiglas,
-            remDepen,
-            destSiglas,
-            destDepen,
-          });
-  
-          // Actualizar valores en el formulario
-          setFormikValues({
-            ...values,
-            remSiglas,
-            remDepen,
-            destDepen,
-            destSiglas,
-          });
-  
-          // Mostrar el modal de confirmación
-          setShowConfirmModal(true);
+
+          if (values.destinatarioType === "1" && values.tipo == "2") {
+            destDepen =
+              "SECRETARÍA PARA EL MANEJO, SANEAMIENTO Y PROTECCIÓN DEL AGUA DE BAJA CALIFORNIA";
+          }
+
+          const objetoOficio = {
+            ejercicio: 2024,
+            folio: values.folio,
+            eor: 2,
+            tipo: values.tipo,
+            noOficio: values.noOficio,
+            pdfpath: null,
+            fecha: currentDate,
+            fechaCaptura: values.fechaCaptura,
+            fechaAcuse: "2024-10-03T07:02:08.170Z",
+            fechaLimite: values.fechaLimite,
+            remDepen: remDepen,
+            remSiglas: remSiglas,
+            remNombre: values.remNombre,
+            remCargo: values.remCargo,
+            destDepen: destDepen,
+            destSiglas: destSiglas,
+            destNombre: values.destNombre,
+            destCargo: values.destCargo,
+            tema: values.tema,
+            estatus: 1,
+            empqentrega: 0,
+            relacionoficio: "string",
+            depto: values.depto,
+            deptoRespon: values.deptoRespon,
+            archivo: values.archivo,
+          };
+
+          try {
+            if (esEditar) {
+              await onEdito(objetoOficio); // Llamar a la función onEdito
+            } else {
+              await onSave(objetoOficio); // Llamar a la función onSave
+              await onSaveOficiosResponsable(oficioResponsable); // Llamar a la función onSaveOficiosResponsable
+            }
+            onClose(); // Cerrar el modal después de guardar
+          } catch (error) {
+            console.error("Error al guardar el oficio:", error);
+          }
         }
-      }}
+        }}
     >
       {({ submitForm, setFieldValue, values, errors, touched }) => (
         <Form>

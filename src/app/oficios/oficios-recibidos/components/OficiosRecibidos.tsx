@@ -3,12 +3,12 @@
 import TableComponent from "../../oficios-expedidos/components/table";
 import UseOficioR from "../HooksRecibido/UseOficioRecibidos";
 import ModalOficio from "./ModalOficio";
-import ModalResponsable from "./ModalResponsable";
 import UseClienteComponent from "../../oficios-expedidos/Hooks/UseClientComponent";
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
 import { createOficio } from "@/app/infrastructure/data-access/oficios/create-oficios";
 import { updateOficio } from "@/app/infrastructure/data-access/oficios/update-oficio ";
+import { createOficioResponsable } from "@/app/infrastructure/data-access/oficios-responsable/create-oficios-responsable";
 
 interface OficiosPageProps {
   remitentes: any[];
@@ -49,6 +49,10 @@ export default function OficiosRecibidos({
   const handleEdito = async (oficio: any) => {
     await updateOficio(oficio); // Usa updateOficio para actualizar
   };
+
+  const handleSaveOficiosResponsable = async (oficioResponsable: any) => {
+    await createOficioResponsable(oficioResponsable);
+  }
 
 
   return (
@@ -91,6 +95,7 @@ export default function OficiosRecibidos({
           onClose={handleCloseModal}
           onSave={handleSave}
           onEdito={handleEdito}
+          onSaveOficiosResponsable={handleSaveOficiosResponsable}
           datosEmpleados={datosEmpleados}
           remitentes={remitentes}
           esNuevo={edit ? false : true}

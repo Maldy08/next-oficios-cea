@@ -8,10 +8,12 @@ export class OficioRepositoryHttpImplementation implements OficiosRepository {
   
   // Método para crear un oficio (POST)
   async createOficio(oficio: Oficios): Promise<void> {
+
     try {
       const data = OficiosMapper.mapFromDomainToApi(oficio);
       await DbAdapter.post<Oficios>("oficios", data, { headers: { "Content-Type": "multipart/form-data" } });
     } catch (error) {
+
       console.error("Error creating oficio from repository:", error);
       throw new Error("Error creating oficio from repository");
     }
@@ -30,6 +32,7 @@ export class OficioRepositoryHttpImplementation implements OficiosRepository {
   }
 
   // Método para obtener todos los oficios (GET)
+
   async getAllOficios(): Promise<Oficios[]> {
     try {
       const { data } = await DbAdapter.get<Result<Oficios[]>>("oficios");
